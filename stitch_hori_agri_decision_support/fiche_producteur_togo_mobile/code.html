@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&amp;family=Source+Sans+3:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary": "#ffffff",
+                        "tertiary-fixed": "#ffdad6",
+                        "primary-container": "#1b5e20",
+                        "on-secondary-container": "#6a4800",
+                        "inverse-on-surface": "#dff4ff",
+                        "outline-variant": "#c0c9bb",
+                        "on-background": "#071e27",
+                        "error": "#ba1a1a",
+                        "secondary-fixed": "#ffdeac",
+                        "primary": "#00450d",
+                        "surface-dim": "#c7dde9",
+                        "on-primary-fixed-variant": "#0c5216",
+                        "surface-bright": "#f3faff",
+                        "inverse-surface": "#1e333c",
+                        "background": "#f3faff",
+                        "primary-fixed-dim": "#91d78a",
+                        "surface-container-high": "#d5ecf8",
+                        "outline": "#717a6d",
+                        "on-secondary": "#ffffff",
+                        "surface": "#f3faff",
+                        "on-tertiary": "#ffffff",
+                        "secondary-container": "#feb300",
+                        "on-tertiary-container": "#ffb2aa",
+                        "on-tertiary-fixed-variant": "#930010",
+                        "secondary": "#7e5700",
+                        "on-tertiary-fixed": "#410003",
+                        "surface-tint": "#2a6b2c",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-variant": "#cfe6f2",
+                        "on-surface": "#071e27",
+                        "error-container": "#ffdad6",
+                        "on-primary-container": "#90d689",
+                        "tertiary-fixed-dim": "#ffb3ac",
+                        "on-secondary-fixed-variant": "#604100",
+                        "on-secondary-fixed": "#281900",
+                        "on-surface-variant": "#41493e",
+                        "surface-container": "#dbf1fe",
+                        "inverse-primary": "#91d78a",
+                        "secondary-fixed-dim": "#ffba38",
+                        "on-primary-fixed": "#002203",
+                        "primary-fixed": "#acf4a4",
+                        "tertiary": "#7c000b",
+                        "tertiary-container": "#a70515",
+                        "surface-container-highest": "#cfe6f2",
+                        "surface-container-low": "#e6f6ff",
+                        "on-error": "#ffffff",
+                        "on-error-container": "#93000a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "container-margin": "24px",
+                        "gutter": "16px",
+                        "base": "8px",
+                        "card-padding": "20px",
+                        "margin-mobile": "16px",
+                        "stack-sm": "8px",
+                        "stack-md": "16px",
+                        "stack-lg": "32px",
+                        "touch-target-min": "48px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Work Sans"],
+                        "label-md": ["Source Sans 3"],
+                        "headline-md": ["Work Sans"],
+                        "headline-lg-mobile": ["Work Sans"],
+                        "body-md": ["Source Sans 3"],
+                        "data-mono": ["Source Sans 3"],
+                        "body-lg": ["Source Sans 3"],
+                        "title-lg": ["Work Sans"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "500"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "data-mono": ["14px", {"lineHeight": "20px", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "title-lg": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Source Sans 3', sans-serif; -webkit-tap-highlight-color: transparent; }
+        h1, h2, h3, h4 { font-family: 'Work Sans', sans-serif; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen pb-24">
+<!-- Header / TopAppBar -->
+<header class="w-full top-0 sticky z-40 bg-surface shadow-sm h-touch-target-min flex items-center px-margin-mobile">
+<button aria-label="Retour" class="w-12 h-12 flex items-center justify-start text-primary active:scale-95 transition-transform">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="font-title-lg text-title-lg text-on-surface flex-grow">Détail Producteur</h1>
+<button class="w-12 h-12 flex items-center justify-end text-on-surface-variant">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</header>
+<main class="px-margin-mobile pt-stack-md">
+<!-- Profile Summary Card -->
+<section class="bg-surface-container-lowest rounded-xl p-stack-md border border-outline-variant shadow-sm mb-stack-md">
+<div class="flex items-center gap-stack-md">
+<div class="w-20 h-20 rounded-full overflow-hidden border-2 border-primary-fixed-dim bg-surface-container">
+<img alt="Portrait of Mamadou Diallo" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCufPU8OFjt-2s30DLdfhRv1ghoxKbH--wCfAC33Et3M5679CV-wteS4YpuT_mNtAtfCE04Ezl1N8Bbmt_HDUTx17O0iRbeWeG0mp5Bl3E1DyWMoL6TMGRqLbuc86NIvcuEDBFA6tH4-JgxyTMQDJ5cNq5p9CEi0QV9CTJZQNDAqiua7v3Da9Qt_stmjSUCCDL6bZrAPikDmnHA3Q_lDGBkNOE9uBUC9UCeS6oma8B0DCCv4OzaS4I6"/>
+</div>
+<div class="flex flex-col">
+<h2 class="font-headline-md text-headline-md text-on-surface">Mamadou Diallo</h2>
+<p class="font-label-md text-label-md text-on-surface-variant">ID: COOP-8829</p>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-stack-sm mt-stack-md pt-stack-md border-t border-outline-variant">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Localisation</p>
+<p class="font-body-md text-body-md font-semibold">Atakpamé, Plateaux, Togo</p>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Contact</p>
+<p class="font-body-md text-body-md font-semibold">+228 90 45 88 12</p>
+</div>
+</div>
+<button class="w-full h-touch-target-min bg-primary text-on-primary rounded-lg font-title-lg mt-stack-md active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">call</span>
+                Appeler le producteur
+            </button>
+</section>
+<!-- Unified Tabs -->
+<div class="sticky top-[48px] z-30 bg-background -mx-margin-mobile px-margin-mobile py-2">
+<nav class="flex border-b border-outline-variant">
+<button class="flex-1 py-3 px-1 text-center font-label-md transition-all border-b-2 border-primary text-primary font-bold" id="tab-parcelles" onclick="switchTab('parcelles')">
+                    Parcelles
+                </button>
+<button class="flex-1 py-3 px-1 text-center font-label-md transition-all border-b-2 border-transparent text-on-surface-variant" id="tab-recomm" onclick="switchTab('recomm')">
+                    Recomm.
+                </button>
+<button class="flex-1 py-3 px-1 text-center font-label-md transition-all border-b-2 border-transparent text-on-surface-variant" id="tab-historique" onclick="switchTab('historique')">
+                    Historique
+                </button>
+</nav>
+</div>
+<!-- Tab Content: Parcelles -->
+<div class="space-y-stack-md py-stack-md" id="content-parcelles">
+<!-- Plot Card 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-stack-md shadow-sm relative overflow-hidden">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-title-lg text-title-lg text-primary">Parcelle Nord A1</h3>
+<span class="material-symbols-outlined text-on-surface-variant">map</span>
+</div>
+<div class="grid grid-cols-2 gap-y-stack-md">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Surface</p>
+<p class="font-headline-md text-headline-md font-bold">4.2 Ha</p>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Culture</p>
+<p class="font-headline-md text-headline-md font-bold">Maïs</p>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Type de sol</p>
+<p class="font-body-lg text-body-lg font-semibold">Argilo-sablonneux</p>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Performance</p>
+<div class="flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-[18px]">trending_up</span>
+<p class="font-body-lg text-body-lg font-bold">+12% vs Médiane</p>
+</div>
+</div>
+</div>
+<div class="mt-stack-md h-12 w-full bg-surface-container rounded-lg flex items-center px-stack-md justify-between">
+<span class="font-label-md text-label-md text-on-surface-variant">Dernier relevé : 14 Oct 2023</span>
+<span class="material-symbols-outlined text-primary">chevron_right</span>
+</div>
+</div>
+<!-- Plot Card 2 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-stack-md shadow-sm relative overflow-hidden">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-title-lg text-title-lg text-primary">Zone Plateau Est</h3>
+<span class="material-symbols-outlined text-on-surface-variant">map</span>
+</div>
+<div class="grid grid-cols-2 gap-y-stack-md">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Surface</p>
+<p class="font-headline-md text-headline-md font-bold">2.5 Ha</p>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Culture</p>
+<p class="font-headline-md text-headline-md font-bold">Soja</p>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Type de sol</p>
+<p class="font-body-lg text-body-lg font-semibold">Ferralitique</p>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Performance</p>
+<div class="flex items-center gap-1 text-tertiary">
+<span class="material-symbols-outlined text-[18px]">trending_down</span>
+<p class="font-body-lg text-body-lg font-bold">-4% vs Médiane</p>
+</div>
+</div>
+</div>
+<div class="mt-stack-md h-12 w-full bg-surface-container rounded-lg flex items-center px-stack-md justify-between">
+<span class="font-label-md text-label-md text-on-surface-variant">Dernier relevé : 22 Sep 2023</span>
+<span class="material-symbols-outlined text-primary">chevron_right</span>
+</div>
+</div>
+<!-- Plot Card 3 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-stack-md shadow-sm relative overflow-hidden">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-title-lg text-title-lg text-primary">Plaine Sud</h3>
+<span class="material-symbols-outlined text-on-surface-variant">map</span>
+</div>
+<div class="grid grid-cols-2 gap-y-stack-md">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Surface</p>
+<p class="font-headline-md text-headline-md font-bold">1.2 Ha</p>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Culture</p>
+<p class="font-headline-md text-headline-md font-bold">Manioc</p>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Type de sol</p>
+<p class="font-body-lg text-body-lg font-semibold">Sableux</p>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Performance</p>
+<div class="flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-[18px]">trending_flat</span>
+<p class="font-body-lg text-body-lg font-bold">Stable</p>
+</div>
+</div>
+</div>
+<div class="mt-stack-md h-12 w-full bg-surface-container rounded-lg flex items-center px-stack-md justify-between">
+<span class="font-label-md text-label-md text-on-surface-variant">Dernier relevé : 05 Oct 2023</span>
+<span class="material-symbols-outlined text-primary">chevron_right</span>
+</div>
+</div>
+<button class="w-full h-touch-target-min border-2 border-dashed border-outline-variant text-on-surface-variant rounded-lg font-label-md flex items-center justify-center gap-2 active:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined">add_location</span>
+                Ajouter une parcelle
+            </button>
+</div>
+<!-- Empty states for other tabs -->
+<div class="hidden py-stack-lg text-center space-y-stack-md" id="content-recomm">
+<span class="material-symbols-outlined text-primary-fixed-dim text-[64px]" style="font-variation-settings: 'FILL' 1;">psychology</span>
+<h3 class="font-title-lg text-title-lg">Recommandations IA</h3>
+<p class="font-body-md text-body-md text-on-surface-variant px-stack-lg">Analyse du sol et des prévisions météo pour optimiser les rendements au Togo.</p>
+<button class="mx-auto h-touch-target-min px-stack-lg bg-primary-container text-on-primary-container rounded-lg font-label-md">Générer un rapport</button>
+</div>
+<div class="hidden py-stack-lg text-center space-y-stack-md" id="content-historique">
+<span class="material-symbols-outlined text-outline-variant text-[64px]">history</span>
+<h3 class="font-title-lg text-title-lg">Historique des visites</h3>
+<p class="font-body-md text-body-md text-on-surface-variant px-stack-lg">Aucun historique récent pour ce producteur.</p>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 right-0 flex justify-around items-center px-margin-mobile py-2 bg-surface dark:bg-inverse-surface border-t border-outline-variant z-50">
+<div class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant active:scale-90 transition-all duration-150">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-sm text-label-sm">Bord</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-primary-container dark:bg-primary text-on-primary-container dark:text-on-primary rounded-full px-4 py-1 active:scale-90 transition-all duration-150">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">groups</span>
+<span class="font-label-sm text-label-sm">Producteurs</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant active:scale-90 transition-all duration-150">
+<span class="material-symbols-outlined">psychology</span>
+<span class="font-label-sm text-label-sm">Recos</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant active:scale-90 transition-all duration-150">
+<span class="material-symbols-outlined">map</span>
+<span class="font-label-sm text-label-sm">Itinéraires</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant active:scale-90 transition-all duration-150">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-sm text-label-sm">Param</span>
+</div>
+</nav>
+<script>
+        function switchTab(tabName) {
+            const tabs = ['parcelles', 'recomm', 'historique'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                const content = document.getElementById(`content-${t}`);
+                if (t === tabName) {
+                    btn.classList.add('border-primary', 'text-primary', 'font-bold');
+                    btn.classList.remove('border-transparent', 'text-on-surface-variant');
+                    content.classList.remove('hidden');
+                } else {
+                    btn.classList.remove('border-primary', 'text-primary', 'font-bold');
+                    btn.classList.add('border-transparent', 'text-on-surface-variant');
+                    content.classList.add('hidden');
+                }
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('mousedown', function (e) {
+                this.classList.add('active:scale-95');
+                setTimeout(() => this.classList.remove('active:scale-95'), 150);
+            });
+        });
+    </script>
+</body></html>

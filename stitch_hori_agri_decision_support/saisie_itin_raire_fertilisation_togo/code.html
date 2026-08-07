@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Hori Agri - Itinéraire Technique</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                "on-primary": "#ffffff",
+                "tertiary-fixed": "#ffdad6",
+                "primary-container": "#1b5e20",
+                "on-secondary-container": "#6a4800",
+                "inverse-on-surface": "#dff4ff",
+                "outline-variant": "#c0c9bb",
+                "on-background": "#071e27",
+                "error": "#ba1a1a",
+                "secondary-fixed": "#ffdeac",
+                "primary": "#00450d",
+                "surface-dim": "#c7dde9",
+                "on-primary-fixed-variant": "#0c5216",
+                "surface-bright": "#f3faff",
+                "inverse-surface": "#1e333c",
+                "background": "#f3faff",
+                "primary-fixed-dim": "#91d78a",
+                "surface-container-high": "#d5ecf8",
+                "outline": "#717a6d",
+                "on-secondary": "#ffffff",
+                "surface": "#f3faff",
+                "on-tertiary": "#ffffff",
+                "secondary-container": "#feb300",
+                "on-tertiary-container": "#ffb2aa",
+                "on-tertiary-fixed-variant": "#930010",
+                "secondary": "#7e5700",
+                "on-tertiary-fixed": "#410003",
+                "surface-tint": "#2a6b2c",
+                "surface-container-lowest": "#ffffff",
+                "surface-variant": "#cfe6f2",
+                "on-surface": "#071e27",
+                "error-container": "#ffdad6",
+                "on-primary-container": "#90d689",
+                "tertiary-fixed-dim": "#ffb3ac",
+                "on-secondary-fixed-variant": "#604100",
+                "on-secondary-fixed": "#281900",
+                "on-surface-variant": "#41493e",
+                "surface-container": "#dbf1fe",
+                "inverse-primary": "#91d78a",
+                "secondary-fixed-dim": "#ffba38",
+                "on-primary-fixed": "#002203",
+                "primary-fixed": "#acf4a4",
+                "tertiary": "#7c000b",
+                "tertiary-container": "#a70515",
+                "surface-container-highest": "#cfe6f2",
+                "surface-container-low": "#e6f6ff",
+                "on-error": "#ffffff",
+                "on-error-container": "#93000a"
+              },
+              "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+              },
+              "spacing": {
+                "container-margin": "24px",
+                "gutter": "16px",
+                "base": "8px",
+                "card-padding": "20px"
+              },
+              "fontFamily": {
+                "headline-lg": ["Work Sans"],
+                "label-md": ["Source Sans 3"],
+                "headline-md": ["Work Sans"],
+                "headline-lg-mobile": ["Work Sans"],
+                "body-md": ["Source Sans 3"],
+                "data-mono": ["Source Sans 3"],
+                "body-lg": ["Source Sans 3"]
+              },
+              "fontSize": {
+                "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "500"}],
+                "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                "data-mono": ["14px", {"lineHeight": "20px", "fontWeight": "700"}],
+                "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        body {
+            background-color: #f3faff;
+            font-family: "Source Sans 3", sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        h1, h2, h3 { font-family: "Work Sans", sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .step-completed {
+            background-color: #1b5e20;
+            color: white;
+        }
+        .step-active {
+            background-color: #00450d;
+            color: white;
+            box-shadow: 0 0 0 4px #acf4a4;
+        }
+        .step-inactive {
+            background-color: #cfe6f2;
+            color: #717a6d;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen text-on-surface">
+<header class="bg-surface shadow-sm sticky top-0 z-50 flex justify-between items-center h-[64px] px-container-margin w-full">
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-on-surface">arrow_back</span>
+</button>
+<h1 class="text-headline-md font-headline-md text-primary uppercase tracking-tight">Hori Agri</h1>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">notifications</span>
+<div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container text-[12px] font-bold">
+            JD
+        </div>
+</div>
+</header>
+<main class="flex-1 pb-40">
+<!-- Progress Stepper (5 steps) -->
+<section class="px-container-margin pt-6 pb-4 overflow-x-auto no-scrollbar">
+<div class="flex items-center min-w-[550px] justify-between">
+<!-- Semis -->
+<div class="flex flex-col items-center gap-2 flex-1">
+<div class="w-10 h-10 rounded-full step-completed flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">check</span>
+</div>
+<span class="text-label-md text-primary">Semis</span>
+</div>
+<div class="h-[2px] w-8 bg-primary mb-6"></div>
+<!-- Fertilisation -->
+<div class="flex flex-col items-center gap-2 flex-1">
+<div class="w-12 h-12 rounded-full step-active flex items-center justify-center">
+<span class="material-symbols-outlined text-[24px]">potted_plant</span>
+</div>
+<span class="text-label-md font-bold text-primary">Fertilisation</span>
+</div>
+<div class="h-[2px] w-8 bg-outline-variant mb-6"></div>
+<!-- Traitements -->
+<div class="flex flex-col items-center gap-2 flex-1 opacity-70">
+<div class="w-10 h-10 rounded-full step-inactive flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">science</span>
+</div>
+<span class="text-label-md">Traitements</span>
+</div>
+<div class="h-[2px] w-8 bg-outline-variant mb-6"></div>
+<!-- Entretien -->
+<div class="flex flex-col items-center gap-2 flex-1 opacity-70">
+<div class="w-10 h-10 rounded-full step-inactive flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">architecture</span>
+</div>
+<span class="text-label-md">Entretien</span>
+</div>
+<div class="h-[2px] w-8 bg-outline-variant mb-6"></div>
+<!-- Récolte -->
+<div class="flex flex-col items-center gap-2 flex-1 opacity-70">
+<div class="w-10 h-10 rounded-full step-inactive flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">agriculture</span>
+</div>
+<span class="text-label-md">Récolte</span>
+</div>
+</div>
+</section>
+<!-- Main Content Canvas -->
+<section class="px-container-margin space-y-6">
+<div class="flex items-center justify-between">
+<h2 class="text-headline-lg-mobile text-on-surface">Apports d'engrais</h2>
+<span class="px-3 py-1 bg-secondary-container text-on-secondary-container text-[12px] font-bold rounded-full">
+                Étape 2/5
+            </span>
+</div>
+<!-- Fertilizer Rows Container -->
+<div class="space-y-4" id="fertilizer-container">
+<!-- Card Item 1 -->
+<div class="bg-surface-container-lowest p-card-padding rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08)] border border-surface-variant relative">
+<div class="flex justify-between items-start mb-4">
+<h3 class="text-label-md text-primary font-bold">Apport #1</h3>
+<button class="p-2 text-error hover:bg-error-container/20 rounded-full remove-btn">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+<div class="space-y-4">
+<div>
+<label class="block text-label-md text-outline mb-1">Produit</label>
+<select class="w-full h-[52px] px-4 rounded-lg border border-outline-variant bg-surface-container-low text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+<option value="urea">Urée (46-0-0)</option>
+<option value="npk">NPK 15-15-15</option>
+<option value="dap">DAP (18-46-0)</option>
+<option value="potash">Potasse (MOP)</option>
+</select>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label class="block text-label-md text-outline mb-1">Dose (kg/ha)</label>
+<input class="w-full h-[52px] px-4 rounded-lg border border-outline-variant bg-surface-container-low text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none" placeholder="0" type="number" value="150"/>
+</div>
+<div>
+<label class="block text-label-md text-outline mb-1">Date (JJ/MM/AAAA)</label>
+<!-- Corrected date value to 2023-10-24 which displays as 24/10/2023 in locale-aware inputs -->
+<input class="w-full h-[52px] px-4 rounded-lg border border-outline-variant bg-surface-container-low text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none" type="date" value="2023-10-24"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Card Item 2 -->
+<div class="bg-surface-container-lowest p-card-padding rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08)] border border-surface-variant">
+<div class="flex justify-between items-start mb-4">
+<h3 class="text-label-md text-primary font-bold">Apport #2</h3>
+<button class="p-2 text-error hover:bg-error-container/20 rounded-full remove-btn">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+<div class="space-y-4">
+<div>
+<label class="block text-label-md text-outline mb-1">Produit</label>
+<select class="w-full h-[52px] px-4 rounded-lg border border-outline-variant bg-surface-container-low text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+<option disabled="" selected="" value="">Choisir un produit...</option>
+<option value="urea">Urée (46-0-0)</option>
+<option value="npk">NPK 15-15-15</option>
+</select>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label class="block text-label-md text-outline mb-1">Dose (kg/ha)</label>
+<input class="w-full h-[52px] px-4 rounded-lg border border-outline-variant bg-surface-container-low text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none" placeholder="Ex: 50" type="number"/>
+</div>
+<div>
+<label class="block text-label-md text-outline mb-1">Date (JJ/MM/AAAA)</label>
+<input class="w-full h-[52px] px-4 rounded-lg border border-outline-variant bg-surface-container-low text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none" type="date"/>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Add Button -->
+<button class="w-full h-[52px] flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-outline-variant text-primary font-bold hover:bg-primary-container/10 transition-all active:scale-95 duration-100" id="add-entry">
+<span class="material-symbols-outlined">add</span>
+<span>Ajouter un apport</span>
+</button>
+<!-- Quick Tip Card -->
+<div class="bg-secondary-container/10 p-card-padding rounded-xl flex gap-4 items-start border border-secondary-container/20">
+<span class="material-symbols-outlined text-secondary">info</span>
+<p class="text-label-md text-on-surface leading-relaxed">
+                Les doses sont calculées sur la base d'un hectare (kg/ha). Assurez-vous que l'étalonnage de votre épandeur est correct.
+            </p>
+</div>
+</section>
+</main>
+<!-- Navigation Chrome: Unified Tab Bar and Action Footer -->
+<div class="fixed bottom-0 left-0 w-full z-50">
+<!-- Action Bar (Buttons) -->
+<div class="bg-surface-container-lowest border-t border-outline-variant px-container-margin py-3 flex gap-4 items-center">
+<button class="flex-1 h-[48px] flex items-center justify-center border-2 border-primary text-primary font-bold rounded-xl active:bg-primary/10 transition-all">
+            Précédent
+        </button>
+<button class="flex-[2] h-[48px] flex items-center justify-center bg-primary text-white font-bold rounded-xl active:scale-[0.98] transition-all shadow-md">
+            Suivant
+        </button>
+</div>
+<!-- Unified Tab Bar -->
+<nav class="bg-surface border-t border-outline-variant h-[64px] flex items-center justify-around px-2 pb-safe">
+<button class="flex flex-col items-center gap-1 flex-1 text-outline">
+<span class="material-symbols-outlined">home</span>
+<span class="text-[10px] font-medium">Accueil</span>
+</button>
+<button class="flex flex-col items-center gap-1 flex-1 text-primary">
+<div class="relative flex flex-col items-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">assignment</span>
+<span class="text-[10px] font-bold">Culture</span>
+<div class="absolute -top-1 right-0 w-1.5 h-1.5 bg-error rounded-full"></div>
+</div>
+</button>
+<button class="flex flex-col items-center gap-1 flex-1 text-outline">
+<span class="material-symbols-outlined">map</span>
+<span class="text-[10px] font-medium">Parcelles</span>
+</button>
+<button class="flex flex-col items-center gap-1 flex-1 text-outline">
+<span class="material-symbols-outlined">monitoring</span>
+<span class="text-[10px] font-medium">Analyses</span>
+</button>
+<button class="flex flex-col items-center gap-1 flex-1 text-outline">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[10px] font-medium">Paramètres</span>
+</button>
+</nav>
+</div>
+<script>
+    const addButton = document.getElementById('add-entry');
+    const container = document.getElementById('fertilizer-container');
+
+    const bindRemove = (btn) => {
+        btn.onclick = (e) => {
+            const card = e.currentTarget.closest('.rounded-xl');
+            card.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => card.remove(), 200);
+        };
+    };
+
+    addButton.addEventListener('click', () => {
+        const count = container.children.length + 1;
+        const newRow = document.createElement('div');
+        newRow.className = 'bg-surface-container-lowest p-card-padding rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08)] border border-surface-variant animate-in fade-in slide-in-from-bottom-4 duration-300';
+        newRow.innerHTML = `
+            <div class="flex justify-between items-start mb-4">
+                <h3 class="text-label-md text-primary font-bold">Apport #${count}</h3>
+                <button class="p-2 text-error hover:bg-error-container/20 rounded-full remove-btn">
+                    <span class="material-symbols-outlined text-[20px]">delete</span>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-label-md text-outline mb-1">Produit</label>
+                    <select class="w-full h-[52px] px-4 rounded-lg border border-outline-variant bg-surface-container-low text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+                        <option value="" disabled selected>Choisir un produit...</option>
+                        <option value="urea">Urée (46-0-0)</option>
+                        <option value="npk">NPK 15-15-15</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-label-md text-outline mb-1">Dose (kg/ha)</label>
+                        <input type="number" class="w-full h-[52px] px-4 rounded-lg border border-outline-variant bg-surface-container-low text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none" placeholder="Ex: 50">
+                    </div>
+                    <div>
+                        <label class="block text-label-md text-outline mb-1">Date (JJ/MM/AAAA)</label>
+                        <input type="date" class="w-full h-[52px] px-4 rounded-lg border border-outline-variant bg-surface-container-low text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+                    </div>
+                </div>
+            </div>
+        `;
+        container.appendChild(newRow);
+        bindRemove(newRow.querySelector('.remove-btn'));
+        newRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+
+    document.querySelectorAll('.remove-btn').forEach(btn => bindRemove(btn));
+</script>
+</body></html>

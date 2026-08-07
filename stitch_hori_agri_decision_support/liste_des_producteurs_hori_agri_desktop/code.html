@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Hori Agri - Liste des Producteurs</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700;800;900&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary": "#ffffff",
+                        "tertiary-fixed": "#ffdad6",
+                        "primary-container": "#1b5e20",
+                        "on-secondary-container": "#6a4800",
+                        "inverse-on-surface": "#dff4ff",
+                        "outline-variant": "#c0c9bb",
+                        "on-background": "#071e27",
+                        "error": "#ba1a1a",
+                        "secondary-fixed": "#ffdeac",
+                        "primary": "#00450d",
+                        "surface-dim": "#c7dde9",
+                        "on-primary-fixed-variant": "#0c5216",
+                        "surface-bright": "#f3faff",
+                        "inverse-surface": "#1e333c",
+                        "background": "#f3faff",
+                        "primary-fixed-dim": "#91d78a",
+                        "surface-container-high": "#d5ecf8",
+                        "outline": "#717a6d",
+                        "on-secondary": "#ffffff",
+                        "surface": "#f3faff",
+                        "on-tertiary": "#ffffff",
+                        "secondary-container": "#feb300",
+                        "on-secondary-container": "#6a4800",
+                        "on-tertiary-container": "#ffb2aa",
+                        "on-tertiary-fixed-variant": "#930010",
+                        "secondary": "#7e5700",
+                        "on-tertiary-fixed": "#410003",
+                        "surface-tint": "#2a6b2c",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-variant": "#cfe6f2",
+                        "on-surface": "#071e27",
+                        "error-container": "#ffdad6",
+                        "on-surface-variant": "#41493e",
+                        "surface-container": "#dbf1fe",
+                        "inverse-primary": "#91d78a",
+                        "secondary-fixed-dim": "#ffba38",
+                        "on-primary-fixed": "#002203",
+                        "primary-fixed": "#acf4a4",
+                        "tertiary": "#7c000b",
+                        "tertiary-container": "#a70515",
+                        "surface-container-highest": "#cfe6f2",
+                        "surface-container-low": "#e6f6ff",
+                        "on-error": "#ffffff",
+                        "on-error-container": "#93000a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "container-margin": "24px",
+                        "gutter": "16px",
+                        "base": "8px",
+                        "card-padding": "20px",
+                        "touch-target-min": "48px",
+                        "stack-lg": "32px",
+                        "margin-desktop": "40px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Work Sans"],
+                        "label-md": ["Source Sans 3"],
+                        "headline-md": ["Work Sans"],
+                        "headline-lg-mobile": ["Work Sans"],
+                        "body-md": ["Source Sans 3"],
+                        "data-mono": ["Source Sans 3"],
+                        "body-lg": ["Source Sans 3"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "500"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "data-mono": ["14px", {"lineHeight": "20px", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Source Sans 3', sans-serif;
+            background-color: #f3faff;
+            color: #071e27;
+            margin: 0;
+            overflow-x: hidden;
+        }
+        h1, h2, h3, h4 {
+            font-family: 'Work Sans', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #c0c9bb;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #717a6d;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex">
+<!-- SideNavBar Anchor -->
+<aside class="h-screen w-64 fixed left-0 top-0 hidden md:flex flex-col bg-surface-container py-4 px-2">
+<div class="px-4 mb-stack-lg">
+<h1 class="font-headline-md text-headline-md font-bold text-primary">Hori Agri</h1>
+<p class="text-label-md font-label-md text-on-surface-variant">Aide à la décision agronomique</p>
+</div>
+<nav class="flex-1 flex flex-col gap-1 px-2">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Tableau de bord</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-primary text-on-primary font-bold rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+<span class="font-label-md text-label-md">Producteurs</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="psychology">psychology</span>
+<span class="font-label-md text-label-md">Recommandations</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="map">map</span>
+<span class="font-label-md text-label-md">Itinéraires</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">Paramètres</span>
+</a>
+</nav>
+<div class="px-2 mt-auto pt-4 border-t border-outline-variant">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+<span class="font-label-md text-label-md">Aide</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-label-md text-label-md">Déconnexion</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-64 min-h-screen">
+<!-- TopAppBar Anchor -->
+<header class="w-full top-0 sticky z-10 bg-surface shadow-sm h-touch-target-min border-b border-outline-variant">
+<div class="flex justify-between items-center px-margin-desktop h-full w-full max-w-7xl mx-auto">
+<div class="flex items-center gap-4">
+<span class="md:hidden material-symbols-outlined text-primary cursor-pointer">menu</span>
+<h2 class="font-headline-md text-xl text-primary">Producteurs</h2>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden md:flex items-center gap-4 bg-surface-container-low px-4 py-1.5 rounded-full border border-outline-variant">
+<span class="material-symbols-outlined text-on-surface-variant">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-md font-body-md w-48" placeholder="Recherche rapide..." type="text"/>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary cursor-pointer" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined text-primary cursor-pointer" data-icon="help">help</span>
+<div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-on-primary font-bold overflow-hidden ring-2 ring-primary/20">
+<img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCE8lH8Ni26RbRHcVwOb3Ed4DUEfyJvqCRnkIwrOwWqI8ggu80U6dYDnyzyLTg4qv-hIaSGClib8y4S-50p2G1AfEMH4AgLOi0g4xFUzBrFM1-pY9J3zj_Xnqq8Xhe0-C4lPERNRf-5HwppLSvAMnAUzTNdmdhS9k0PIx81hk9A_G5zpWhoqAPsqAhJh_fs7KHcnorFGWTBoRzVXHKTdtAylE6o4lpwQ-AXvR1l9YgHztIrQxCCwSsH"/>
+</div>
+</div>
+</div>
+</div>
+</header>
+<!-- Content Canvas -->
+<div class="max-w-7xl mx-auto p-margin-desktop space-y-stack-lg">
+<!-- Page Header Actions -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-gutter">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface">Producteurs</h1>
+<p class="text-body-md font-body-md text-on-surface-variant">Gérez votre base de données de coopérateurs et leurs parcelles au Togo.</p>
+</div>
+<button class="bg-primary hover:bg-primary-container transition-colors text-white h-12 px-6 rounded-xl flex items-center justify-center gap-2 font-bold shadow-sm active:scale-95">
+<span class="material-symbols-outlined">add_circle</span>
+                Ajouter un relevé
+            </button>
+</div>
+<!-- Search and Filter Bar -->
+<div class="bg-white rounded-xl p-4 shadow-sm border border-outline-variant flex flex-col lg:flex-row gap-4">
+<div class="flex-1 relative group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within:text-primary transition-colors">search</span>
+<input class="w-full pl-10 pr-4 py-3 bg-surface-container-lowest border border-outline-variant rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-body-md outline-none" placeholder="Rechercher par nom, matricule ou téléphone..." type="text"/>
+</div>
+<div class="flex flex-wrap gap-4 items-center">
+<div class="flex flex-col gap-1 min-w-[160px]">
+<select class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-3 text-body-md focus:border-primary focus:ring-1 focus:ring-primary">
+<option value="">Culture</option>
+<option>Maïs</option>
+<option>Soja</option>
+<option>Manioc</option>
+</select>
+</div>
+<div class="flex flex-col gap-1 min-w-[160px]">
+<select class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-3 text-body-md focus:border-primary focus:ring-1 focus:ring-primary">
+<option value="">Préfecture</option>
+<option>Keran (Kandé)</option>
+<option>Bassar</option>
+<option>Blitta</option>
+<option>Tchaoudjo (Sokodé)</option>
+</select>
+</div>
+<button class="h-12 w-12 flex items-center justify-center bg-surface-container-high text-on-surface-variant rounded-lg hover:bg-surface-variant transition-colors active:scale-90">
+<span class="material-symbols-outlined">filter_list</span>
+</button>
+</div>
+</div>
+<!-- Producer List / Table -->
+<div class="bg-white rounded-xl shadow-sm border border-outline-variant overflow-hidden">
+<div class="overflow-x-auto custom-scrollbar">
+<table class="w-full border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant">
+<th class="px-6 py-4 text-left font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Producteur</th>
+<th class="px-6 py-4 text-left font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Localisation</th>
+<th class="px-6 py-4 text-left font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Parcelles</th>
+<th class="px-6 py-4 text-left font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Cultures</th>
+<th class="px-6 py-4 text-center font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Sévérité Alertes</th>
+<th class="px-6 py-4"></th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-low transition-colors cursor-pointer group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold text-label-md">
+                                    KS
+                                </div>
+<div>
+<p class="font-bold text-on-surface">Koffi Soklou</p>
+<p class="text-label-sm text-on-surface-variant">ID: PROD-TG-00421</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2 text-body-md text-on-surface-variant">
+<span class="material-symbols-outlined text-primary text-[20px]">location_on</span>
+                                Kandé (Région de la Kara)
+                            </div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 bg-secondary-container text-on-secondary-container rounded-full font-label-md text-label-sm">
+                                3 parcelles
+                            </span>
+</td>
+<td class="px-6 py-4">
+<div class="flex gap-1">
+<span class="px-2 py-0.5 bg-surface-container-highest text-on-surface-variant text-[11px] rounded uppercase font-bold">Maïs</span>
+<span class="px-2 py-0.5 bg-surface-container-highest text-on-surface-variant text-[11px] rounded uppercase font-bold">Soja</span>
+</div>
+</td>
+<td class="px-6 py-4 text-center">
+<span class="px-3 py-1 rounded-full text-label-sm font-bold bg-error-container text-on-error-container uppercase tracking-tight">Élevée</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-primary/10 text-on-surface-variant group-hover:text-primary transition-all">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low transition-colors cursor-pointer group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-bold text-label-md">
+                                    AM
+                                </div>
+<div>
+<p class="font-bold text-on-surface">Aminata Mensah</p>
+<p class="text-label-sm text-on-surface-variant">ID: PROD-TG-00568</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2 text-body-md text-on-surface-variant">
+<span class="material-symbols-outlined text-primary text-[20px]">location_on</span>
+                                Bassar (Région de la Kara)
+                            </div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 bg-secondary-container text-on-secondary-container rounded-full font-label-md text-label-sm">
+                                5 parcelles
+                            </span>
+</td>
+<td class="px-6 py-4">
+<div class="flex gap-1">
+<span class="px-2 py-0.5 bg-surface-container-highest text-on-surface-variant text-[11px] rounded uppercase font-bold">Manioc</span>
+</div>
+</td>
+<td class="px-6 py-4 text-center">
+<span class="px-3 py-1 rounded-full text-label-sm font-bold bg-secondary-container text-on-secondary-container uppercase tracking-tight">Moyenne</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-primary/10 text-on-surface-variant group-hover:text-primary transition-all">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low transition-colors cursor-pointer group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-outline-variant text-on-surface-variant flex items-center justify-center font-bold text-label-md">
+                                    BT
+                                </div>
+<div>
+<p class="font-bold text-on-surface">Benoît Tigan</p>
+<p class="text-label-sm text-on-surface-variant">ID: PROD-TG-00312</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2 text-body-md text-on-surface-variant">
+<span class="material-symbols-outlined text-primary text-[20px]">location_on</span>
+                                Blitta (Région Centrale)
+                            </div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 bg-surface-container-highest text-on-surface-variant rounded-full font-label-md text-label-sm">
+                                1 parcelle
+                            </span>
+</td>
+<td class="px-6 py-4">
+<div class="flex gap-1">
+<span class="px-2 py-0.5 bg-surface-container-highest text-on-surface-variant text-[11px] rounded uppercase font-bold">Soja</span>
+</div>
+</td>
+<td class="px-6 py-4 text-center">
+<span class="px-3 py-1 rounded-full text-label-sm font-bold bg-surface-container-highest text-on-surface-variant uppercase tracking-tight">Faible</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-primary/10 text-on-surface-variant group-hover:text-primary transition-all">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="bg-surface-container-low px-6 py-4 flex items-center justify-between border-t border-outline-variant">
+<p class="text-label-md text-on-surface-variant">Affichage de 1-3 sur 156 producteurs au Togo</p>
+<div class="flex gap-2">
+<button class="h-10 w-10 flex items-center justify-center border border-outline-variant rounded-lg hover:bg-white transition-colors disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="h-10 w-10 flex items-center justify-center bg-primary text-on-primary rounded-lg shadow-sm">1</button>
+<button class="h-10 w-10 flex items-center justify-center border border-outline-variant rounded-lg hover:bg-white transition-colors">2</button>
+<button class="h-10 w-10 flex items-center justify-center border border-outline-variant rounded-lg hover:bg-white transition-colors">3</button>
+<button class="h-10 w-10 flex items-center justify-center border border-outline-variant rounded-lg hover:bg-white transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Insights Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<div class="bg-primary-container p-6 rounded-2xl border border-primary/20 flex flex-col justify-between min-h-[160px]">
+<span class="material-symbols-outlined text-on-primary text-3xl">groups</span>
+<div>
+<p class="text-headline-lg text-on-primary font-headline-lg">156</p>
+<p class="text-label-md text-on-primary/90 font-bold uppercase tracking-widest">Total Producteurs</p>
+</div>
+</div>
+<div class="bg-secondary-container p-6 rounded-2xl border border-secondary/20 flex flex-col justify-between min-h-[160px]">
+<span class="material-symbols-outlined text-on-secondary-container text-3xl">landscape</span>
+<div>
+<p class="text-headline-lg text-on-secondary-container font-headline-lg">482</p>
+<p class="text-label-md text-on-secondary-container/90 font-bold uppercase tracking-widest">Parcelles Gérées</p>
+</div>
+</div>
+<div class="bg-tertiary-container p-6 rounded-2xl border border-tertiary/20 flex flex-col justify-between min-h-[160px]">
+<span class="material-symbols-outlined text-on-primary text-3xl">map</span>
+<div>
+<p class="text-headline-lg text-on-primary font-headline-lg">12</p>
+<p class="text-label-md text-on-primary/90 font-bold uppercase tracking-widest">Localités Couvertes</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<script>
+    // Micro-interaction for table rows
+    document.querySelectorAll('tr.cursor-pointer').forEach(row => {
+        row.addEventListener('click', () => {
+            row.classList.add('scale-[0.995]');
+            setTimeout(() => row.classList.remove('scale-[0.995]'), 100);
+        });
+    });
+
+    // Search filter (Visual only)
+    const searchInput = document.querySelector('input[type="text"]');
+    if(searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            const val = e.target.value.toLowerCase();
+            document.querySelectorAll('tbody tr').forEach(row => {
+                const text = row.innerText.toLowerCase();
+                row.style.display = text.includes(val) ? '' : 'none';
+            });
+        });
+    }
+</script>
+</body></html>

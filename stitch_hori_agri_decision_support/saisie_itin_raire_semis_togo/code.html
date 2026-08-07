@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Hori Agri - Saisie Itinéraire Technique</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "on-primary": "#ffffff",
+                "tertiary-fixed": "#ffdad6",
+                "primary-container": "#1b5e20",
+                "on-secondary-container": "#6a4800",
+                "inverse-on-surface": "#dff4ff",
+                "outline-variant": "#c0c9bb",
+                "on-background": "#071e27",
+                "error": "#ba1a1a",
+                "secondary-fixed": "#ffdeac",
+                "primary": "#00450d",
+                "surface-dim": "#c7dde9",
+                "on-primary-fixed-variant": "#0c5216",
+                "surface-bright": "#f3faff",
+                "inverse-surface": "#1e333c",
+                "background": "#f3faff",
+                "primary-fixed-dim": "#91d78a",
+                "surface-container-high": "#d5ecf8",
+                "outline": "#717a6d",
+                "on-secondary": "#ffffff",
+                "surface": "#f3faff",
+                "on-tertiary": "#ffffff",
+                "secondary-container": "#feb300",
+                "on-tertiary-container": "#ffb2aa",
+                "on-tertiary-fixed-variant": "#930010",
+                "secondary": "#7e5700",
+                "on-tertiary-fixed": "#410003",
+                "surface-tint": "#2a6b2c",
+                "surface-container-lowest": "#ffffff",
+                "surface-variant": "#cfe6f2",
+                "on-surface": "#071e27",
+                "error-container": "#ffdad6",
+                "on-primary-container": "#90d689",
+                "tertiary-fixed-dim": "#ffb3ac",
+                "on-secondary-fixed-variant": "#604100",
+                "on-secondary-fixed": "#281900",
+                "on-surface-variant": "#41493e",
+                "surface-container": "#dbf1fe",
+                "inverse-primary": "#91d78a",
+                "secondary-fixed-dim": "#ffba38",
+                "on-primary-fixed": "#002203",
+                "primary-fixed": "#acf4a4",
+                "tertiary": "#7c000b",
+                "tertiary-container": "#a70515",
+                "surface-container-highest": "#cfe6f2",
+                "surface-container-low": "#e6f6ff",
+                "on-error": "#ffffff",
+                "on-error-container": "#93000a"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+        },
+        "spacing": {
+                "container-margin": "24px",
+                "gutter": "16px",
+                "base": "8px",
+                "card-padding": "20px"
+        },
+        "fontFamily": {
+                "headline-lg": ["Work Sans"],
+                "label-md": ["\"Source Sans 3\""],
+                "headline-md": ["Work Sans"],
+                "headline-lg-mobile": ["Work Sans"],
+                "body-md": ["\"Source Sans 3\""],
+                "data-mono": ["\"Source Sans 3\""],
+                "body-lg": ["\"Source Sans 3\""]
+        },
+        "fontSize": {
+                "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "500"}],
+                "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                "data-mono": ["14px", {"lineHeight": "20px", "fontWeight": "700"}],
+                "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+        }
+      },
+    },
+  }
+</script>
+<style>
+        body {
+            font-family: 'Source Sans 3', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        h1, h2, h3 {
+            font-family: 'Work Sans', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        /* Style consistent date input for mobile and custom placeholder look */
+        input[type="date"]::before {
+            content: attr(placeholder);
+            width: 100%;
+        }
+        input[type="date"]:focus::before,
+        input[type="date"]:valid::before {
+            display: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-background min-h-screen pb-32">
+<!-- Top Navigation Header -->
+<header class="bg-surface sticky top-0 z-50 flex justify-between items-center h-[64px] px-container-margin w-full shadow-sm border-b border-outline-variant/30">
+<div class="flex items-center gap-3">
+<button class="w-[48px] h-[48px] flex items-center justify-center rounded-full hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-on-surface">arrow_back</span>
+</button>
+<h1 class="text-headline-md font-headline-md text-primary tracking-tight">HORI AGRI</h1>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[28px]">notifications</span>
+<div class="w-10 h-10 rounded-full bg-surface-container-highest border-2 border-primary-fixed overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a West African agricultural expert in a bright, modern setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBcydIhjRsgfTjS5_E3K6V-1pG7raszdzs47D3BCtQLUzL6zBSGAK8sXaEJOwl_P47TfzZcJw7nyYoRC1NumPzhmvIMNOEhMU84V5bmTP2ZzEFjvdROsQpvTzivalhSwHNqtLZS1lOsZ3ihWmdLnIwOYCMKTQ8TwxTfgWGKrPusqOR9X8I7frMJ25tnb3rYI6tYvMLvvuE5eGxpcVa7833PiXiFGJaERghTSxdGjqlXsmWqVRmsBqzH"/>
+</div>
+</div>
+</header>
+<!-- Unified Tab Bar / Progress Indicator - 5 steps -->
+<nav class="bg-surface-container-lowest overflow-x-auto no-scrollbar border-b border-outline-variant sticky top-[64px] z-40">
+<div class="flex min-w-max px-2">
+<div class="flex flex-col items-center justify-center py-4 px-4 border-b-4 border-primary text-primary transition-all">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">eco</span>
+<span class="text-[12px] font-label-md whitespace-nowrap uppercase tracking-wider">Semis</span>
+</div>
+<div class="flex flex-col items-center justify-center py-4 px-4 border-b-4 border-transparent text-on-surface-variant/50">
+<span class="material-symbols-outlined mb-1">water_drop</span>
+<span class="text-[12px] font-label-md whitespace-nowrap uppercase tracking-wider">Fertilisation</span>
+</div>
+<div class="flex flex-col items-center justify-center py-4 px-4 border-b-4 border-transparent text-on-surface-variant/50">
+<span class="material-symbols-outlined mb-1">pest_control</span>
+<span class="text-[12px] font-label-md whitespace-nowrap uppercase tracking-wider">Traitements</span>
+</div>
+<div class="flex flex-col items-center justify-center py-4 px-4 border-b-4 border-transparent text-on-surface-variant/50">
+<span class="material-symbols-outlined mb-1">architecture</span>
+<span class="text-[12px] font-label-md whitespace-nowrap uppercase tracking-wider">Entretien</span>
+</div>
+<div class="flex flex-col items-center justify-center py-4 px-4 border-b-4 border-transparent text-on-surface-variant/50">
+<span class="material-symbols-outlined mb-1">agriculture</span>
+<span class="text-[12px] font-label-md whitespace-nowrap uppercase tracking-wider">Récolte</span>
+</div>
+</div>
+</nav>
+<main class="px-container-margin pt-base max-w-md mx-auto">
+<!-- Header Text -->
+<header class="my-6">
+<h2 class="text-headline-lg-mobile font-headline-lg-mobile text-on-surface mb-1">Étape 1 : Semis</h2>
+<p class="text-body-md text-on-surface-variant">Renseignez les détails techniques de votre mise en terre.</p>
+</header>
+<!-- Form Content -->
+<form class="space-y-4">
+<!-- Date Picker - jj/mm/aaaa -->
+<div class="bg-surface-container-lowest p-card-padding rounded-xl shadow-sm border border-outline-variant/20">
+<label class="block text-label-md font-label-md text-on-surface mb-2" for="date-semis">Date de semis (jj/mm/aaaa)</label>
+<div class="relative">
+<input class="w-full h-[52px] bg-white border border-outline-variant rounded-lg px-4 text-body-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all appearance-none outline-none" id="date-semis" placeholder="jj/mm/aaaa" required="" type="date"/>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">calendar_today</span>
+</div>
+</div>
+<!-- Culture Selection -->
+<div class="bg-surface-container-lowest p-card-padding rounded-xl shadow-sm border border-outline-variant/20">
+<label class="block text-label-md font-label-md text-on-surface mb-2" for="culture">Culture</label>
+<div class="relative">
+<select class="w-full h-[52px] bg-white border border-outline-variant rounded-lg px-4 text-body-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all appearance-none outline-none" id="culture" required="">
+<option disabled="" selected="" value="">Sélectionnez une culture</option>
+<option value="mais">Maïs</option>
+<option value="soja">Soja</option>
+<option value="manioc">Manioc</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">expand_more</span>
+</div>
+</div>
+<!-- Variété Selection -->
+<div class="bg-surface-container-lowest p-card-padding rounded-xl shadow-sm border border-outline-variant/20">
+<label class="block text-label-md font-label-md text-on-surface mb-2" for="variete">Variété</label>
+<div class="relative">
+<select class="w-full h-[52px] bg-white border border-outline-variant rounded-lg px-4 text-body-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all appearance-none outline-none" id="variete" required="">
+<option disabled="" selected="" value="">Sélectionnez la variété</option>
+<option value="hybride-a">Hybride A-12</option>
+<option value="local">Variété locale améliorée</option>
+<option value="bio-x">Bio-X Resist</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">expand_more</span>
+</div>
+</div>
+<!-- Densité Input - graines/ha -->
+<div class="bg-surface-container-lowest p-card-padding rounded-xl shadow-sm border border-outline-variant/20">
+<label class="block text-label-md font-label-md text-on-surface mb-2" for="densite">Densité de semis</label>
+<div class="flex items-center gap-2">
+<div class="relative flex-grow">
+<input class="w-full h-[52px] bg-white border border-outline-variant rounded-lg px-4 text-body-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all outline-none" id="densite" placeholder="ex: 55000" required="" type="number"/>
+</div>
+<span class="text-label-md font-label-md text-on-surface-variant bg-surface-container-high h-[52px] flex items-center px-4 rounded-lg border border-outline-variant min-w-[100px] justify-center">graines/ha</span>
+</div>
+</div>
+<!-- Surface Input -->
+<div class="bg-surface-container-lowest p-card-padding rounded-xl shadow-sm border border-outline-variant/20">
+<label class="block text-label-md font-label-md text-on-surface mb-2" for="surface">Surface de la parcelle</label>
+<div class="flex items-center gap-2">
+<div class="relative flex-grow">
+<input class="w-full h-[52px] bg-white border border-outline-variant rounded-lg px-4 text-body-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all outline-none" id="surface" placeholder="ex: 2.5" required="" step="0.1" type="number"/>
+</div>
+<span class="text-label-md font-label-md text-on-surface-variant bg-surface-container-high h-[52px] flex items-center px-6 rounded-lg border border-outline-variant">ha</span>
+</div>
+</div>
+<!-- Decorative Visual Context -->
+<div class="mt-8 rounded-xl overflow-hidden relative h-48 shadow-md">
+<img class="w-full h-full object-cover" data-alt="A close-up shot of hands planting vibrant green seedlings into fertile, rich dark soil." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDpLl4yTNym2g2d7E49MaLMPiaW2pT-yX0bQY9EfYkkTyqbbbxbCdENcIMhtfVfTKk1oPJ1l3gFm9wdS4hENbu_sf8j9w-9x4qdRsccm7NQi75E7let3l79gOSQ3ljX3m39ET5Ol_jAtFdGh2K_3bkZtGo7CsaxsLAISa8J7aBA7Iw5vcSuwLhYT1boYUmCqfB02o-BQn6pRHcEhaWOo2sO_miFfWUvv_8x9M3NAMzcm_90rtZICn8i"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4">
+<p class="text-white text-label-md font-label-md">Parcelle : Nord-Est #42</p>
+</div>
+</div>
+</form>
+</main>
+<!-- Sticky Bottom Action Bar -->
+<footer class="fixed bottom-0 left-0 w-full h-[96px] bg-surface flex items-center px-container-margin pb-safe shadow-[0_-4px_12px_rgba(0,0,0,0.05)] z-50">
+<div class="flex w-full gap-4 max-w-md mx-auto">
+<button class="flex-1 h-[56px] bg-primary text-on-primary text-body-lg font-bold rounded-xl flex items-center justify-center gap-2 active:scale-[0.98] transition-all duration-200 shadow-lg">
+                Suivant
+                <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</footer>
+<!-- Micro-interactions Script -->
+<script>
+        document.querySelectorAll('input, select').forEach(element => {
+            element.addEventListener('change', (e) => {
+                if (e.target.value) {
+                    e.target.closest('.bg-surface-container-lowest').classList.add('border-primary');
+                } else {
+                    e.target.closest('.bg-surface-container-lowest').classList.remove('border-primary');
+                }
+            });
+        });
+
+        const nextBtn = document.querySelector('button.bg-primary');
+        nextBtn.addEventListener('click', () => {
+            console.log('Navigating to Fertilisation step');
+        });
+    </script>
+</body></html>

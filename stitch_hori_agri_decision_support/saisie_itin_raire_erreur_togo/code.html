@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Saisie Itinéraire Technique - Hori Agri</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&amp;family=Source+Sans+3:wght@400;600;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .fill-icon {
+            font-variation-settings: 'FILL' 1;
+        }
+        body {
+            font-family: "Source Sans 3", sans-serif;
+        }
+        h1, h2, h3, h4, .headline {
+            font-family: "Work Sans", sans-serif;
+        }
+        /* Custom scroll hide */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-primary": "#ffffff",
+                      "tertiary-fixed": "#ffdad6",
+                      "primary-container": "#1b5e20",
+                      "on-secondary-container": "#6a4800",
+                      "inverse-on-surface": "#dff4ff",
+                      "outline-variant": "#c0c9bb",
+                      "on-background": "#071e27",
+                      "error": "#ba1a1a",
+                      "secondary-fixed": "#ffdeac",
+                      "primary": "#00450d",
+                      "surface-dim": "#c7dde9",
+                      "on-primary-fixed-variant": "#0c5216",
+                      "surface-bright": "#f3faff",
+                      "inverse-surface": "#1e333c",
+                      "background": "#f3faff",
+                      "primary-fixed-dim": "#91d78a",
+                      "surface-container-high": "#d5ecf8",
+                      "outline": "#717a6d",
+                      "on-secondary": "#ffffff",
+                      "surface": "#f3faff",
+                      "on-tertiary": "#ffffff",
+                      "secondary-container": "#feb300",
+                      "on-tertiary-container": "#ffb2aa",
+                      "on-tertiary-fixed-variant": "#930010",
+                      "secondary": "#7e5700",
+                      "on-tertiary-fixed": "#410003",
+                      "surface-tint": "#2a6b2c",
+                      "surface-container-lowest": "#ffffff",
+                      "surface-variant": "#cfe6f2",
+                      "on-surface": "#071e27",
+                      "error-container": "#ffdad6",
+                      "on-primary-container": "#90d689",
+                      "tertiary-fixed-dim": "#ffb3ac",
+                      "on-secondary-fixed-variant": "#604100",
+                      "on-secondary-fixed": "#281900",
+                      "on-surface-variant": "#41493e",
+                      "surface-container": "#dbf1fe",
+                      "inverse-primary": "#91d78a",
+                      "secondary-fixed-dim": "#ffba38",
+                      "on-primary-fixed": "#002203",
+                      "primary-fixed": "#acf4a4",
+                      "tertiary": "#7c000b",
+                      "tertiary-container": "#a70515",
+                      "surface-container-highest": "#cfe6f2",
+                      "surface-container-low": "#e6f6ff",
+                      "on-error": "#ffffff",
+                      "on-error-container": "#93000a"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "container-margin": "24px",
+                      "gutter": "16px",
+                      "base": "8px",
+                      "card-padding": "20px"
+              },
+              "fontFamily": {
+                      "headline-lg": ["Work Sans"],
+                      "label-md": ["Source Sans 3"],
+                      "headline-md": ["Work Sans"],
+                      "headline-lg-mobile": ["Work Sans"],
+                      "body-md": ["Source Sans 3"],
+                      "data-mono": ["Source Sans 3"],
+                      "body-lg": ["Source Sans 3"]
+              },
+              "fontSize": {
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                      "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "500"}],
+                      "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "data-mono": ["14px", {"lineHeight": "20px", "fontWeight": "700"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        body {
+            min-height: 100dvh;
+        }
+        /* Mobile Date Input Placeholder Workaround */
+        input[type="date"]::before {
+            content: attr(data-placeholder);
+            width: 100%;
+        }
+        input[type="date"]:focus::before,
+        input[type="date"]:valid::before {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface flex flex-col">
+<!-- Top Navigation Bar -->
+<header class="bg-surface sticky top-0 z-50 flex justify-between items-center h-[64px] px-container-margin w-full border-b border-outline-variant">
+<div class="flex items-center gap-3">
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-on-surface">arrow_back</span>
+</button>
+<h1 class="text-headline-md text-primary uppercase tracking-tight">Hori Agri</h1>
+</div>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary-container">
+<img alt="Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDb-jL8BJtKIxDF0YfPd0FeN2POwsLPH5hln6GiWI-Ff8YKpz4Y1CEDgNN4TSfPQIoUkCQlw0iGklebcdVp6E_AsZGg7Bdt-hslM0u4hqwlpOHzLj3TiRy32olSjGPMPXzJYYVmkLcdZY6RqvYU-Bt_tYEtV94WP5uJEL-e2BAdmE7OVjqL15F13jcHVvpB2Ve04SBp5oMfbSUJ4QxIN2FZNiFtnyDsEO1ABbmIyHRo86zV73Vkjppe"/>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow px-container-margin pt-base pb-[160px]">
+<!-- Stepper Indicator -->
+<section class="mb-gutter">
+<div class="flex justify-between items-center mb-2">
+<span class="text-label-md text-primary">Étape 1 sur 5</span>
+<span class="text-label-md text-on-surface-variant">Semis</span>
+</div>
+<div class="w-full h-1.5 bg-surface-container-highest rounded-full overflow-hidden flex">
+<div class="w-1/5 h-full bg-primary transition-all duration-500"></div>
+<div class="w-4/5 h-full bg-transparent"></div>
+</div>
+</section>
+<!-- Page Header -->
+<section class="mb-gutter">
+<h2 class="text-headline-lg-mobile text-on-surface mb-2">Détails du Semis</h2>
+<p class="text-body-md text-on-surface-variant">Renseignez les informations relatives à la mise en terre de vos cultures pour un suivi précis.</p>
+</section>
+<!-- Form Section -->
+<form class="space-y-gutter">
+<!-- Date de semis -->
+<div class="flex flex-col gap-2">
+<label class="text-label-md text-on-surface">Date de semis (jj/mm/aaaa)</label>
+<div class="relative">
+<input class="w-full h-[56px] px-4 rounded-lg border border-outline focus:border-2 focus:border-primary focus:ring-0 text-body-lg bg-surface-container-lowest outline-none transition-all" data-placeholder="jj/mm/aaaa" required="" type="date" value="2023-11-20"/>
+</div>
+</div>
+<!-- Variété de semences -->
+<div class="flex flex-col gap-2">
+<label class="text-label-md text-on-surface">Variété de semence</label>
+<div class="relative flex items-center">
+<select class="w-full h-[56px] px-4 rounded-lg border border-outline focus:border-2 focus:border-primary focus:ring-0 text-body-lg bg-surface-container-lowest outline-none appearance-none transition-all">
+<option>Maïs Jaune Hybrid-X</option>
+<option>Maïs Blanc Local</option>
+<option>Soja Premium</option>
+</select>
+<span class="material-symbols-outlined absolute right-4 pointer-events-none text-on-surface-variant">expand_more</span>
+</div>
+</div>
+<!-- Densité de semis - ERROR STATE -->
+<div class="flex flex-col gap-2">
+<label class="text-label-md text-error font-bold">Densité de semis (graines/ha)</label>
+<div class="relative">
+<input class="w-full h-[56px] px-4 rounded-lg border-2 border-error focus:ring-0 text-body-lg bg-error-container/10 outline-none transition-all text-on-surface" placeholder="Ex: 50 000" type="number" value="15000"/>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-error">error</span>
+</div>
+<p class="text-label-md text-error flex items-start gap-1">
+<span class="material-symbols-outlined text-[16px] mt-0.5">info</span>
+                    Veuillez saisir une densité valide (entre 20 000 et 80 000 graines/ha)
+                </p>
+</div>
+<!-- Severity selection (Mockup for request) -->
+<div class="flex flex-col gap-2">
+<label class="text-label-md text-on-surface">Sévérité des risques</label>
+<div class="flex gap-2">
+<button class="flex-1 py-2 px-3 border border-outline rounded-lg text-label-md hover:bg-surface-container-low transition-colors" type="button">Élevée</button>
+<button class="flex-1 py-2 px-3 border border-outline rounded-lg text-label-md hover:bg-surface-container-low transition-colors" type="button">Moyenne</button>
+<button class="flex-1 py-2 px-3 border border-outline rounded-lg text-label-md hover:bg-surface-container-low transition-colors" type="button">Faible</button>
+</div>
+</div>
+<!-- Profondeur de semis -->
+<div class="flex flex-col gap-2">
+<label class="text-label-md text-on-surface">Profondeur de semis (cm)</label>
+<div class="flex gap-3">
+<div class="relative flex-grow">
+<input class="w-full h-[56px] px-4 rounded-lg border border-outline focus:border-2 focus:border-primary focus:ring-0 text-body-lg bg-surface-container-lowest outline-none transition-all" type="number" value="5"/>
+</div>
+<div class="flex items-center gap-2">
+<button class="w-[56px] h-[56px] flex items-center justify-center rounded-lg border border-outline hover:bg-surface-container-low transition-colors" type="button">
+<span class="material-symbols-outlined">remove</span>
+</button>
+<button class="w-[56px] h-[56px] flex items-center justify-center rounded-lg border border-outline hover:bg-surface-container-low transition-colors" type="button">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Note additionnelle -->
+<div class="flex flex-col gap-2">
+<label class="text-label-md text-on-surface">Observations (Optionnel)</label>
+<textarea class="w-full p-4 rounded-lg border border-outline focus:border-2 focus:border-primary focus:ring-0 text-body-md bg-surface-container-lowest outline-none transition-all" placeholder="Sols légèrement humides au moment du semis..." rows="3"></textarea>
+</div>
+</form>
+<!-- Expert Tip Card -->
+<div class="mt-gutter p-card-padding bg-secondary-container/10 rounded-xl border border-secondary-fixed-dim flex items-start gap-4">
+<span class="material-symbols-outlined text-secondary text-[28px]">lightbulb</span>
+<div>
+<h4 class="text-label-md text-secondary mb-1">Conseil d'expert</h4>
+<p class="text-label-md text-on-surface-variant leading-relaxed">Une densité trop faible réduit votre rendement potentiel, tandis qu'une densité trop élevée augmente la compétition entre les plants.</p>
+</div>
+</div>
+</main>
+<!-- Bottom Action Bar + Tab Bar -->
+<div class="fixed bottom-0 left-0 w-full z-[60] flex flex-col">
+<!-- Validation Buttons -->
+<div class="bg-surface-container-low border-t border-outline-variant px-container-margin py-3 flex flex-col gap-3">
+<!-- Error Alert Bar -->
+<div class="flex items-center gap-2 px-4 py-2 bg-error-container rounded-lg border border-error/20">
+<span class="material-symbols-outlined text-error text-[20px]">warning</span>
+<p class="text-label-md text-on-error-container">1 erreur détectée dans le formulaire</p>
+</div>
+<div class="flex gap-4">
+<button class="flex-1 h-[48px] rounded-full border-2 border-primary text-primary font-bold text-label-md hover:bg-primary-container/5 transition-colors">
+                    Précédent
+                </button>
+<button class="flex-[1.5] h-[48px] rounded-full bg-outline-variant/30 text-on-surface-variant/40 font-bold text-label-md flex items-center justify-center gap-2 cursor-not-allowed" disabled="">
+                    Suivant
+                    <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Unified Navigation Tab Bar -->
+<nav class="bg-surface border-t border-outline-variant h-[64px] flex items-center justify-around px-2">
+<button class="flex flex-col items-center justify-center flex-1 gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-[10px] font-bold">Tableau</span>
+</button>
+<button class="flex flex-col items-center justify-center flex-1 gap-1 text-primary">
+<span class="material-symbols-outlined fill-icon">assignment</span>
+<span class="text-[10px] font-bold">Itinéraire</span>
+</button>
+<button class="flex flex-col items-center justify-center flex-1 gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">monitoring</span>
+<span class="text-[10px] font-bold">Analyses</span>
+</button>
+<button class="flex flex-col items-center justify-center flex-1 gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px] font-bold">Profil</span>
+</button>
+</nav>
+</div>
+<script>
+        // Visual feedback on focus
+        const inputs = document.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                input.parentElement.closest('.flex-col')?.classList.add('opacity-100');
+            });
+        });
+
+        // Error vibration simulation
+        const disabledBtn = document.querySelector('button[disabled]');
+        if(disabledBtn) {
+            disabledBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const bar = disabledBtn.closest('.fixed');
+                bar.classList.add('animate-shake');
+                setTimeout(() => bar.classList.remove('animate-shake'), 400);
+            });
+        }
+    </script>
+<style>
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-4px); }
+            75% { transform: translateX(4px); }
+        }
+        .animate-shake {
+            animation: shake 0.2s cubic-bezier(.36,.07,.19,.97) both;
+        }
+    </style>
+</body></html>

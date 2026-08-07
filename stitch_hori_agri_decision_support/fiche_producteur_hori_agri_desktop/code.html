@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Hori Agri - Fiche Producteur</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700;800;900&amp;family=Source+Sans+3:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary": "#ffffff",
+                        "tertiary-fixed": "#ffdad6",
+                        "primary-container": "#1b5e20",
+                        "on-secondary-container": "#6a4800",
+                        "inverse-on-surface": "#dff4ff",
+                        "outline-variant": "#c0c9bb",
+                        "on-background": "#071e27",
+                        "error": "#ba1a1a",
+                        "secondary-fixed": "#ffdeac",
+                        "primary": "#00450d",
+                        "surface-dim": "#c7dde9",
+                        "on-primary-fixed-variant": "#0c5216",
+                        "surface-bright": "#f3faff",
+                        "inverse-surface": "#1e333c",
+                        "background": "#f3faff",
+                        "primary-fixed-dim": "#91d78a",
+                        "surface-container-high": "#d5ecf8",
+                        "outline": "#717a6d",
+                        "on-secondary": "#ffffff",
+                        "surface": "#f3faff",
+                        "on-tertiary": "#ffffff",
+                        "secondary-container": "#feb300",
+                        "on-tertiary-container": "#ffb2aa",
+                        "on-tertiary-fixed-variant": "#930010",
+                        "secondary": "#7e5700",
+                        "on-tertiary-fixed": "#410003",
+                        "surface-tint": "#2a6b2c",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-variant": "#cfe6f2",
+                        "on-surface": "#071e27",
+                        "error-container": "#ffdad6",
+                        "on-primary-container": "#90d689",
+                        "tertiary-fixed-dim": "#ffb3ac",
+                        "on-secondary-fixed-variant": "#604100",
+                        "on-secondary-fixed": "#281900",
+                        "on-surface-variant": "#41493e",
+                        "surface-container": "#dbf1fe",
+                        "inverse-primary": "#91d78a",
+                        "secondary-fixed-dim": "#ffba38",
+                        "on-primary-fixed": "#002203",
+                        "primary-fixed": "#acf4a4",
+                        "tertiary": "#7c000b",
+                        "tertiary-container": "#a70515",
+                        "surface-container-highest": "#cfe6f2",
+                        "surface-container-low": "#e6f6ff",
+                        "on-error": "#ffffff",
+                        "on-error-container": "#93000a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "container-margin": "24px",
+                        "gutter": "16px",
+                        "base": "8px",
+                        "card-padding": "20px",
+                        "touch-target-min": "48px",
+                        "margin-desktop": "40px",
+                        "stack-sm": "8px",
+                        "stack-md": "16px",
+                        "stack-lg": "32px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Work Sans"],
+                        "label-md": ["Source Sans 3"],
+                        "headline-md": ["Work Sans"],
+                        "headline-lg-mobile": ["Work Sans"],
+                        "body-md": ["Source Sans 3"],
+                        "data-mono": ["Source Sans 3"],
+                        "body-lg": ["Source Sans 3"],
+                        "title-lg": ["Work Sans"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "500"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "data-mono": ["14px", {"lineHeight": "20px", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "title-lg": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #f3faff;
+            color: #071e27;
+            font-family: "Source Sans 3", sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        h1, h2, h3, .font-headline {
+            font-family: "Work Sans", sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-tab {
+            border-bottom: 2px solid #00450d;
+            color: #00450d;
+        }
+        @media (min-width: 768px) {
+            body { padding-left: 16rem; }
+            header { left: 16rem; width: calc(100% - 16rem); }
+        }
+    </style>
+</head>
+<body class="bg-background">
+<!-- Side Navigation -->
+<aside class="h-screen w-64 fixed left-0 top-0 hidden md:flex flex-col bg-surface-container py-stack-md px-base border-r border-outline-variant/30 z-50">
+<div class="flex flex-col gap-1 px-4 mb-stack-lg">
+<span class="font-headline-md text-headline-md font-black text-primary leading-tight">Hori Agri</span>
+<span class="font-label-md text-label-md text-outline leading-tight">Aide à la décision agronomique</span>
+</div>
+<nav class="flex-grow flex flex-col gap-1 px-2">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Tableau de bord</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-primary-container text-on-primary-container font-bold rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+<span class="font-label-md text-label-md">Producteurs</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="psychology">psychology</span>
+<span class="font-label-md text-label-md">Recommandations</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="map">map</span>
+<span class="font-label-md text-label-md">Itinéraires</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">Paramètres</span>
+</a>
+</nav>
+<div class="mt-auto px-2 flex flex-col gap-1 border-t border-outline-variant/30 pt-4">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+<span class="font-label-md text-label-md">Aide</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-error hover:bg-error-container/20 rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-label-md text-label-md">Déconnexion</span>
+</a>
+</div>
+</aside>
+<!-- Top Navigation Bar -->
+<header class="w-full top-0 sticky z-40 bg-surface shadow-sm h-touch-target-min flex justify-center border-b border-outline-variant/30">
+<div class="flex justify-between items-center px-margin-desktop w-full max-w-7xl mx-auto">
+<div class="flex items-center gap-stack-md">
+<span class="font-headline-md text-headline-md font-bold text-primary">Hori Agri</span>
+</div>
+<div class="flex items-center gap-gutter">
+<div class="hidden md:flex items-center gap-stack-lg">
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">Tableau de bord</a>
+<a class="font-label-md text-label-md text-primary border-b-2 border-primary" href="#">Producteurs</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">Itinéraires</a>
+</div>
+<div class="flex items-center gap-stack-md">
+<button class="w-touch-target-min h-touch-target-min flex items-center justify-center text-on-surface-variant hover:bg-surface-container-low rounded-full transition-all">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-outline-variant">
+<img alt="Manager profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfMveLfQF37LpTFPcxM9qiMChd1S8Hux5_ml5hnU755uamKaKQx2qSSazb_vuF_80ITqloAZaZw-izbOBG66IExz7G7HPgDGhjqKG5oOpeFeOWlyebgJnzFOAKG_c0JOb_uMpInt34nKj8XeMoAMYCbPS8LjJ44Os96D5eOeHDBMd2urBYL1HPHQJ-5Hyejwg4X1G-GQxomAz5BywLTkr465na44vnVBEzNr8iMseGyygUppHCsY5g"/>
+</div>
+</div>
+</div>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-margin-desktop py-stack-lg flex flex-col gap-stack-lg">
+<!-- Breadcrumbs & Back -->
+<nav class="flex items-center justify-between">
+<div class="flex items-center gap-stack-sm text-on-surface-variant">
+<button class="flex items-center gap-2 font-label-md text-label-md hover:text-primary transition-colors" onclick="history.back()">
+<span class="material-symbols-outlined text-[20px]" data-icon="arrow_back">arrow_back</span>
+                Retour
+            </button>
+<span class="text-outline-variant">/</span>
+<span class="font-label-md text-label-md">Producteurs</span>
+<span class="text-outline-variant">/</span>
+<span class="font-label-md text-label-md font-bold text-on-surface">Koffi Kouamé</span>
+</div>
+<div class="flex gap-stack-md">
+<button class="px-6 h-touch-target-min border border-outline text-primary font-label-md text-label-md rounded-xl hover:bg-surface-container transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px]" data-icon="edit">edit</span>
+                Modifier
+            </button>
+<button class="px-6 h-touch-target-min bg-primary text-on-primary font-label-md text-label-md rounded-xl hover:brightness-110 active:scale-95 transition-all flex items-center gap-2 shadow-sm">
+<span class="material-symbols-outlined text-[20px]" data-icon="add_notes">add_notes</span>
+                Ajouter un relevé
+            </button>
+</div>
+</nav>
+<!-- Top Card: Producer Info -->
+<section class="bg-surface-container-lowest rounded-xl border border-outline-variant/50 p-stack-lg shadow-sm flex flex-col md:flex-row items-center md:items-start gap-stack-lg">
+<div class="w-32 h-32 md:w-40 md:h-40 rounded-xl overflow-hidden shadow-md flex-shrink-0">
+<img alt="Koffi Kouamé" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBv860QPLPwUV13PmWLjkziUKZ7qbL_vkRd0Dxk6xfjq4QgWBcrMEjo9HYiGR9Do8ZoKyE4Qlp5ZaW3EKX-GrU8_a6M37gT_P5ZkoOxJxb5iiX9foSWlTo-xGXA-Q1pQ3ZzsN8E8KpPAvu-xqq1-CzKSsAnFfn9CqjVdA5hgDsv2YLfpVCjeSCxRBUxxW5ANQlz8J9DEUC6SMBlLhbIZlRTtGJn-zBRwu4mE8qOuOhWrsnDIjtUOEkl"/>
+</div>
+<div class="flex-grow flex flex-col gap-stack-sm text-center md:text-left">
+<div class="flex flex-col md:flex-row md:items-end gap-2 md:gap-4">
+<h1 class="font-headline-lg text-headline-lg text-on-surface">Koffi Kouamé</h1>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-stack-md mt-2">
+<div class="flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-primary" data-icon="location_on">location_on</span>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-outline">Localisation</span>
+<span class="font-body-md text-body-md font-medium">Dapaong, Région des Savanes, Togo</span>
+</div>
+</div>
+<div class="flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-primary" data-icon="calendar_today">calendar_today</span>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-outline">Membre depuis</span>
+<span class="font-body-md text-body-md font-medium">14 Mars 2018</span>
+</div>
+</div>
+<div class="flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-primary" data-icon="inventory_2">inventory_2</span>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-outline">Production totale</span>
+<span class="font-body-md text-body-md font-medium">4.2 Tonnes (2023)</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Tabbed Interface -->
+<section class="flex flex-col gap-stack-lg">
+<div class="border-b border-outline-variant">
+<nav aria-label="Tabs" class="flex gap-gutter">
+<button class="px-4 py-4 font-label-md text-label-md active-tab border-b-2 border-primary font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px]" data-icon="grid_view">grid_view</span>
+                    Parcelles
+                </button>
+<button class="px-4 py-4 font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px]" data-icon="psychology">psychology</span>
+                    Recommandations
+                </button>
+<button class="px-4 py-4 font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px]" data-icon="history">history</span>
+                    Historique
+                </button>
+</nav>
+</div>
+<!-- Tab Content: Parcelles -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+<!-- Plot Card 1 - Soja -->
+<div class="bg-surface-container-lowest border border-outline-variant/50 rounded-xl overflow-hidden hover:shadow-md transition-shadow group">
+<div class="h-32 bg-surface-container-high relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent z-10"></div>
+<img alt="Soja plot" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCenxW7BkQDJw28h0G0r1FeMewe7FBhZNY9g_HKe0ZXJwKdnc8C0Aeuog_vaQwBdh6DTn29u7je3t8Tx1MMjpNz7OnIkp34pnMBnXw3kRPab9kI12xogzw104tiantC-xkpHimZpeOSq2JQOgIFbtH0HS2QeGJd6kM9LQ3lMyFUVQMBRQYuC5azY81AFDBZGJMCY4PvBQdvCTHTa5-A2WsHNsj0rnrR4NmxgaPKGW91FnhE53GicAiB"/>
+<div class="absolute bottom-3 left-3 z-20">
+<span class="bg-primary-container text-on-primary-container font-label-sm text-label-sm px-2 py-1 rounded">Actif</span>
+</div>
+</div>
+<div class="p-stack-md flex flex-col gap-stack-md">
+<div class="flex justify-between items-start">
+<h3 class="font-title-lg text-title-lg text-on-surface">Parcelle Nord</h3>
+<button class="text-outline hover:text-primary"><span class="material-symbols-outlined" data-icon="more_vert">more_vert</span></button>
+</div>
+<div class="grid grid-cols-2 gap-stack-md">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-outline">Superficie</span>
+<span class="font-body-md text-body-md font-semibold text-on-surface">1.5 ha</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-outline">Culture</span>
+<span class="font-body-md text-body-md font-semibold text-on-surface">Soja</span>
+</div>
+</div>
+<div class="pt-stack-sm border-t border-outline-variant/30 flex flex-col gap-1">
+<div class="flex justify-between items-center text-label-sm">
+<span class="text-outline">Rendement actuel</span>
+<span class="font-bold text-primary">2.8 T/ha</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[75%] rounded-full"></div>
+</div>
+</div>
+<button class="mt-2 w-full py-2 bg-surface-container-low text-primary font-label-md text-label-md rounded-xl hover:bg-primary-container/20 transition-colors">
+                        Voir détails techniques
+                    </button>
+</div>
+</div>
+<!-- Plot Card 2 - Maïs -->
+<div class="bg-surface-container-lowest border border-outline-variant/50 rounded-xl overflow-hidden hover:shadow-md transition-shadow group">
+<div class="h-32 bg-surface-container-high relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent z-10"></div>
+<img alt="Maize field" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDozQj72ZoZMQBamZP6KyPPiPUsC6b2ldd2wsZkqUhhhbyzlBM5ORLsQEI0XFHosq5lGnqPgHXNe5U8-O_gDdTiPR58IFUTLJbB1JU7mRy0YPdMu6ali5ReuQSxVrd2k-ujh-I1QegSG4ii1Ubmknn8qpJ8Ij5_Vsw_3k5Z5RlYrjbxNPpS6qwsaobvDyFN26sMqZ954vc8p0oKNE__zvigRzsLbJHODJ8_w97U54bolynFXH67FQmw"/>
+<div class="absolute bottom-3 left-3 z-20">
+<span class="bg-primary-container text-on-primary-container font-label-sm text-label-sm px-2 py-1 rounded">Actif</span>
+</div>
+</div>
+<div class="p-stack-md flex flex-col gap-stack-md">
+<div class="flex justify-between items-start">
+<h3 class="font-title-lg text-title-lg text-on-surface">Parcelle Ouest</h3>
+<button class="text-outline hover:text-primary"><span class="material-symbols-outlined" data-icon="more_vert">more_vert</span></button>
+</div>
+<div class="grid grid-cols-2 gap-stack-md">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-outline">Superficie</span>
+<span class="font-body-md text-body-md font-semibold text-on-surface">2.2 ha</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-outline">Culture</span>
+<span class="font-body-md text-body-md font-semibold text-on-surface">Maïs</span>
+</div>
+</div>
+<div class="pt-stack-sm border-t border-outline-variant/30 flex flex-col gap-1">
+<div class="flex justify-between items-center text-label-sm">
+<span class="text-outline">Rendement actuel</span>
+<span class="font-bold text-primary">3.5 T/ha</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[85%] rounded-full"></div>
+</div>
+</div>
+<button class="mt-2 w-full py-2 bg-surface-container-low text-primary font-label-md text-label-md rounded-xl hover:bg-primary-container/20 transition-colors">
+                        Voir détails techniques
+                    </button>
+</div>
+</div>
+<!-- Plot Card 3 - Manioc -->
+<div class="bg-surface-container-lowest border border-outline-variant/50 rounded-xl overflow-hidden hover:shadow-md transition-shadow group">
+<div class="h-32 bg-surface-container-high relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent z-10"></div>
+<div class="w-full h-full bg-surface-container-highest flex items-center justify-center">
+<span class="material-symbols-outlined text-outline-variant text-4xl" data-icon="grass">grass</span>
+</div>
+<div class="absolute bottom-3 left-3 z-20">
+<span class="bg-primary-container text-on-primary-container font-label-sm text-label-sm px-2 py-1 rounded">Actif</span>
+</div>
+</div>
+<div class="p-stack-md flex flex-col gap-stack-md">
+<div class="flex justify-between items-start">
+<h3 class="font-title-lg text-title-lg text-on-surface">Parcelle Est</h3>
+<button class="text-outline hover:text-primary"><span class="material-symbols-outlined" data-icon="more_vert">more_vert</span></button>
+</div>
+<div class="grid grid-cols-2 gap-stack-md">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-outline">Superficie</span>
+<span class="font-body-md text-body-md font-semibold text-on-surface">1.8 ha</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-outline">Culture</span>
+<span class="font-body-md text-body-md font-semibold text-on-surface">Manioc</span>
+</div>
+</div>
+<div class="pt-stack-sm border-t border-outline-variant/30 opacity-0">
+<div class="h-2"></div>
+</div>
+<button class="mt-2 w-full py-2 bg-surface-container-low text-primary font-label-md text-label-md rounded-xl hover:bg-primary-container/20 transition-colors">
+                        Voir détails techniques
+                    </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Insights Section -->
+<section class="mt-stack-lg">
+<div class="bg-surface-container-low rounded-xl p-stack-lg border border-outline-variant/30">
+<div class="flex items-center gap-2 mb-stack-md">
+<span class="material-symbols-outlined text-primary" data-icon="analytics">analytics</span>
+<h2 class="font-title-lg text-title-lg text-on-surface">Observations Agronomiques</h2>
+</div>
+<div class="space-y-stack-md">
+<div class="flex gap-4 items-start p-4 bg-surface-container-lowest rounded-xl border-l-4 border-primary">
+<span class="material-symbols-outlined text-primary mt-1" data-icon="check_circle">check_circle</span>
+<div>
+<p class="font-label-md text-label-md font-bold text-on-surface">Santé de la culture - Optimale</p>
+<p class="font-body-md text-body-md text-on-surface-variant">La parcelle de soja présente une croissance vigoureuse sans signe de pathogènes.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<script>
+    // Tab switching logic
+    const tabs = document.querySelectorAll('nav[aria-label="Tabs"] button');
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => {
+                t.classList.remove('active-tab', 'border-b-2', 'border-primary', 'font-bold');
+                t.classList.add('text-on-surface-variant');
+            });
+            tab.classList.add('active-tab', 'border-b-2', 'border-primary', 'font-bold');
+            tab.classList.remove('text-on-surface-variant');
+        });
+    });
+</script>
+</body></html>

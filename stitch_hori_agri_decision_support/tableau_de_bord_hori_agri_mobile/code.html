@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Hori Agri - Tableau de Bord Mobile</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&amp;family=Source+Sans+3:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary": "#ffffff",
+                    "tertiary-fixed": "#ffdad6",
+                    "primary-container": "#1b5e20",
+                    "on-secondary-container": "#6a4800",
+                    "inverse-on-surface": "#dff4ff",
+                    "outline-variant": "#c0c9bb",
+                    "on-background": "#071e27",
+                    "error": "#ba1a1a",
+                    "secondary-fixed": "#ffdeac",
+                    "primary": "#00450d",
+                    "surface-dim": "#c7dde9",
+                    "on-primary-fixed-variant": "#0c5216",
+                    "surface-bright": "#f3faff",
+                    "inverse-surface": "#1e333c",
+                    "background": "#f3faff",
+                    "primary-fixed-dim": "#91d78a",
+                    "surface-container-high": "#d5ecf8",
+                    "outline": "#717a6d",
+                    "on-secondary": "#ffffff",
+                    "surface": "#f3faff",
+                    "on-tertiary": "#ffffff",
+                    "secondary-container": "#feb300",
+                    "on-tertiary-container": "#ffb2aa",
+                    "on-tertiary-fixed-variant": "#930010",
+                    "secondary": "#7e5700",
+                    "on-tertiary-fixed": "#410003",
+                    "surface-tint": "#2a6b2c",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-variant": "#cfe6f2",
+                    "on-surface": "#071e27",
+                    "error-container": "#ffdad6",
+                    "on-surface-variant": "#41493e",
+                    "surface-container": "#dbf1fe",
+                    "inverse-primary": "#91d78a",
+                    "secondary-fixed-dim": "#ffba38",
+                    "on-primary-fixed": "#002203",
+                    "primary-fixed": "#acf4a4",
+                    "tertiary": "#7c000b",
+                    "tertiary-container": "#a70515",
+                    "surface-container-highest": "#cfe6f2",
+                    "surface-container-low": "#e6f6ff",
+                    "on-error": "#ffffff",
+                    "on-error-container": "#93000a"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "container-margin": "24px",
+                    "gutter": "16px",
+                    "base": "8px",
+                    "card-padding": "20px",
+                    "margin-mobile": "16px",
+                    "stack-md": "16px",
+                    "stack-sm": "8px",
+                    "touch-target-min": "48px"
+            },
+            "fontFamily": {
+                    "headline-lg": ["Work Sans"],
+                    "label-md": ["Source Sans 3"],
+                    "headline-md": ["Work Sans"],
+                    "headline-lg-mobile": ["Work Sans"],
+                    "body-md": ["Source Sans 3"],
+                    "data-mono": ["Source Sans 3"],
+                    "body-lg": ["Source Sans 3"],
+                    "title-lg": ["Work Sans"]
+            },
+            "fontSize": {
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "500"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "data-mono": ["14px", {"lineHeight": "20px", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "title-lg": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+        body {
+            background-color: #f3faff;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="font-body-md text-on-surface">
+<!-- Top Navigation Bar -->
+<header class="bg-surface sticky top-0 z-50 w-full h-16 flex justify-between items-center px-margin-mobile border-b border-outline-variant shadow-sm">
+<div class="flex items-center gap-3">
+<span class="font-headline-md text-headline-md text-primary font-bold">Hori Agri</span>
+<span class="text-label-sm px-2 py-0.5 bg-primary-container text-on-primary-container rounded-full">Togo</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="w-touch-target-min h-touch-target-min flex items-center justify-center cursor-pointer active:scale-95 transition-colors hover:bg-surface-container-high rounded-full">
+<span class="material-symbols-outlined text-primary">notifications</span>
+</button>
+<div class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="Profile" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhPieOEjjqCWI_11BW6hoUEGt1qz2RVVONeu73yy_7CxZ2Y450XD9rvURhOM1j9MDuMXpHmJ3zmI8g6835XPqAZOQenzKUOu062CJscFwYDhNz3ZGhVgDHTt2AK6dkpmlEEZWFd850bS8NtiJhnHeFM5m92Td_D6ry0xUJnv8H7P1RxhISt1xh-QrKC99ms7Bt0lH2pD3nqTkc2vPn27I_URPkMoO4gw4v-H6uAHTjp9KEfo-o2zQH"/>
+</div>
+</div>
+</header>
+<main class="pb-24">
+<!-- Dashboard Header -->
+<section class="px-margin-mobile pt-stack-md pb-stack-sm">
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface font-bold">Tableau de bord</h1>
+<p class="font-body-md text-on-surface-variant">Coopérative Régionale Togo</p>
+</section>
+<!-- KPI Cards - Horizontal Scroll -->
+<section class="w-full overflow-x-auto hide-scrollbar flex gap-stack-md px-margin-mobile py-stack-sm">
+<!-- KPI Card 1: Producteurs -->
+<div class="min-w-[240px] bg-surface-container-lowest p-stack-md rounded-xl shadow-sm border border-outline-variant flex flex-col gap-2">
+<div class="flex justify-between items-start">
+<span class="p-2 bg-primary-container text-on-primary-container rounded-lg">
+<span class="material-symbols-outlined">group</span>
+</span>
+<span class="text-primary font-bold text-label-md">+8%</span>
+</div>
+<div>
+<p class="text-on-surface-variant font-label-md">Producteurs</p>
+<p class="text-headline-md font-bold text-on-surface">1,542</p>
+</div>
+</div>
+<!-- KPI Card 2: Parcelles -->
+<div class="min-w-[240px] bg-surface-container-lowest p-stack-md rounded-xl shadow-sm border border-outline-variant flex flex-col gap-2">
+<div class="flex justify-between items-start">
+<span class="p-2 bg-secondary-container text-on-secondary-container rounded-lg">
+<span class="material-symbols-outlined">map</span>
+</span>
+<span class="text-primary font-bold text-label-md">+12%</span>
+</div>
+<div>
+<p class="text-on-surface-variant font-label-md">Parcelles</p>
+<p class="text-headline-md font-bold text-on-surface">3,120 Ha</p>
+</div>
+</div>
+</section>
+<!-- Main Chart Section -->
+<section class="px-margin-mobile py-stack-md">
+<div class="bg-surface-container-lowest p-stack-md rounded-xl shadow-sm border border-outline-variant">
+<div class="flex justify-between items-center mb-6">
+<h2 class="font-title-lg text-title-lg text-on-surface">Rendements par Culture (kg/ha)</h2>
+<span class="material-symbols-outlined text-on-surface-variant">more_vert</span>
+</div>
+<!-- Bar Chart -->
+<div class="h-48 w-full flex items-end gap-6 px-4">
+<div class="flex-1 flex flex-col items-center gap-2">
+<div class="w-full bg-surface-container-high rounded-t-lg relative group transition-all" style="height: 35%;"></div>
+</div>
+<div class="flex-1 flex flex-col items-center gap-2">
+<div class="w-full bg-surface-container-high rounded-t-lg relative group transition-all" style="height: 15%;"></div>
+</div>
+<div class="flex-1 flex flex-col items-center gap-2">
+<div class="w-full bg-primary rounded-t-lg relative group transition-all" style="height: 95%;"></div>
+</div>
+</div>
+<div class="flex justify-between mt-3 px-4 text-label-sm text-on-surface-variant font-bold">
+<div class="text-center">Maïs<br/><span class="text-[10px] font-normal">4200</span></div>
+<div class="text-center">Soja<br/><span class="text-[10px] font-normal">1900</span></div>
+<div class="text-center">Manioc<br/><span class="text-[10px] font-normal">12000</span></div>
+</div>
+</div>
+</section>
+<!-- Alerts Section -->
+<section class="px-margin-mobile py-stack-sm">
+<div class="flex justify-between items-center mb-4">
+<h2 class="font-title-lg text-title-lg text-on-surface">Alertes Agronomiques</h2>
+<button class="text-primary font-bold text-label-md">Tout voir</button>
+</div>
+<div class="space-y-stack-sm">
+<!-- Alert Card 1 - High Severity -->
+<div class="bg-error-container/30 border border-error p-stack-md rounded-xl flex items-center gap-4">
+<div class="w-12 h-12 bg-error text-on-error rounded-full flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined">warning</span>
+</div>
+<div class="flex-1">
+<div class="flex items-center gap-2 mb-0.5">
+<h3 class="font-label-md text-on-surface font-bold">Stress azoté détecté</h3>
+<span class="text-[10px] px-1.5 py-0.5 bg-error text-on-error rounded-full uppercase tracking-wider font-bold">Élevée</span>
+</div>
+<p class="text-label-sm text-on-surface-variant">Parcelle M-02 • Maïs</p>
+</div>
+<span class="material-symbols-outlined text-on-surface">chevron_right</span>
+</div>
+<!-- Alert Card 2 - Medium Severity -->
+<div class="bg-secondary-container/10 border border-secondary p-stack-md rounded-xl flex items-center gap-4">
+<div class="w-12 h-12 bg-secondary text-on-secondary rounded-full flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined">science</span>
+</div>
+<div class="flex-1">
+<div class="flex items-center gap-2 mb-0.5">
+<h3 class="font-label-md text-on-surface font-bold">Seuil de fertilisation</h3>
+<span class="text-[10px] px-1.5 py-0.5 bg-secondary text-on-secondary rounded-full uppercase tracking-wider font-bold">Moyenne</span>
+</div>
+<p class="text-label-sm text-on-surface-variant">Secteur Sud • Soja</p>
+</div>
+<span class="material-symbols-outlined text-on-surface">chevron_right</span>
+</div>
+<!-- Alert Card 3 - Low Severity -->
+<div class="bg-primary-container/10 border border-primary p-stack-md rounded-xl flex items-center gap-4">
+<div class="w-12 h-12 bg-primary text-on-primary rounded-full flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined">info</span>
+</div>
+<div class="flex-1">
+<div class="flex items-center gap-2 mb-0.5">
+<h3 class="font-label-md text-on-surface font-bold">Rappel maintenance</h3>
+<span class="text-[10px] px-1.5 py-0.5 bg-primary text-on-primary rounded-full uppercase tracking-wider font-bold">Faible</span>
+</div>
+<p class="text-label-sm text-on-surface-variant">Équipement G-12</p>
+</div>
+<span class="material-symbols-outlined text-on-surface">chevron_right</span>
+</div>
+</div>
+</section>
+<!-- Performance Section -->
+<section class="px-margin-mobile py-stack-md">
+<h2 class="font-title-lg text-title-lg text-on-surface mb-4">Focus Parcelles</h2>
+<div class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant overflow-hidden">
+<!-- Plot Item 1 -->
+<div class="p-stack-md border-b border-outline-variant flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">potted_plant</span>
+</div>
+<div>
+<h4 class="font-label-md text-on-surface font-bold">Parcelle A-12</h4>
+<p class="text-label-sm text-on-surface-variant">Maïs • 2.4 Ha</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-error font-bold">-15%</p>
+<p class="text-label-sm text-on-surface-variant font-bold">vs. Prévu</p>
+</div>
+</div>
+<!-- Plot Item 2 -->
+<div class="p-stack-md border-b border-outline-variant flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">potted_plant</span>
+</div>
+<div>
+<h4 class="font-label-md text-on-surface font-bold">Parcelle C-08</h4>
+<p class="text-label-sm text-on-surface-variant">Soja • 5.1 Ha</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-primary font-bold">+5%</p>
+<p class="text-label-sm text-on-surface-variant font-bold">vs. Prévu</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Bar - Unified 5 items -->
+<nav class="fixed bottom-0 left-0 right-0 h-16 bg-surface-container-low border-t border-outline-variant flex items-center justify-around px-2 shadow-lg z-50">
+<button class="flex flex-col items-center justify-center w-16 h-full text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="text-[10px] mt-1 font-bold">Tableau</span>
+</button>
+<button class="flex flex-col items-center justify-center w-16 h-full text-on-surface-variant">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px] mt-1 font-bold">Producteurs</span>
+</button>
+<button class="flex flex-col items-center justify-center w-16 h-full text-on-surface-variant">
+<span class="material-symbols-outlined">lightbulb</span>
+<span class="text-[10px] mt-1 font-bold">Conseils</span>
+</button>
+<button class="flex flex-col items-center justify-center w-16 h-full text-on-surface-variant">
+<span class="material-symbols-outlined">route</span>
+<span class="text-[10px] mt-1 font-bold">Itinéraires</span>
+</button>
+<button class="flex flex-col items-center justify-center w-16 h-full text-on-surface-variant">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[10px] mt-1 font-bold">Paramètres</span>
+</button>
+</nav>
+<!-- Floating Action Button -->
+<button class="fixed bottom-20 right-margin-mobile w-14 h-14 bg-primary text-on-primary rounded-full shadow-lg flex items-center justify-center active:scale-90 transition-transform z-40">
+<span class="material-symbols-outlined" style="font-size: 32px;">add</span>
+</button>
+<script>
+        // Micro-interaction for cards
+        const cards = document.querySelectorAll('.bg-surface-container-lowest, [class*="bg-error-container/30"], [class*="bg-secondary-container/10"], [class*="bg-primary-container/10"]');
+        cards.forEach(card => {
+            card.addEventListener('click', () => {
+                card.classList.add('scale-[0.98]');
+                setTimeout(() => card.classList.remove('scale-[0.98]'), 100);
+            });
+        });
+
+        // Animation for chart bars
+        window.addEventListener('DOMContentLoaded', () => {
+            const bars = document.querySelectorAll('.bg-surface-container-high, .bg-primary');
+            bars.forEach((bar, index) => {
+                const targetHeight = bar.style.height;
+                if(targetHeight) {
+                    bar.style.height = '0%';
+                    setTimeout(() => {
+                        bar.style.transition = 'height 1s cubic-bezier(0.4, 0, 0.2, 1)';
+                        bar.style.height = targetHeight;
+                    }, index * 150);
+                }
+            });
+        });
+    </script>
+</body></html>
