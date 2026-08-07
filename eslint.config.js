@@ -114,6 +114,8 @@ export default [
             'resources/js/components/ui/*',
             'resources/js/routes/**',
             'resources/js/wayfinder/**',
+            '.claude/**',
+            'stitch_hori_agri_decision_support/**',
         ],
     },
     prettier,

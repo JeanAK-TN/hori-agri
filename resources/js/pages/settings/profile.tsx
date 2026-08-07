@@ -1,5 +1,4 @@
 import { Form, Head, usePage } from '@inertiajs/react';
-import { Link } from '@inertiajs/react';
 import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
 import DeleteUser from '@/components/delete-user';
 import Heading from '@/components/heading';
@@ -8,33 +7,26 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { edit } from '@/routes/profile';
-import { send } from '@/routes/verification';
 import type { Auth } from '@/types';
 
 type PageProps = {
     auth: Auth;
 };
 
-export default function Profile({
-    mustVerifyEmail,
-    status,
-}: {
-    mustVerifyEmail: boolean;
-    status?: string;
-}) {
+export default function Profile() {
     const { auth } = usePage<PageProps>().props;
 
     return (
         <>
-            <Head title="Profile settings" />
+            <Head title="Profil" />
 
-            <h1 className="sr-only">Profile settings</h1>
+            <h1 className="sr-only">Paramètres du profil</h1>
 
             <div className="space-y-6">
                 <Heading
                     variant="small"
-                    title="Profile"
-                    description="Update your name and email address"
+                    title="Profil"
+                    description="Mettez à jour votre nom et votre adresse e-mail"
                 />
 
                 <Form
@@ -47,16 +39,16 @@ export default function Profile({
                     {({ processing, errors }) => (
                         <>
                             <div className="grid gap-2">
-                                <Label htmlFor="name">Name</Label>
+                                <Label htmlFor="name">Nom</Label>
 
                                 <Input
                                     id="name"
-                                    className="mt-1 block w-full"
+                                    className="mt-1 block h-12 w-full"
                                     defaultValue={auth.user.name}
                                     name="name"
                                     required
                                     autoComplete="name"
-                                    placeholder="Full name"
+                                    placeholder="Nom complet"
                                 />
 
                                 <InputError
@@ -66,17 +58,38 @@ export default function Profile({
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="email">Email address</Label>
+                                <Label htmlFor="phone">
+                                    Numéro de téléphone
+                                </Label>
+
+                                <Input
+                                    id="phone"
+                                    type="tel"
+                                    className="mt-1 block h-12 w-full"
+                                    defaultValue={auth.user.phone}
+                                    disabled
+                                />
+
+                                <p className="text-sm text-muted-foreground">
+                                    Le numéro de téléphone sert d'identifiant de
+                                    connexion. Contactez votre administrateur
+                                    pour le modifier.
+                                </p>
+                            </div>
+
+                            <div className="grid gap-2">
+                                <Label htmlFor="email">
+                                    Adresse e-mail (facultative)
+                                </Label>
 
                                 <Input
                                     id="email"
                                     type="email"
-                                    className="mt-1 block w-full"
-                                    defaultValue={auth.user.email}
+                                    className="mt-1 block h-12 w-full"
+                                    defaultValue={auth.user.email ?? ''}
                                     name="email"
-                                    required
-                                    autoComplete="username"
-                                    placeholder="Email address"
+                                    autoComplete="email"
+                                    placeholder="adresse@exemple.com"
                                 />
 
                                 <InputError
@@ -85,37 +98,13 @@ export default function Profile({
                                 />
                             </div>
 
-                            {mustVerifyEmail &&
-                                auth.user.email_verified_at === null && (
-                                    <div>
-                                        <p className="-mt-4 text-sm text-muted-foreground">
-                                            Your email address is unverified.{' '}
-                                            <Link
-                                                href={send()}
-                                                as="button"
-                                                className="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
-                                            >
-                                                Click here to re-send the
-                                                verification email.
-                                            </Link>
-                                        </p>
-
-                                        {status ===
-                                            'verification-link-sent' && (
-                                            <div className="mt-2 text-sm font-medium text-green-600">
-                                                A new verification link has been
-                                                sent to your email address.
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-
                             <div className="flex items-center gap-4">
                                 <Button
+                                    className="h-12"
                                     disabled={processing}
                                     data-test="update-profile-button"
                                 >
-                                    Save
+                                    Enregistrer
                                 </Button>
                             </div>
                         </>
@@ -131,7 +120,7 @@ export default function Profile({
 Profile.layout = {
     breadcrumbs: [
         {
-            title: 'Profile settings',
+            title: 'Profil',
             href: edit(),
         },
     ],
