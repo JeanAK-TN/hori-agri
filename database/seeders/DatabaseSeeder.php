@@ -2,24 +2,44 @@
 
 namespace Database\Seeders;
 
+use App\Models\Cooperative;
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
     /**
-     * Seed the application's database.
+     * Seed the application's database with development accounts.
+     *
+     * Everything below is a test fixture (SPEC rule 2) : no data about
+     * the real Hori cooperative is ever seeded.
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        User::factory()->superAdmin()->create([
+            'name' => 'Super administrateur (fixture)',
+            'phone' => '00000000',
+        ]);
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        $cooperative = Cooperative::factory()->create([
+            'name' => 'Coopérative de démonstration (fixture)',
+            'region' => 'Kara',
+            'prefecture' => 'Kozah',
+        ]);
+
+        User::factory()->coopAdmin()->for($cooperative)->create([
+            'name' => 'Administrateur de coopérative (fixture)',
+            'phone' => '00000001',
+        ]);
+
+        User::factory()->technician()->for($cooperative)->create([
+            'name' => 'Technicien (fixture)',
+            'phone' => '00000002',
+        ]);
+
+        User::factory()->farmer()->for($cooperative)->create([
+            'name' => 'Agriculteur (fixture)',
+            'phone' => '00000003',
         ]);
     }
 }

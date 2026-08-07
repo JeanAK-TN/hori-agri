@@ -1,0 +1,38 @@
+<?php
+
+namespace App\Http\Middleware;
+
+use Closure;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\Response;
+
+/**
+ * Logs out any member of a suspended cooperative in the middle of a
+ * session. The login refusal itself lives in Fortify::authenticateUsing.
+ */
+class EnsureCooperativeActive
+{
+    /**
+     * Handle an incoming request.
+     *
+     * @param  Closure(Request): (Response)  $next
+     */
+    public function handle(Request $request, Closure $next): Response
+    {
+        $user = $request->user();
+
+        if ($user !== null && ! $user->isSuperAdmin() && $user->cooperative?->isSuspended()) {
+            Auth::guard('web')->logout();
+
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()
+                ->route('login')
+                ->withErrors(['phone' => 'Ce compte est momentanément indisponible. Contactez votre administrateur.']);
+        }
+
+        return $next($request);
+    }
+}

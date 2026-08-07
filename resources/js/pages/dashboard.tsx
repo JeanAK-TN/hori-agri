@@ -29,7 +29,7 @@ export default function Dashboard() {
 Dashboard.layout = {
     breadcrumbs: [
         {
-            title: 'Tableau de bord',
+            title: 'Accueil',
             href: dashboard(),
         },
     ],

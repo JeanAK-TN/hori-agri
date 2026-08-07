@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Actions\Fortify\ResetUserPassword;
+use App\Concerns\NormalizesPhoneNumbers;
 use App\Models\User;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
@@ -17,6 +18,8 @@ use Laravel\Fortify\Fortify;
 
 class FortifyServiceProvider extends ServiceProvider
 {
+    use NormalizesPhoneNumbers;
+
     /**
      * Register any application services.
      */
@@ -47,20 +50,16 @@ class FortifyServiceProvider extends ServiceProvider
 
             $user = User::where('phone', $phone)->first();
 
-            if ($user && Hash::check((string) $request->input('password'), $user->password)) {
-                return $user;
+            if (! $user || ! Hash::check((string) $request->input('password'), $user->password)) {
+                return null;
             }
 
-            return null;
-        });
-    }
+            if ($user->cooperative?->isSuspended()) {
+                return null;
+            }
 
-    /**
-     * Normalize a phone number typed by the user (spaces, dashes, dots).
-     */
-    public static function normalizePhone(string $phone): string
-    {
-        return preg_replace('/[\s.\-()]+/', '', $phone) ?? $phone;
+            return $user;
+        });
     }
 
     /**

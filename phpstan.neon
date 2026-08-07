@@ -11,3 +11,11 @@ parameters:
         - routes/
 
     level: 7
+
+    ignoreErrors:
+        # BelongsToCooperative est livré au module 1 (SPEC section 13) mais son
+        # premier modèle métier arrive au module 2 (farmers). À retirer dès que
+        # Farmer utilise le trait.
+        -
+            identifier: trait.unused
+            path: app/Models/Concerns/BelongsToCooperative.php

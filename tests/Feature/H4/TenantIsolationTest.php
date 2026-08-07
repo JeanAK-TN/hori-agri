@@ -1,0 +1,102 @@
+<?php
+
+use App\Enums\Role;
+use App\Models\Cooperative;
+use App\Models\User;
+use Inertia\Testing\AssertableInertia as Assert;
+
+/*
+| Hypothèse H4 : l'isolation entre coopératives (SPEC section 14.2).
+| Une demande portant sur une ressource d'une autre coopérative doit
+| produire « ressource introuvable », jamais un refus d'accès, qui
+| révélerait l'existence de la ressource.
+*/
+
+test('a cooperative administrator only sees the accounts of their own cooperative', function () {
+    $mine = Cooperative::factory()->create();
+    $other = Cooperative::factory()->create();
+
+    $admin = User::factory()->coopAdmin()->for($mine)->create(['name' => 'Chez moi']);
+    User::factory()->technician()->for($mine)->create(['name' => 'Mon technicien']);
+    User::factory()->technician()->for($other)->create(['name' => 'Technicien voisin']);
+
+    $this->actingAs($admin)
+        ->get(route('users.index'))
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('users/index')
+            ->has('users.data', 2)
+            ->where('users.data.0.name', 'Chez moi')
+            ->where('users.data.1.name', 'Mon technicien'),
+        );
+});
+
+test('the super_admin sees every account', function () {
+    $first = Cooperative::factory()->create();
+    $second = Cooperative::factory()->create();
+
+    User::factory()->technician()->for($first)->create();
+    User::factory()->technician()->for($second)->create();
+    $superAdmin = User::factory()->superAdmin()->create();
+
+    $this->actingAs($superAdmin)
+        ->get(route('users.index'))
+        ->assertInertia(fn (Assert $page) => $page->has('users.data', 3));
+});
+
+test('updating an account of another cooperative answers not found, not forbidden', function () {
+    $admin = User::factory()->coopAdmin()->create();
+    $foreign = User::factory()->technician()->create();
+
+    $this->actingAs($admin)
+        ->patch(route('users.update', $foreign), [
+            'name' => 'Renommé de force',
+            'phone' => $foreign->phone,
+            'role' => Role::Technician->value,
+        ])
+        ->assertNotFound();
+
+    expect($foreign->fresh()->name)->not->toBe('Renommé de force');
+});
+
+test('a cooperative administrator can update an account of their own cooperative', function () {
+    $cooperative = Cooperative::factory()->create();
+    $admin = User::factory()->coopAdmin()->for($cooperative)->create();
+    $technician = User::factory()->technician()->for($cooperative)->create();
+
+    $this->actingAs($admin)
+        ->patch(route('users.update', $technician), [
+            'name' => 'Nom corrigé',
+            'phone' => $technician->phone,
+            'role' => Role::Technician->value,
+        ])
+        ->assertRedirect(route('users.index'));
+
+    expect($technician->fresh()->name)->toBe('Nom corrigé');
+});
+
+test('an administrator cannot change their own role', function () {
+    $admin = User::factory()->coopAdmin()->create();
+
+    $this->actingAs($admin)
+        ->patch(route('users.update', $admin), [
+            'name' => $admin->name,
+            'phone' => $admin->phone,
+            'role' => Role::Farmer->value,
+        ])
+        ->assertSessionHasErrors('role');
+
+    expect($admin->fresh()->role)->toBe(Role::CoopAdmin);
+});
+
+test('a cooperative administrator cannot reach the cooperative registry', function () {
+    $admin = User::factory()->coopAdmin()->create();
+    $cooperative = Cooperative::factory()->create();
+
+    $this->actingAs($admin)
+        ->patch(route('cooperatives.update', $cooperative), [
+            'name' => 'Renommée',
+            'region' => 'Kara',
+            'prefecture' => 'Kozah',
+        ])
+        ->assertForbidden();
+});

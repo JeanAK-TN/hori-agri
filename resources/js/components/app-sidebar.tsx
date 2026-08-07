@@ -1,5 +1,4 @@
-import { Link } from '@inertiajs/react';
-import { LayoutGrid } from 'lucide-react';
+import { Link, usePage } from '@inertiajs/react';
 import AppLogo from '@/components/app-logo';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
@@ -12,18 +11,13 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
+import { navigationFor } from '@/lib/navigation';
 import { dashboard } from '@/routes';
-import type { NavItem } from '@/types';
-
-const mainNavItems: NavItem[] = [
-    {
-        title: 'Tableau de bord',
-        href: dashboard(),
-        icon: LayoutGrid,
-    },
-];
 
 export function AppSidebar() {
+    const { auth } = usePage().props;
+    const items = auth.user ? navigationFor(auth.user.role) : [];
+
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>
@@ -39,7 +33,7 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent>
-                <NavMain items={mainNavItems} />
+                <NavMain items={items} />
             </SidebarContent>
 
             <SidebarFooter>

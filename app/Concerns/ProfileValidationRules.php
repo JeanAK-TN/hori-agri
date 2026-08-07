@@ -28,7 +28,7 @@ trait ProfileValidationRules
      */
     protected function nameRules(): array
     {
-        return ['required', 'string', 'max:255'];
+        return ['required', 'string', 'max:120'];
     }
 
     /**
@@ -43,6 +43,25 @@ trait ProfileValidationRules
             'string',
             'email',
             'max:120',
+            $userId === null
+                ? Rule::unique(User::class)
+                : Rule::unique(User::class)->ignore($userId),
+        ];
+    }
+
+    /**
+     * Get the validation rules used to validate phone numbers, which are
+     * the login identifier of every account (SPEC section 6.2).
+     *
+     * @return array<int, ValidationRule|array<mixed>|string>
+     */
+    protected function phoneRules(?int $userId = null): array
+    {
+        return [
+            'required',
+            'string',
+            'max:20',
+            'regex:/^\+?[0-9]{6,}$/',
             $userId === null
                 ? Rule::unique(User::class)
                 : Rule::unique(User::class)->ignore($userId),

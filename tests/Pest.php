@@ -19,6 +19,14 @@ pest()->extend(TestCase::class)
     ->in('Feature');
 
 /*
+| Unit tests get the application container so that services and models can
+| be exercised in isolation. They do not touch the database by default: a
+| unit test that needs it declares `uses(RefreshDatabase::class)` itself.
+*/
+
+pest()->extend(TestCase::class)->in('Unit');
+
+/*
 |--------------------------------------------------------------------------
 | Expectations
 |--------------------------------------------------------------------------
