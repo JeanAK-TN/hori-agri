@@ -9,7 +9,11 @@
 
 @theme {
     --font-sans:
-        'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
+        'Source Sans 3', ui-sans-serif, system-ui, sans-serif,
+        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+        'Noto Color Emoji';
+    --font-heading:
+        'Work Sans', ui-sans-serif, system-ui, sans-serif,
         'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
         'Noto Color Emoji';
 
@@ -51,6 +55,13 @@
     --color-chart-4: var(--chart-4);
     --color-chart-5: var(--chart-5);
 
+    --color-severity-high: var(--severity-high);
+    --color-severity-high-foreground: var(--severity-high-foreground);
+    --color-severity-medium: var(--severity-medium);
+    --color-severity-medium-foreground: var(--severity-medium-foreground);
+    --color-severity-low: var(--severity-low);
+    --color-severity-low-foreground: var(--severity-low-foreground);
+
     --color-sidebar: var(--sidebar);
     --color-sidebar-foreground: var(--sidebar-foreground);
     --color-sidebar-primary: var(--sidebar-primary);
@@ -61,75 +72,95 @@
     --color-sidebar-ring: var(--sidebar-ring);
 }
 
+/*
+ * Palette Hori Agri, dérivée du design system Material 3 des maquettes
+ * (stitch_hori_agri_decision_support/hori_agri/DESIGN.md), canonisée :
+ * primaire vert forêt #00450d, accent ambre, erreurs #ba1a1a, surfaces
+ * neutres claires (le bleu glacé des maquettes est volontairement remplacé
+ * par un fond neutre plus épuré). Badges de sévérité en paires tonales
+ * (fond pâle + texte foncé), lisibles en plein soleil.
+ */
 :root {
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.145 0 0);
-    --card: oklch(1 0 0);
-    --card-foreground: oklch(0.145 0 0);
-    --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.205 0 0);
-    --primary-foreground: oklch(0.985 0 0);
-    --secondary: oklch(0.97 0 0);
-    --secondary-foreground: oklch(0.205 0 0);
-    --muted: oklch(0.97 0 0);
-    --muted-foreground: oklch(0.556 0 0);
-    --accent: oklch(0.97 0 0);
-    --accent-foreground: oklch(0.205 0 0);
-    --destructive: oklch(0.577 0.245 27.325);
-    --destructive-foreground: oklch(0.577 0.245 27.325);
-    --border: oklch(0.922 0 0);
-    --input: oklch(0.922 0 0);
-    --ring: oklch(0.87 0 0);
-    --chart-1: oklch(0.646 0.222 41.116);
-    --chart-2: oklch(0.6 0.118 184.704);
-    --chart-3: oklch(0.398 0.07 227.392);
-    --chart-4: oklch(0.828 0.189 84.429);
-    --chart-5: oklch(0.769 0.188 70.08);
-    --radius: 0.625rem;
-    --sidebar: oklch(0.985 0 0);
-    --sidebar-foreground: oklch(0.145 0 0);
-    --sidebar-primary: oklch(0.205 0 0);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.97 0 0);
-    --sidebar-accent-foreground: oklch(0.205 0 0);
-    --sidebar-border: oklch(0.922 0 0);
-    --sidebar-ring: oklch(0.87 0 0);
+    --background: #f7f8f5;
+    --foreground: #1b201a;
+    --card: #ffffff;
+    --card-foreground: #1b201a;
+    --popover: #ffffff;
+    --popover-foreground: #1b201a;
+    --primary: #00450d;
+    --primary-foreground: #ffffff;
+    --secondary: #e9efe6;
+    --secondary-foreground: #0c5216;
+    --muted: #eef1ec;
+    --muted-foreground: #5a6357;
+    --accent: #e0f3dc;
+    --accent-foreground: #0c5216;
+    --destructive: #ba1a1a;
+    --destructive-foreground: #ffffff;
+    --border: #dce2d6;
+    --input: #c0c9bb;
+    --ring: #2a6b2c;
+    --chart-1: #2a6b2c;
+    --chart-2: #feb300;
+    --chart-3: #a70515;
+    --chart-4: #467c8a;
+    --chart-5: #91d78a;
+    --severity-high: #ffdad6;
+    --severity-high-foreground: #93000a;
+    --severity-medium: #ffdeac;
+    --severity-medium-foreground: #604100;
+    --severity-low: #cdeec5;
+    --severity-low-foreground: #0c5216;
+    --radius: 0.5rem;
+    --sidebar: #00450d;
+    --sidebar-foreground: #e6f4e2;
+    --sidebar-primary: #acf4a4;
+    --sidebar-primary-foreground: #002203;
+    --sidebar-accent: #1b5e20;
+    --sidebar-accent-foreground: #ffffff;
+    --sidebar-border: #1b5e20;
+    --sidebar-ring: #91d78a;
 }
 
 .dark {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.145 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.145 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.985 0 0);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.396 0.141 25.723);
-    --destructive-foreground: oklch(0.637 0.237 25.331);
-    --border: oklch(0.269 0 0);
-    --input: oklch(0.269 0 0);
-    --ring: oklch(0.439 0 0);
-    --chart-1: oklch(0.488 0.243 264.376);
-    --chart-2: oklch(0.696 0.17 162.48);
-    --chart-3: oklch(0.769 0.188 70.08);
-    --chart-4: oklch(0.627 0.265 303.9);
-    --chart-5: oklch(0.645 0.246 16.439);
-    --sidebar: oklch(0.205 0 0);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.985 0 0);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.269 0 0);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(0.269 0 0);
-    --sidebar-ring: oklch(0.439 0 0);
+    --background: #11150f;
+    --foreground: #e1e5dd;
+    --card: #191e16;
+    --card-foreground: #e1e5dd;
+    --popover: #191e16;
+    --popover-foreground: #e1e5dd;
+    --primary: #91d78a;
+    --primary-foreground: #002203;
+    --secondary: #232a20;
+    --secondary-foreground: #b9d8b2;
+    --muted: #232a20;
+    --muted-foreground: #a3ada0;
+    --accent: #1c3a20;
+    --accent-foreground: #acf4a4;
+    --destructive: #ffb4ab;
+    --destructive-foreground: #690005;
+    --border: #2c332a;
+    --input: #3a4237;
+    --ring: #91d78a;
+    --chart-1: #91d78a;
+    --chart-2: #ffba38;
+    --chart-3: #ffb3ac;
+    --chart-4: #7fb2c2;
+    --chart-5: #2a6b2c;
+    --severity-high: #5c1512;
+    --severity-high-foreground: #ffb4ab;
+    --severity-medium: #4a3300;
+    --severity-medium-foreground: #ffdeac;
+    --severity-low: #143a17;
+    --severity-low-foreground: #acf4a4;
+    --sidebar: #0c1a0e;
+    --sidebar-foreground: #dbe6d8;
+    --sidebar-primary: #acf4a4;
+    --sidebar-primary-foreground: #002203;
+    --sidebar-accent: #1b3a1e;
+    --sidebar-accent-foreground: #eafce6;
+    --sidebar-border: #1b3a1e;
+    --sidebar-ring: #91d78a;
 }
 
 @layer base {
@@ -139,5 +170,12 @@
 
     body {
         @apply bg-background text-foreground;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+        @apply font-heading;
     }
 }
