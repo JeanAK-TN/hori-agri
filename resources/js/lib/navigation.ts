@@ -1,6 +1,7 @@
-import { Building2, House, Users } from 'lucide-react';
+import { Building2, House, Sprout, Users } from 'lucide-react';
 import { dashboard } from '@/routes';
 import { index as cooperatives } from '@/routes/cooperatives';
+import { index as farmers } from '@/routes/farmers';
 import { index as users } from '@/routes/users';
 import type { NavItem, Role } from '@/types';
 
@@ -26,6 +27,12 @@ const navigation: RoleNavItem[] = [
         icon: Building2,
         roles: ['super_admin'],
         shortTitle: 'Coop.',
+    },
+    {
+        title: 'Producteurs',
+        href: farmers(),
+        icon: Sprout,
+        roles: ['coop_admin', 'technician'],
     },
     {
         title: 'Comptes',

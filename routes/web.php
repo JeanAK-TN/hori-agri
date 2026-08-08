@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CooperativeController;
+use App\Http\Controllers\FarmerController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\EnsureCooperativeActive;
 use Illuminate\Support\Facades\Route;
@@ -27,6 +28,10 @@ Route::middleware(['auth', EnsureCooperativeActive::class])->group(function () {
         Route::get('users', [UserController::class, 'index'])->name('users.index');
         Route::post('users', [UserController::class, 'store'])->name('users.store');
         Route::patch('users/{user}', [UserController::class, 'update'])->name('users.update');
+    });
+
+    Route::middleware('role:coop_admin,technician')->group(function () {
+        Route::resource('farmers', FarmerController::class)->except(['destroy']);
     });
 });
 

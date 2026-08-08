@@ -5,7 +5,6 @@ namespace App\Models\Concerns;
 use App\Models\Cooperative;
 use App\Models\Scopes\CooperativeScope;
 use App\Models\Scopes\CurrentCooperative;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
@@ -20,11 +19,14 @@ trait BelongsToCooperative
     {
         static::addGlobalScope(new CooperativeScope);
 
-        static::creating(function (Model $model): void {
+        static::creating(function (self $model): void {
             $model->cooperative_id ??= CurrentCooperative::id();
         });
     }
 
+    /**
+     * @return BelongsTo<Cooperative, $this>
+     */
     public function cooperative(): BelongsTo
     {
         return $this->belongsTo(Cooperative::class);

@@ -2,6 +2,7 @@
 
 use App\Enums\Role;
 use App\Models\Cooperative;
+use App\Models\Farmer;
 use App\Models\User;
 use Inertia\Testing\AssertableInertia as Assert;
 
@@ -86,6 +87,45 @@ test('an administrator cannot change their own role', function () {
         ->assertSessionHasErrors('role');
 
     expect($admin->fresh()->role)->toBe(Role::CoopAdmin);
+});
+
+test('a technician only sees the producers of their own cooperative', function () {
+    $mine = Cooperative::factory()->create();
+    $technician = User::factory()->technician()->for($mine)->create();
+
+    Farmer::factory()->for($mine)->create(['last_name' => 'Chez moi']);
+    Farmer::factory()->create(['last_name' => 'Chez le voisin']);
+
+    $this->actingAs($technician)
+        ->get(route('farmers.index'))
+        ->assertInertia(fn (Assert $page) => $page
+            ->has('farmers.data', 1)
+            ->where('farmers.data.0.last_name', 'Chez moi'),
+        );
+});
+
+test('consulting a producer of another cooperative answers not found', function () {
+    $technician = User::factory()->technician()->create();
+    $foreign = Farmer::factory()->create();
+
+    $this->actingAs($technician)
+        ->get(route('farmers.show', $foreign))
+        ->assertNotFound();
+});
+
+test('updating a producer of another cooperative answers not found', function () {
+    $technician = User::factory()->technician()->create();
+    $foreign = Farmer::factory()->create(['village' => 'Village voisin']);
+
+    $this->actingAs($technician)
+        ->patch(route('farmers.update', $foreign), [
+            'first_name' => $foreign->first_name,
+            'last_name' => $foreign->last_name,
+            'village' => 'Village détourné',
+        ])
+        ->assertNotFound();
+
+    expect($foreign->fresh()->village)->toBe('Village voisin');
 });
 
 test('a cooperative administrator cannot reach the cooperative registry', function () {
