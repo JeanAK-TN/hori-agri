@@ -1,9 +1,11 @@
 import { Head, Link } from '@inertiajs/react';
-import { ArrowLeft, Pencil, Phone } from 'lucide-react';
+import { ArrowLeft, LandPlot, Pencil, Phone, Plus } from 'lucide-react';
+import EmptyState from '@/components/empty-state';
 import PageHeader from '@/components/page-header';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { edit, index } from '@/routes/farmers';
+import { create as createPlot, show as showPlot } from '@/routes/plots';
 
 type Farmer = {
     id: number;
@@ -18,8 +20,16 @@ type Farmer = {
     account: { id: number; name: string; phone: string } | null;
 };
 
+type Plot = {
+    id: number;
+    name: string;
+    area_ha: string;
+    soil_type_label: string;
+};
+
 type Props = {
     farmer: Farmer;
+    plots: Plot[];
 };
 
 function Detail({ label, value }: { label: string; value: string }) {
@@ -31,7 +41,7 @@ function Detail({ label, value }: { label: string; value: string }) {
     );
 }
 
-export default function FarmerShow({ farmer }: Props) {
+export default function FarmerShow({ farmer, plots }: Props) {
     return (
         <>
             <Head title={farmer.full_name} />
@@ -95,6 +105,55 @@ export default function FarmerShow({ farmer }: Props) {
                                 Appeler le {farmer.phone}
                             </a>
                         </Button>
+                    )}
+                </section>
+
+                <section className="max-w-2xl space-y-4 rounded-xl border bg-card p-4 md:p-6">
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                        <h2 className="font-heading text-lg font-semibold">
+                            Parcelles
+                        </h2>
+                        <Button asChild className="h-12">
+                            <Link
+                                href={createPlot({
+                                    query: { producteur: farmer.id },
+                                })}
+                            >
+                                <Plus className="size-4" />
+                                Nouvelle parcelle
+                            </Link>
+                        </Button>
+                    </div>
+
+                    {plots.length === 0 ? (
+                        <EmptyState
+                            icon={LandPlot}
+                            title="Aucune parcelle"
+                            description="Enregistrez une parcelle pour pouvoir ouvrir un cycle cultural."
+                        />
+                    ) : (
+                        <ul className="space-y-3">
+                            {plots.map((plot) => (
+                                <li key={plot.id}>
+                                    <Link
+                                        href={showPlot(plot.id)}
+                                        className="flex min-h-14 items-center justify-between gap-3 rounded-lg border p-4"
+                                    >
+                                        <div className="space-y-1">
+                                            <p className="font-medium">
+                                                {plot.name}
+                                            </p>
+                                            <p className="text-sm text-muted-foreground">
+                                                {plot.soil_type_label}
+                                            </p>
+                                        </div>
+                                        <span className="shrink-0 font-medium tabular-nums">
+                                            {plot.area_ha} ha
+                                        </span>
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
                     )}
                 </section>
 

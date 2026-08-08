@@ -7,6 +7,7 @@ use App\Enums\Role;
 use App\Http\Requests\StoreFarmerRequest;
 use App\Http\Requests\UpdateFarmerRequest;
 use App\Models\Farmer;
+use App\Models\Plot;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -54,10 +55,20 @@ class FarmerController extends Controller
     {
         $this->authorize('view', $farmer);
 
-        $farmer->load('user:id,name,phone');
+        $farmer->load(['user:id,name,phone', 'plots']);
 
         return Inertia::render('farmers/show', [
             'farmer' => $this->present($farmer),
+            'plots' => $farmer->plots
+                ->sortBy('name')
+                ->values()
+                ->map(fn (Plot $plot): array => [
+                    'id' => $plot->id,
+                    'name' => $plot->name,
+                    'area_ha' => $plot->area_ha,
+                    'soil_type_label' => $plot->soil_type->label(),
+                ])
+                ->all(),
         ]);
     }
 

@@ -1,0 +1,29 @@
+[
+    {
+        "_source": "VALEUR SIMULÉE — à remplacer par la donnée publiée (Ministère de l'Agriculture du Togo / ITRA) avant toute exploitation",
+        "name": "Maïs",
+        "family": "Poaceae",
+        "cycle_days": 100,
+        "reference_density": 50000,
+        "reference_yield_kg_ha": 2500,
+        "npk_needs": { "n": 90, "p": 45, "k": 45 }
+    },
+    {
+        "_source": "VALEUR SIMULÉE — à remplacer par la donnée publiée (Ministère de l'Agriculture du Togo / ITRA) avant toute exploitation",
+        "name": "Soja",
+        "family": "Fabaceae",
+        "cycle_days": 105,
+        "reference_density": 300000,
+        "reference_yield_kg_ha": 1500,
+        "npk_needs": { "n": 20, "p": 60, "k": 40 }
+    },
+    {
+        "_source": "VALEUR SIMULÉE — à remplacer par la donnée publiée (Ministère de l'Agriculture du Togo / ITRA) avant toute exploitation",
+        "name": "Manioc",
+        "family": "Euphorbiaceae",
+        "cycle_days": 300,
+        "reference_density": 10000,
+        "reference_yield_kg_ha": 15000,
+        "npk_needs": { "n": 60, "p": 30, "k": 120 }
+    }
+]

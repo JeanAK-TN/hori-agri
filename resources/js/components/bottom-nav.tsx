@@ -16,7 +16,10 @@ export function BottomNav() {
         return null;
     }
 
-    const items = navigationFor(auth.user.role);
+    // Au-delà de cinq entrées, les cibles deviennent trop étroites au
+    // pouce : le reste de la navigation reste accessible par le menu
+    // latéral, que l'en-tête ouvre sur téléphone.
+    const items = navigationFor(auth.user.role).slice(0, 5);
 
     if (items.length < 2) {
         return null;

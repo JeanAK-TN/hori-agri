@@ -1,7 +1,19 @@
-import { Building2, House, Sprout, Users } from 'lucide-react';
+import {
+    Building2,
+    CalendarRange,
+    House,
+    LandPlot,
+    Sprout,
+    Users,
+    Wheat,
+} from 'lucide-react';
 import { dashboard } from '@/routes';
+import { index as campaigns } from '@/routes/campaigns';
 import { index as cooperatives } from '@/routes/cooperatives';
+import { index as crops } from '@/routes/crops';
+import { index as cycles } from '@/routes/cycles';
 import { index as farmers } from '@/routes/farmers';
+import { index as plots } from '@/routes/plots';
 import { index as users } from '@/routes/users';
 import type { NavItem, Role } from '@/types';
 
@@ -31,8 +43,33 @@ const navigation: RoleNavItem[] = [
     {
         title: 'Producteurs',
         href: farmers(),
+        icon: Users,
+        roles: ['coop_admin', 'technician'],
+    },
+    {
+        title: 'Parcelles',
+        href: plots(),
+        icon: LandPlot,
+        roles: ['coop_admin', 'technician'],
+    },
+    {
+        title: 'Cycles culturaux',
+        href: cycles(),
         icon: Sprout,
         roles: ['coop_admin', 'technician'],
+        shortTitle: 'Cycles',
+    },
+    {
+        title: 'Campagnes',
+        href: campaigns(),
+        icon: CalendarRange,
+        roles: ['coop_admin', 'technician'],
+    },
+    {
+        title: 'Référentiel',
+        href: crops(),
+        icon: Wheat,
+        roles: ['super_admin'],
     },
     {
         title: 'Comptes',

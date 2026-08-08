@@ -11,3 +11,9 @@ parameters:
         - routes/
 
     level: 7
+
+    # Les propriétés du cadre applicatif sont typées par PHPDoc et non
+    # nativement : Seeder::$command est déclarée « protected $command »
+    # et vaut null hors console, ce que Laravel teste lui-même par
+    # isset(). Traiter ces types comme certains produit de faux positifs.
+    treatPhpDocTypesAsCertain: false

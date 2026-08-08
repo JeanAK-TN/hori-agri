@@ -1,8 +1,12 @@
 <?php
 
 use App\Enums\Role;
+use App\Models\Campaign;
 use App\Models\Cooperative;
+use App\Models\Crop;
+use App\Models\CropCycle;
 use App\Models\Farmer;
+use App\Models\Plot;
 use App\Models\User;
 use Inertia\Testing\AssertableInertia as Assert;
 
@@ -126,6 +130,76 @@ test('updating a producer of another cooperative answers not found', function ()
         ->assertNotFound();
 
     expect($foreign->fresh()->village)->toBe('Village voisin');
+});
+
+test('consulting a plot of another cooperative answers not found', function () {
+    $technician = User::factory()->technician()->create();
+    $foreign = Plot::factory()->create();
+
+    $this->actingAs($technician)
+        ->get(route('plots.show', $foreign))
+        ->assertNotFound();
+});
+
+test('consulting a cycle of another cooperative answers not found', function () {
+    $technician = User::factory()->technician()->create();
+
+    $foreignFarmer = Farmer::factory()->create();
+    $foreignPlot = Plot::factory()->ofFarmer($foreignFarmer)->create();
+    $foreignCampaign = Campaign::factory()
+        ->for($foreignFarmer->cooperative)
+        ->create();
+    $foreignCycle = CropCycle::factory()
+        ->on($foreignPlot, $foreignCampaign, Crop::factory()->create())
+        ->create();
+
+    $this->actingAs($technician)
+        ->get(route('cycles.show', $foreignCycle))
+        ->assertNotFound();
+});
+
+test('closing a cycle of another cooperative answers not found', function () {
+    $technician = User::factory()->technician()->create();
+
+    $foreignFarmer = Farmer::factory()->create();
+    $foreignPlot = Plot::factory()->ofFarmer($foreignFarmer)->create();
+    $foreignCampaign = Campaign::factory()
+        ->for($foreignFarmer->cooperative)
+        ->create();
+    $foreignCycle = CropCycle::factory()
+        ->on($foreignPlot, $foreignCampaign, Crop::factory()->create())
+        ->create();
+
+    $this->actingAs($technician)
+        ->post(route('cycles.close', $foreignCycle))
+        ->assertNotFound();
+});
+
+test('the lists only carry the rows of the current cooperative', function () {
+    $mine = Cooperative::factory()->create();
+    $technician = User::factory()->technician()->for($mine)->create();
+
+    $myFarmer = Farmer::factory()->for($mine)->create();
+    Plot::factory()->ofFarmer($myFarmer)->create(['name' => 'Ma parcelle']);
+    Campaign::factory()->for($mine)->create(['label' => 'Ma campagne']);
+
+    $foreignFarmer = Farmer::factory()->create();
+    Plot::factory()->ofFarmer($foreignFarmer)->create(['name' => 'Parcelle voisine']);
+    Campaign::factory()->for($foreignFarmer->cooperative)->create(['label' => 'Campagne voisine']);
+
+    $this->actingAs($technician);
+
+    $this->get(route('plots.index'))
+        ->assertInertia(fn (Assert $page) => $page
+            ->has('plots.data', 1)
+            ->where('plots.data.0.name', 'Ma parcelle'),
+        );
+
+    $this->get(route('campaigns.index'))
+        ->assertInertia(fn (Assert $page) => $page
+            ->has('campaigns.data', 1)
+            ->where('campaigns.data.0.label', 'Ma campagne'),
+        );
 });
 
 test('a cooperative administrator cannot reach the cooperative registry', function () {

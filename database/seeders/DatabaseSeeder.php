@@ -16,6 +16,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Référentiel commun à toutes les coopératives (SPEC section 10).
+        $this->call([
+            CropSeeder::class,
+            VarietySeeder::class,
+        ]);
+
         User::factory()->superAdmin()->create([
             'name' => 'Super administrateur (fixture)',
             'phone' => '00000000',
