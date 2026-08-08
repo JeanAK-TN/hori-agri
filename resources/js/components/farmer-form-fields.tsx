@@ -109,7 +109,7 @@ export default function FarmerFormFields({
                         name="gender"
                         defaultValue={farmer?.gender ?? undefined}
                     >
-                        <SelectTrigger id="gender" className="h-12 w-full">
+                        <SelectTrigger id="gender" className="w-full">
                             <SelectValue placeholder="Non renseigné" />
                         </SelectTrigger>
                         <SelectContent>
@@ -168,7 +168,7 @@ export default function FarmerFormFields({
                             : String(farmer.user_id)
                     }
                 >
-                    <SelectTrigger id="user_id" className="h-12 w-full">
+                    <SelectTrigger id="user_id" className="w-full">
                         <SelectValue />
                     </SelectTrigger>
                     <SelectContent>

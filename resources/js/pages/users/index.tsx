@@ -124,7 +124,7 @@ function AccountFields({
                     name="role"
                     defaultValue={account?.role ?? assignableRoles[0]?.value}
                 >
-                    <SelectTrigger id="role" className="h-12 w-full">
+                    <SelectTrigger id="role" className="w-full">
                         <SelectValue placeholder="Choisir un rôle" />
                     </SelectTrigger>
                     <SelectContent>
@@ -142,10 +142,7 @@ function AccountFields({
                 <div className="grid gap-2">
                     <Label htmlFor="cooperative_id">Coopérative</Label>
                     <Select name="cooperative_id">
-                        <SelectTrigger
-                            id="cooperative_id"
-                            className="h-12 w-full"
-                        >
+                        <SelectTrigger id="cooperative_id" className="w-full">
                             <SelectValue placeholder="Choisir une coopérative" />
                         </SelectTrigger>
                         <SelectContent>

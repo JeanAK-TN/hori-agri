@@ -27,6 +27,17 @@ pest()->extend(TestCase::class)
 pest()->extend(TestCase::class)->in('Unit');
 
 /*
+| Browser tests drive a real browser through Playwright. They cover what
+| a server-side assertion cannot: the responsive rules of SPEC section
+| 11.4, the 48 px touch targets of rule 5, and the absence of JavaScript
+| errors on each screen.
+*/
+
+pest()->extend(TestCase::class)
+    ->use(RefreshDatabase::class)
+    ->in('Browser');
+
+/*
 |--------------------------------------------------------------------------
 | Expectations
 |--------------------------------------------------------------------------

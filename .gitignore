@@ -27,3 +27,7 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+
+# Captures d’écran des tests navigateur en échec
+/tests/Browser/Screenshots
+/Tests/Browser/Screenshots

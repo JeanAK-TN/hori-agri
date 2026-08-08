@@ -141,10 +141,15 @@ return [
     */
 
     'attributes' => [
+        'birth_year' => 'année de naissance',
         'contact' => 'contact',
         'cooperative_id' => 'coopérative',
         'current_password' => 'mot de passe actuel',
         'email' => 'adresse e-mail',
+        'experience_years' => 'nombre d\'années d\'expérience',
+        'first_name' => 'prénom',
+        'gender' => 'sexe',
+        'last_name' => 'nom',
         'name' => 'nom',
         'password' => 'mot de passe',
         'password_confirmation' => 'confirmation du mot de passe',
@@ -152,6 +157,8 @@ return [
         'prefecture' => 'préfecture',
         'region' => 'région',
         'role' => 'rôle',
+        'user_id' => 'compte de consultation',
+        'village' => 'village',
     ],
 
 ];

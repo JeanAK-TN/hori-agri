@@ -11,6 +11,13 @@
         <testsuite name="Feature">
             <directory>tests/Feature</directory>
         </testsuite>
+        <!-- Tests navigateur : nécessitent Playwright
+             (npm install playwright, puis npx playwright install chromium)
+             et un front à jour (npm run build). Pour les écarter, lancer
+             Pest en ciblant les suites Unit et Feature. -->
+        <testsuite name="Browser">
+            <directory>tests/Browser</directory>
+        </testsuite>
     </testsuites>
     <source>
         <include>
