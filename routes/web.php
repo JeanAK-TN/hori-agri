@@ -5,6 +5,9 @@ use App\Http\Controllers\CooperativeController;
 use App\Http\Controllers\CropController;
 use App\Http\Controllers\CropCycleController;
 use App\Http\Controllers\FarmerController;
+use App\Http\Controllers\HarvestController;
+use App\Http\Controllers\ImportController;
+use App\Http\Controllers\OperationController;
 use App\Http\Controllers\PlotController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VarietyController;
@@ -65,6 +68,28 @@ Route::middleware(['auth', EnsureCooperativeActive::class])->group(function () {
             ->name('cycles.close');
         Route::post('cycles/{cycle}/abandon', [CropCycleController::class, 'abandon'])
             ->name('cycles.abandon');
+
+        // Dépôt d'un fichier et rapport d'import (SPEC section 11).
+        Route::get('imports', [ImportController::class, 'index'])->name('imports.index');
+        Route::post('imports', [ImportController::class, 'store'])->name('imports.store');
+    });
+
+    // L'itinéraire technique est saisi par le technicien (SPEC section 5).
+    // Les policies refusent aussi la saisie sur un cycle terminé.
+    Route::middleware('role:technician')->group(function () {
+        Route::post('cycles/{cycle}/operations', [OperationController::class, 'store'])
+            ->name('operations.store');
+        Route::patch('cycles/{cycle}/operations/{operation}', [OperationController::class, 'update'])
+            ->name('operations.update');
+        Route::delete('cycles/{cycle}/operations/{operation}', [OperationController::class, 'destroy'])
+            ->name('operations.destroy');
+
+        Route::post('cycles/{cycle}/harvests', [HarvestController::class, 'store'])
+            ->name('harvests.store');
+        Route::patch('cycles/{cycle}/harvests/{harvest}', [HarvestController::class, 'update'])
+            ->name('harvests.update');
+        Route::delete('cycles/{cycle}/harvests/{harvest}', [HarvestController::class, 'destroy'])
+            ->name('harvests.destroy');
     });
 });
 

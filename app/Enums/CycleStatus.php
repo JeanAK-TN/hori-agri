@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum CycleStatus: string
+enum CycleStatus: string implements HasLabel
 {
     case Planned = 'planned';
     case InProgress = 'in_progress';

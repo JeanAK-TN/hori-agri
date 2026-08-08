@@ -1,9 +1,14 @@
 import { Form, Head, Link } from '@inertiajs/react';
-import { ArrowLeft, ClipboardList } from 'lucide-react';
+import { ArrowLeft, ClipboardList, Wheat } from 'lucide-react';
 import CropCycleController from '@/actions/App/Http/Controllers/CropCycleController';
+import EmptyState from '@/components/empty-state';
+import HarvestForm from '@/components/harvest-form';
+import OperationForm from '@/components/operation-form';
+import type { Option, OperationTypeOption } from '@/components/operation-form';
 import PageHeader from '@/components/page-header';
 import StatusBadge from '@/components/status-badge';
 import type { CycleStatusValue } from '@/components/status-badge';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { index } from '@/routes/cycles';
@@ -31,8 +36,37 @@ type Cycle = {
     farmer: { id: number; full_name: string; village: string };
 };
 
+type OperationRow = {
+    id: number;
+    type: string;
+    type_label: string;
+    input_type_label: string | null;
+    date_label: string;
+    product: string | null;
+    quantity: string | null;
+    unit_label: string | null;
+    cost: string | null;
+    notes: string | null;
+};
+
+type HarvestRow = {
+    id: number;
+    date_label: string;
+    quantity_kg: string;
+    unit_price: string | null;
+    quality_label: string | null;
+    post_harvest_losses_kg: string | null;
+};
+
 type Props = {
     cycle: Cycle;
+    operations: OperationRow[];
+    harvests: HarvestRow[];
+    operationTypes: OperationTypeOption[];
+    inputTypes: Option[];
+    units: Option[];
+    qualities: Option[];
+    canRecord: boolean;
 };
 
 function Detail({ label, value }: { label: string; value: string }) {
@@ -44,7 +78,16 @@ function Detail({ label, value }: { label: string; value: string }) {
     );
 }
 
-export default function CycleShow({ cycle }: Props) {
+export default function CycleShow({
+    cycle,
+    operations,
+    harvests,
+    operationTypes,
+    inputTypes,
+    units,
+    qualities,
+    canRecord,
+}: Props) {
     return (
         <>
             <Head title={`${cycle.crop} · ${cycle.plot.name}`} />
@@ -115,15 +158,136 @@ export default function CycleShow({ cycle }: Props) {
                     </div>
                 </section>
 
-                <section className="max-w-2xl space-y-3 rounded-xl border border-dashed bg-card p-4 md:p-6">
+                <section className="max-w-2xl space-y-4 rounded-xl border bg-card p-4 md:p-6">
                     <h2 className="flex items-center gap-2 font-heading text-lg font-semibold">
                         <ClipboardList className="size-5" />
                         Itinéraire technique
                     </h2>
-                    <p className="text-sm text-muted-foreground">
-                        La saisie des opérations et des récoltes arrive avec le
-                        module suivant.
-                    </p>
+
+                    {/* Les opérations déjà saisies s'affichent en ordre
+                        chronologique au-dessus du formulaire (section 11.1). */}
+                    {operations.length === 0 ? (
+                        <p className="text-sm text-muted-foreground">
+                            Aucune opération enregistrée pour l'instant.
+                        </p>
+                    ) : (
+                        <ol className="space-y-3" data-test="operation-list">
+                            {operations.map((operation) => (
+                                <li
+                                    key={operation.id}
+                                    className="space-y-2 rounded-lg border p-4"
+                                >
+                                    <div className="flex flex-wrap items-start justify-between gap-2">
+                                        <p className="font-medium">
+                                            {operation.type_label}
+                                        </p>
+                                        <span className="text-sm text-muted-foreground tabular-nums">
+                                            {operation.date_label}
+                                        </span>
+                                    </div>
+
+                                    {operation.input_type_label && (
+                                        <div className="flex flex-wrap items-center gap-2">
+                                            <Badge variant="secondary">
+                                                {operation.input_type_label}
+                                            </Badge>
+                                            {operation.product && (
+                                                <span className="text-sm text-muted-foreground">
+                                                    {operation.product}
+                                                </span>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {(operation.quantity || operation.cost) && (
+                                        <p className="text-sm text-muted-foreground tabular-nums">
+                                            {operation.quantity &&
+                                                `${operation.quantity} ${operation.unit_label ?? ''}`}
+                                            {operation.quantity &&
+                                                operation.cost &&
+                                                ' · '}
+                                            {operation.cost &&
+                                                `${operation.cost} FCFA`}
+                                        </p>
+                                    )}
+
+                                    {operation.notes && (
+                                        <p className="text-sm text-muted-foreground">
+                                            {operation.notes}
+                                        </p>
+                                    )}
+                                </li>
+                            ))}
+                        </ol>
+                    )}
+
+                    {canRecord && (
+                        <div className="space-y-4 border-t pt-4">
+                            <h3 className="font-medium">
+                                Enregistrer une opération
+                            </h3>
+                            <OperationForm
+                                cycleId={cycle.id}
+                                operationTypes={operationTypes}
+                                inputTypes={inputTypes}
+                                units={units}
+                            />
+                        </div>
+                    )}
+                </section>
+
+                <section className="max-w-2xl space-y-4 rounded-xl border bg-card p-4 md:p-6">
+                    <h2 className="flex items-center gap-2 font-heading text-lg font-semibold">
+                        <Wheat className="size-5" />
+                        Récoltes
+                    </h2>
+
+                    {harvests.length === 0 ? (
+                        <EmptyState
+                            icon={Wheat}
+                            title="Aucune récolte"
+                            description="Les indicateurs du cycle se calculent à partir de la première récolte."
+                        />
+                    ) : (
+                        <ol className="space-y-3" data-test="harvest-list">
+                            {harvests.map((harvest) => (
+                                <li
+                                    key={harvest.id}
+                                    className="space-y-1 rounded-lg border p-4"
+                                >
+                                    <div className="flex flex-wrap items-start justify-between gap-2">
+                                        <p className="font-medium tabular-nums">
+                                            {harvest.quantity_kg} kg
+                                        </p>
+                                        <span className="text-sm text-muted-foreground tabular-nums">
+                                            {harvest.date_label}
+                                        </span>
+                                    </div>
+                                    <p className="text-sm text-muted-foreground tabular-nums">
+                                        {harvest.unit_price
+                                            ? `${harvest.unit_price} FCFA/kg`
+                                            : 'Prix non renseigné'}
+                                        {harvest.quality_label &&
+                                            ` · ${harvest.quality_label}`}
+                                        {harvest.post_harvest_losses_kg &&
+                                            ` · ${harvest.post_harvest_losses_kg} kg de pertes`}
+                                    </p>
+                                </li>
+                            ))}
+                        </ol>
+                    )}
+
+                    {canRecord && (
+                        <div className="space-y-4 border-t pt-4">
+                            <h3 className="font-medium">
+                                Enregistrer une récolte
+                            </h3>
+                            <HarvestForm
+                                cycleId={cycle.id}
+                                qualities={qualities}
+                            />
+                        </div>
+                    )}
                 </section>
 
                 {cycle.is_open && (

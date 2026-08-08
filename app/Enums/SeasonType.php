@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum SeasonType: string
+enum SeasonType: string implements HasLabel
 {
     case GrandeSaison = 'grande_saison';
     case PetiteSaison = 'petite_saison';

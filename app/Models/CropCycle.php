@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use LogicException;
 
@@ -93,6 +94,22 @@ class CropCycle extends Model
     public function campaign(): BelongsTo
     {
         return $this->belongsTo(Campaign::class);
+    }
+
+    /**
+     * @return HasMany<Operation, $this>
+     */
+    public function operations(): HasMany
+    {
+        return $this->hasMany(Operation::class);
+    }
+
+    /**
+     * @return HasMany<Harvest, $this>
+     */
+    public function harvests(): HasMany
+    {
+        return $this->hasMany(Harvest::class);
     }
 
     /*

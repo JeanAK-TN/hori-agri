@@ -2,10 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\InputType;
+use App\Enums\OperationType;
+use App\Enums\Quality;
+use App\Enums\QuantityUnit;
+use App\Enums\Role;
 use App\Http\Requests\StoreCropCycleRequest;
 use App\Models\Campaign;
 use App\Models\Crop;
 use App\Models\CropCycle;
+use App\Models\Harvest;
+use App\Models\Operation;
 use App\Models\Plot;
 use App\Models\Variety;
 use Illuminate\Http\RedirectResponse;
@@ -62,7 +69,7 @@ class CropCycleController extends Controller
      * Show a cycle. The technical itinerary — operations and harvests —
      * is filled in by module 4.
      */
-    public function show(CropCycle $cycle): Response
+    public function show(Request $request, CropCycle $cycle): Response
     {
         $this->authorize('view', $cycle);
 
@@ -72,9 +79,48 @@ class CropCycleController extends Controller
             'campaign:id,label,start_date,end_date',
             'plot:id,name,area_ha,soil_type,farmer_id',
             'plot.farmer:id,first_name,last_name,village',
+            'operations',
+            'harvests',
         ]);
 
         return Inertia::render('cycles/show', [
+            // L'itinéraire déjà saisi s'affiche en ordre chronologique
+            // au-dessus du formulaire (SPEC section 11.1).
+            'operations' => $cycle->operations
+                ->sortBy(['date', 'id'])
+                ->values()
+                ->map(fn (Operation $operation): array => [
+                    'id' => $operation->id,
+                    'type' => $operation->type->value,
+                    'type_label' => $operation->type->label(),
+                    'input_type_label' => $operation->input_type?->label(),
+                    'date' => $operation->date->toDateString(),
+                    'date_label' => $operation->date->format('d/m/Y'),
+                    'product' => $operation->product,
+                    'quantity' => $operation->quantity,
+                    'unit_label' => $operation->unit?->label(),
+                    'cost' => $operation->cost,
+                    'notes' => $operation->notes,
+                ])
+                ->all(),
+            'harvests' => $cycle->harvests
+                ->sortBy(['date', 'id'])
+                ->values()
+                ->map(fn (Harvest $harvest): array => [
+                    'id' => $harvest->id,
+                    'date' => $harvest->date->toDateString(),
+                    'date_label' => $harvest->date->format('d/m/Y'),
+                    'quantity_kg' => $harvest->quantity_kg,
+                    'unit_price' => $harvest->unit_price,
+                    'quality_label' => $harvest->quality?->label(),
+                    'post_harvest_losses_kg' => $harvest->post_harvest_losses_kg,
+                ])
+                ->all(),
+            'operationTypes' => OperationType::options(),
+            'inputTypes' => InputType::options(),
+            'units' => QuantityUnit::options(),
+            'qualities' => Quality::options(),
+            'canRecord' => $request->user()->role === Role::Technician && $cycle->status->isOpen(),
             'cycle' => [
                 'id' => $cycle->id,
                 'crop' => $cycle->crop->name,

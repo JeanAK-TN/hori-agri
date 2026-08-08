@@ -1,6 +1,7 @@
 import {
     Building2,
     CalendarRange,
+    FileUp,
     House,
     LandPlot,
     Sprout,
@@ -13,6 +14,7 @@ import { index as cooperatives } from '@/routes/cooperatives';
 import { index as crops } from '@/routes/crops';
 import { index as cycles } from '@/routes/cycles';
 import { index as farmers } from '@/routes/farmers';
+import { index as imports } from '@/routes/imports';
 import { index as plots } from '@/routes/plots';
 import { index as users } from '@/routes/users';
 import type { NavItem, Role } from '@/types';
@@ -64,6 +66,13 @@ const navigation: RoleNavItem[] = [
         href: campaigns(),
         icon: CalendarRange,
         roles: ['coop_admin', 'technician'],
+    },
+    {
+        title: 'Import de données',
+        href: imports(),
+        icon: FileUp,
+        roles: ['coop_admin', 'technician'],
+        shortTitle: 'Import',
     },
     {
         title: 'Référentiel',

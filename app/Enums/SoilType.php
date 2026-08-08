@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum SoilType: string
+enum SoilType: string implements HasLabel
 {
     case Ferrugineux = 'ferrugineux';
     case Sableux = 'sableux';

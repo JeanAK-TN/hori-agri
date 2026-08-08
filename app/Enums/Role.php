@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum Role: string
+enum Role: string implements HasLabel
 {
     case SuperAdmin = 'super_admin';
     case CoopAdmin = 'coop_admin';
