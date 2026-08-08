@@ -1,6 +1,13 @@
 import { Form, Head, Link } from '@inertiajs/react';
-import { ArrowLeft, ClipboardList, Wheat } from 'lucide-react';
+import {
+    ArrowLeft,
+    ChartNoAxesColumn,
+    ClipboardList,
+    Wheat,
+} from 'lucide-react';
 import CropCycleController from '@/actions/App/Http/Controllers/CropCycleController';
+import CycleIndicatorsPanel from '@/components/cycle-indicators';
+import type { CycleIndicators } from '@/components/cycle-indicators';
 import EmptyState from '@/components/empty-state';
 import HarvestForm from '@/components/harvest-form';
 import OperationForm from '@/components/operation-form';
@@ -60,6 +67,7 @@ type HarvestRow = {
 
 type Props = {
     cycle: Cycle;
+    indicators: CycleIndicators | null;
     operations: OperationRow[];
     harvests: HarvestRow[];
     operationTypes: OperationTypeOption[];
@@ -80,6 +88,7 @@ function Detail({ label, value }: { label: string; value: string }) {
 
 export default function CycleShow({
     cycle,
+    indicators,
     operations,
     harvests,
     operationTypes,
@@ -157,6 +166,16 @@ export default function CycleShow({
                         </Button>
                     </div>
                 </section>
+
+                {indicators && (
+                    <section className="max-w-2xl space-y-4 rounded-xl border bg-card p-4 md:p-6">
+                        <h2 className="flex items-center gap-2 font-heading text-lg font-semibold">
+                            <ChartNoAxesColumn className="size-5" />
+                            Indicateurs
+                        </h2>
+                        <CycleIndicatorsPanel indicators={indicators} />
+                    </section>
+                )}
 
                 <section className="max-w-2xl space-y-4 rounded-xl border bg-card p-4 md:p-6">
                     <h2 className="flex items-center gap-2 font-heading text-lg font-semibold">

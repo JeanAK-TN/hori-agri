@@ -15,6 +15,7 @@ use App\Models\Harvest;
 use App\Models\Operation;
 use App\Models\Plot;
 use App\Models\Variety;
+use App\Services\Indicators\IndicatorService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -81,6 +82,7 @@ class CropCycleController extends Controller
             'plot.farmer:id,first_name,last_name,village',
             'operations',
             'harvests',
+            'indicator',
         ]);
 
         return Inertia::render('cycles/show', [
@@ -116,6 +118,22 @@ class CropCycleController extends Controller
                     'post_harvest_losses_kg' => $harvest->post_harvest_losses_kg,
                 ])
                 ->all(),
+            // Aucune de ces valeurs n'est saisie : elles sont recalculées
+            // à chaque écriture sur le cycle (SPEC section 9.1).
+            'indicators' => $cycle->indicator === null ? null : [
+                'yield_kg_ha' => $cycle->indicator->yield_kg_ha,
+                'production_cost_ha' => $cycle->indicator->production_cost_ha,
+                'gross_margin_ha' => $cycle->indicator->gross_margin_ha,
+                'input_cost_share' => $cycle->indicator->input_cost_share,
+                'zone_median_yield_kg_ha' => $cycle->indicator->zone_median_yield_kg_ha,
+                'zone_median_cost_ha' => $cycle->indicator->zone_median_cost_ha,
+                'zone_plot_count' => $cycle->indicator->zone_plot_count,
+                'yield_vs_zone_median' => $cycle->indicator->yield_vs_zone_median,
+                'cost_vs_zone_median' => $cycle->indicator->cost_vs_zone_median,
+                'has_comparable_zone' => $cycle->indicator->hasComparableZone(),
+                'minimum_zone_size' => IndicatorService::MINIMUM_ZONE_SIZE,
+                'computed_at_label' => $cycle->indicator->computed_at->format('d/m/Y à H:i'),
+            ],
             'operationTypes' => OperationType::options(),
             'inputTypes' => InputType::options(),
             'units' => QuantityUnit::options(),
