@@ -6,12 +6,12 @@ use App\Http\Requests\StoreHarvestRequest;
 use App\Http\Requests\UpdateHarvestRequest;
 use App\Models\CropCycle;
 use App\Models\Harvest;
-use App\Services\Indicators\IndicatorService;
+use App\Services\Rules\RecommendationService;
 use Illuminate\Http\RedirectResponse;
 
 class HarvestController extends Controller
 {
-    public function __construct(private readonly IndicatorService $indicators) {}
+    public function __construct(private readonly RecommendationService $engine) {}
 
     /**
      * Record a harvest. Several harvests are possible for one cycle
@@ -23,7 +23,7 @@ class HarvestController extends Controller
 
         $cycle->markInProgress();
 
-        $this->indicators->computeFor($cycle->fresh());
+        $this->engine->runFor($cycle->fresh());
 
         return to_route('cycles.show', $cycle);
     }
@@ -35,7 +35,7 @@ class HarvestController extends Controller
     {
         $harvest->update($request->validated());
 
-        $this->indicators->computeFor($cycle->fresh());
+        $this->engine->runFor($cycle->fresh());
 
         return to_route('cycles.show', $cycle);
     }
@@ -50,7 +50,7 @@ class HarvestController extends Controller
 
         $harvest->delete();
 
-        $this->indicators->computeFor($cycle->fresh());
+        $this->engine->runFor($cycle->fresh());
 
         return to_route('cycles.show', $cycle);
     }

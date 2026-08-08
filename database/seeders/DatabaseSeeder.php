@@ -16,10 +16,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Référentiel commun à toutes les coopératives (SPEC section 10).
+        // Le référentiel commun et la base de règles, chargés depuis les
+        // fichiers de référence (SPEC section 10).
         $this->call([
             CropSeeder::class,
             VarietySeeder::class,
+            RuleSeeder::class,
         ]);
 
         User::factory()->superAdmin()->create([

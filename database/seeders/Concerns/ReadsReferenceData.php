@@ -90,9 +90,9 @@ trait ReadsReferenceData
     {
         return count(array_filter(
             $entries,
-            static fn (array $entry): bool => str_starts_with(
+            static fn (array $entry): bool => str_contains(
                 (string) ($entry['_source'] ?? ''),
-                'VALEUR SIMULÉE',
+                'SIMULÉ',
             ),
         ));
     }

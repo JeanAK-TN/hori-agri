@@ -1,4 +1,5 @@
 import {
+    BookOpen,
     Building2,
     CalendarRange,
     FileUp,
@@ -16,6 +17,7 @@ import { index as cycles } from '@/routes/cycles';
 import { index as farmers } from '@/routes/farmers';
 import { index as imports } from '@/routes/imports';
 import { index as plots } from '@/routes/plots';
+import { index as rules } from '@/routes/rules';
 import { index as users } from '@/routes/users';
 import type { NavItem, Role } from '@/types';
 
@@ -79,6 +81,13 @@ const navigation: RoleNavItem[] = [
         href: crops(),
         icon: Wheat,
         roles: ['super_admin'],
+    },
+    {
+        title: 'Base de règles',
+        href: rules(),
+        icon: BookOpen,
+        roles: ['super_admin', 'coop_admin'],
+        shortTitle: 'Règles',
     },
     {
         title: 'Comptes',

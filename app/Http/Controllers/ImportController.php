@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreImportRequest;
 use App\Models\CropCycle;
 use App\Services\Import\ImportService;
-use App\Services\Indicators\IndicatorService;
+use App\Services\Rules\RecommendationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -32,14 +32,14 @@ class ImportController extends Controller
     public function store(
         StoreImportRequest $request,
         ImportService $importer,
-        IndicatorService $indicators,
+        RecommendationService $engine,
     ): RedirectResponse {
         $report = $importer->import($request->file('fichier')->getRealPath());
 
         // Les indicateurs sont recalculés une seule fois par cycle touché,
         // et non à chaque ligne du fichier.
         foreach (CropCycle::whereKey($report['touched_cycles'])->get() as $cycle) {
-            $indicators->computeFor($cycle);
+            $engine->runFor($cycle);
         }
 
         return to_route('imports.index')->with('rapport', $report);

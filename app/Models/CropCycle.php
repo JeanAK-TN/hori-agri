@@ -121,6 +121,14 @@ class CropCycle extends Model
         return $this->hasOne(Indicator::class);
     }
 
+    /**
+     * @return HasMany<Recommendation, $this>
+     */
+    public function recommendations(): HasMany
+    {
+        return $this->hasMany(Recommendation::class);
+    }
+
     /*
     |--------------------------------------------------------------------
     | Diagramme d'états (SPEC section 13, module 3)

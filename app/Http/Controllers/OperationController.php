@@ -6,12 +6,12 @@ use App\Http\Requests\StoreOperationRequest;
 use App\Http\Requests\UpdateOperationRequest;
 use App\Models\CropCycle;
 use App\Models\Operation;
-use App\Services\Indicators\IndicatorService;
+use App\Services\Rules\RecommendationService;
 use Illuminate\Http\RedirectResponse;
 
 class OperationController extends Controller
 {
-    public function __construct(private readonly IndicatorService $indicators) {}
+    public function __construct(private readonly RecommendationService $engine) {}
 
     /**
      * Record an operation of the technical itinerary.
@@ -26,7 +26,7 @@ class OperationController extends Controller
 
         $cycle->markInProgress();
 
-        $this->indicators->computeFor($cycle->fresh());
+        $this->engine->runFor($cycle->fresh());
 
         return to_route('cycles.show', $cycle);
     }
@@ -38,7 +38,7 @@ class OperationController extends Controller
     {
         $operation->update($request->validated());
 
-        $this->indicators->computeFor($cycle->fresh());
+        $this->engine->runFor($cycle->fresh());
 
         return to_route('cycles.show', $cycle);
     }
@@ -52,7 +52,7 @@ class OperationController extends Controller
 
         $operation->delete();
 
-        $this->indicators->computeFor($cycle->fresh());
+        $this->engine->runFor($cycle->fresh());
 
         return to_route('cycles.show', $cycle);
     }

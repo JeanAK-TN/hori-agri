@@ -9,6 +9,7 @@ use App\Http\Controllers\HarvestController;
 use App\Http\Controllers\ImportController;
 use App\Http\Controllers\OperationController;
 use App\Http\Controllers\PlotController;
+use App\Http\Controllers\RuleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VarietyController;
 use App\Http\Middleware\EnsureCooperativeActive;
@@ -41,6 +42,10 @@ Route::middleware(['auth', EnsureCooperativeActive::class])->group(function () {
     });
 
     Route::middleware('role:super_admin,coop_admin')->group(function () {
+        // Base de règles, avec l'origine de chaque seuil (SPEC section 11).
+        Route::get('rules', [RuleController::class, 'index'])->name('rules.index');
+        Route::patch('rules/{rule}', [RuleController::class, 'update'])->name('rules.update');
+
         Route::get('users', [UserController::class, 'index'])->name('users.index');
         Route::post('users', [UserController::class, 'store'])->name('users.store');
         Route::patch('users/{user}', [UserController::class, 'update'])->name('users.update');
