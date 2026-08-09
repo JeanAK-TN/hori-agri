@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 
 /**
@@ -69,5 +70,34 @@ class Recommendation extends Model
     public function rule(): BelongsTo
     {
         return $this->belongsTo(Rule::class);
+    }
+
+    /**
+     * @return HasOne<Feedback, $this>
+     */
+    public function feedback(): HasOne
+    {
+        return $this->hasOne(Feedback::class);
+    }
+
+    /**
+     * The producer this recommendation concerns, reached through the
+     * plot. This chain is what the policy checks before letting anyone
+     * answer (SPEC section 11.2).
+     */
+    public function farmer(): ?Farmer
+    {
+        return $this->cropCycle?->plot?->farmer;
+    }
+
+    /**
+     * Reading a new recommendation marks it read. An answer already
+     * given is never walked back by a simple visit.
+     */
+    public function markRead(): void
+    {
+        if ($this->status === RecoStatus::New) {
+            $this->update(['status' => RecoStatus::Read]);
+        }
     }
 }

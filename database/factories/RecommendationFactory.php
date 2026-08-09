@@ -38,4 +38,26 @@ class RecommendationFactory extends Factory
     {
         return $this->state(fn (array $attributes) => ['status' => $status]);
     }
+
+    /**
+     * Attach the recommendation to a cycle, and to the cooperative that
+     * cycle belongs to.
+     */
+    public function forCycle(CropCycle $cycle): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'cooperative_id' => $cycle->cooperative_id,
+            'crop_cycle_id' => $cycle->id,
+        ]);
+    }
+
+    public function fromRule(Rule $rule): static
+    {
+        return $this->state(fn (array $attributes) => ['rule_id' => $rule->id]);
+    }
+
+    public function saying(string $message): static
+    {
+        return $this->state(fn (array $attributes) => ['generated_message' => $message]);
+    }
 }

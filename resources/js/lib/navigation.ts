@@ -5,6 +5,7 @@ import {
     FileUp,
     House,
     LandPlot,
+    Lightbulb,
     Sprout,
     Users,
     Wheat,
@@ -17,6 +18,7 @@ import { index as cycles } from '@/routes/cycles';
 import { index as farmers } from '@/routes/farmers';
 import { index as imports } from '@/routes/imports';
 import { index as plots } from '@/routes/plots';
+import { index as recommendations } from '@/routes/recommendations';
 import { index as rules } from '@/routes/rules';
 import { index as users } from '@/routes/users';
 import type { NavItem, Role } from '@/types';
@@ -43,6 +45,15 @@ const navigation: RoleNavItem[] = [
         icon: Building2,
         roles: ['super_admin'],
         shortTitle: 'Coop.',
+    },
+    // Placée haut à dessein : c'est la raison d'être de l'application,
+    // et au delà de cinq entrées la barre du téléphone tronque.
+    {
+        title: 'Recommandations',
+        href: recommendations(),
+        icon: Lightbulb,
+        roles: ['coop_admin', 'technician', 'farmer'],
+        shortTitle: 'Conseils',
     },
     {
         title: 'Producteurs',

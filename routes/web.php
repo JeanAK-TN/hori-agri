@@ -5,10 +5,12 @@ use App\Http\Controllers\CooperativeController;
 use App\Http\Controllers\CropController;
 use App\Http\Controllers\CropCycleController;
 use App\Http\Controllers\FarmerController;
+use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\HarvestController;
 use App\Http\Controllers\ImportController;
 use App\Http\Controllers\OperationController;
 use App\Http\Controllers\PlotController;
+use App\Http\Controllers\RecommendationController;
 use App\Http\Controllers\RuleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VarietyController;
@@ -77,6 +79,20 @@ Route::middleware(['auth', EnsureCooperativeActive::class])->group(function () {
         // Dépôt d'un fichier et rapport d'import (SPEC section 11).
         Route::get('imports', [ImportController::class, 'index'])->name('imports.index');
         Route::post('imports', [ImportController::class, 'store'])->name('imports.store');
+    });
+
+    // La restitution : le technicien et l'administrateur lisent, seul le
+    // producteur concerné répond (SPEC section 11.2).
+    Route::middleware('role:coop_admin,technician,farmer')->group(function () {
+        Route::get('recommandations', [RecommendationController::class, 'index'])
+            ->name('recommendations.index');
+    });
+
+    Route::middleware('role:farmer')->group(function () {
+        Route::patch('recommandations/{recommendation}', [RecommendationController::class, 'update'])
+            ->name('recommendations.update');
+        Route::post('recommandations/{recommendation}/retour', [FeedbackController::class, 'store'])
+            ->name('feedbacks.store');
     });
 
     // L'itinéraire technique est saisi par le technicien (SPEC section 5).
