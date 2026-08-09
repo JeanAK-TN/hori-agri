@@ -9,10 +9,10 @@ use App\Models\User;
 /**
  * Qui lit une recommandation, et qui y répond (SPEC sections 5 et 11.2).
  *
- * Le technicien et l'administrateur suivent les producteurs de leur
- * coopérative : ils lisent. Seul l'agriculteur propriétaire de la
- * parcelle concernée change l'état d'une recommandation et enregistre un
- * retour.
+ * Le technicien suit les producteurs de sa coopérative : il lit. Seul
+ * l'agriculteur propriétaire de la parcelle concernée change l'état
+ * d'une recommandation et enregistre un retour. L'administrateur de
+ * coopérative lit les mêmes chiffres agrégés au tableau de bord.
  *
  * L'isolation entre coopératives est déjà tenue par le scope global : une
  * recommandation d'une autre coopérative n'est jamais liée à la route, la
@@ -23,7 +23,7 @@ class RecommendationPolicy
 {
     public function viewAny(User $user): bool
     {
-        return in_array($user->role, [Role::CoopAdmin, Role::Technician, Role::Farmer], true);
+        return in_array($user->role, [Role::Technician, Role::Farmer], true);
     }
 
     public function view(User $user, Recommendation $recommendation): bool
@@ -32,7 +32,7 @@ class RecommendationPolicy
             return $this->owns($user, $recommendation);
         }
 
-        return in_array($user->role, [Role::CoopAdmin, Role::Technician], true);
+        return $user->role === Role::Technician;
     }
 
     /**

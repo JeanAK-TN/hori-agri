@@ -4,6 +4,7 @@ use App\Http\Controllers\CampaignController;
 use App\Http\Controllers\CooperativeController;
 use App\Http\Controllers\CropController;
 use App\Http\Controllers\CropCycleController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FarmerController;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\HarvestController;
@@ -54,6 +55,13 @@ Route::middleware(['auth', EnsureCooperativeActive::class])->group(function () {
     });
 
     Route::middleware('role:coop_admin')->group(function () {
+        // Tableau de bord de la coopérative et sa synthèse de campagne
+        // (SPEC section 12).
+        Route::get('tableau-de-bord', [DashboardController::class, 'index'])
+            ->name('cooperative-dashboard.index');
+        Route::get('tableau-de-bord/export', [DashboardController::class, 'export'])
+            ->name('cooperative-dashboard.export');
+
         Route::post('campaigns', [CampaignController::class, 'store'])->name('campaigns.store');
         Route::patch('campaigns/{campaign}', [CampaignController::class, 'update'])
             ->name('campaigns.update');
@@ -81,9 +89,11 @@ Route::middleware(['auth', EnsureCooperativeActive::class])->group(function () {
         Route::post('imports', [ImportController::class, 'store'])->name('imports.store');
     });
 
-    // La restitution : le technicien et l'administrateur lisent, seul le
-    // producteur concerné répond (SPEC section 11.2).
-    Route::middleware('role:coop_admin,technician,farmer')->group(function () {
+    // La restitution : le technicien lit celles des producteurs qu'il
+    // suit, seul le producteur concerné répond (SPEC sections 10.2 et
+    // 11.2). L'administrateur de coopérative passe par le tableau de
+    // bord, pas par cet écran.
+    Route::middleware('role:technician,farmer')->group(function () {
         Route::get('recommandations', [RecommendationController::class, 'index'])
             ->name('recommendations.index');
     });

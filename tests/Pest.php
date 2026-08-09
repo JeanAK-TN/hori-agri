@@ -1,5 +1,14 @@
 <?php
 
+use App\Models\Campaign;
+use App\Models\Cooperative;
+use App\Models\Crop;
+use App\Models\CropCycle;
+use App\Models\Farmer;
+use App\Models\Harvest;
+use App\Models\Operation;
+use App\Models\Plot;
+use App\Services\Indicators\IndicatorService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -63,7 +72,29 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
-{
-    // ..
+/**
+ * Un cycle dont le rendement et le coût sont connus à l'unité près, avec
+ * ses indicateurs déjà calculés. Partagé par les tests du tableau de
+ * bord, qui vérifient des moyennes vérifiables à la main.
+ */
+function cycleYielding(
+    Cooperative $cooperative,
+    Crop $crop,
+    Campaign $campaign,
+    string $village,
+    float $areaHa,
+    float $harvestedKg,
+    float $operationCost,
+    ?float $unitPrice = 100.0,
+): CropCycle {
+    $farmer = Farmer::factory()->for($cooperative)->inVillage($village)->create();
+    $plot = Plot::factory()->ofFarmer($farmer)->withArea($areaHa)->create();
+    $cycle = CropCycle::factory()->on($plot, $campaign, $crop)->create();
+
+    Operation::factory()->forCycle($cycle)->costing($operationCost)->create();
+    Harvest::factory()->forCycle($cycle)->of($harvestedKg, $unitPrice)->create();
+
+    app(IndicatorService::class)->computeFor($cycle);
+
+    return $cycle;
 }

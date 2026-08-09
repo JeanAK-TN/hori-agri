@@ -110,6 +110,16 @@
     --severity-medium-foreground: #604100;
     --severity-low: #cdeec5;
     --severity-low-foreground: #0c5216;
+
+    /*
+     * Rampe de sévérité pour les graphiques : une seule teinte, du foncé
+     * au clair. La sévérité est une échelle ordonnée, pas trois
+     * identités : un trio rouge/ambre/vert se confondrait sous
+     * daltonisme deutan, ce que cette rampe évite par construction.
+     */
+    --chart-severity-1: #8c0d16;
+    --chart-severity-2: #c5423a;
+    --chart-severity-3: #dd8279;
     --radius: 0.5rem;
     --sidebar: #00450d;
     --sidebar-foreground: #e6f4e2;
@@ -146,6 +156,11 @@
     --chart-3: #ffb3ac;
     --chart-4: #7fb2c2;
     --chart-5: #2a6b2c;
+    /* Sur fond sombre la rampe s'inverse : le plus grave est le plus clair. */
+    --chart-severity-1: #ff8f85;
+    --chart-severity-2: #e2685e;
+    --chart-severity-3: #b03e35;
+
     --severity-high: #5c1512;
     --severity-high-foreground: #ffb4ab;
     --severity-medium: #4a3300;

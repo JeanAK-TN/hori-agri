@@ -2,6 +2,7 @@ import {
     BookOpen,
     Building2,
     CalendarRange,
+    ChartColumn,
     FileUp,
     House,
     LandPlot,
@@ -12,6 +13,7 @@ import {
 } from 'lucide-react';
 import { dashboard } from '@/routes';
 import { index as campaigns } from '@/routes/campaigns';
+import { index as cooperativeDashboard } from '@/routes/cooperative-dashboard';
 import { index as cooperatives } from '@/routes/cooperatives';
 import { index as crops } from '@/routes/crops';
 import { index as cycles } from '@/routes/cycles';
@@ -46,13 +48,20 @@ const navigation: RoleNavItem[] = [
         roles: ['super_admin'],
         shortTitle: 'Coop.',
     },
+    {
+        title: 'Tableau de bord',
+        href: cooperativeDashboard(),
+        icon: ChartColumn,
+        roles: ['coop_admin'],
+        shortTitle: 'Synthèse',
+    },
     // Placée haut à dessein : c'est la raison d'être de l'application,
     // et au delà de cinq entrées la barre du téléphone tronque.
     {
         title: 'Recommandations',
         href: recommendations(),
         icon: Lightbulb,
-        roles: ['coop_admin', 'technician', 'farmer'],
+        roles: ['technician', 'farmer'],
         shortTitle: 'Conseils',
     },
     {

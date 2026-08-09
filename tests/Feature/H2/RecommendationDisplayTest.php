@@ -203,8 +203,14 @@ test('marking applied without saying what happened goes through the feedback', f
     expect($recommendation->fresh()->status)->toBe(RecoStatus::New);
 });
 
-test('a super_admin has no business on this screen', function () {
+test('this screen is closed to the roles the route table leaves out', function () {
+    // SPEC section 10.2 : technicien et agriculteur, personne d'autre.
+    // L'administrateur de coopérative lit le tableau de bord.
     $this->actingAs(User::factory()->superAdmin()->create())
+        ->get(route('recommendations.index'))
+        ->assertForbidden();
+
+    $this->actingAs(User::factory()->coopAdmin()->for($this->cooperative)->create())
         ->get(route('recommendations.index'))
         ->assertForbidden();
 });

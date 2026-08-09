@@ -42,6 +42,8 @@ test('les écrans du technicien se chargent sans erreur JavaScript', function ()
         '/cycles',
         '/cycles/create',
         "/cycles/{$cycle->id}",
+        '/imports',
+        '/recommandations',
         '/settings/profile',
         '/settings/appearance',
     ]);
@@ -52,7 +54,28 @@ test('les écrans du technicien se chargent sans erreur JavaScript', function ()
 test('les écrans de l administrateur de coopérative se chargent sans erreur JavaScript', function () {
     $this->actingAs(User::factory()->coopAdmin()->create());
 
-    visit(['/dashboard', '/users', '/farmers', '/plots', '/campaigns', '/cycles'])
+    visit([
+        '/dashboard',
+        '/tableau-de-bord',
+        '/users',
+        '/farmers',
+        '/plots',
+        '/campaigns',
+        '/cycles',
+        '/rules',
+    ])
+        ->assertNoJavaScriptErrors()
+        ->assertNoConsoleLogs();
+});
+
+test('les écrans de l agriculteur se chargent sans erreur JavaScript', function () {
+    $cooperative = Cooperative::factory()->create();
+    $account = User::factory()->farmer()->for($cooperative)->create();
+    Farmer::factory()->for($cooperative)->create(['user_id' => $account->id]);
+
+    $this->actingAs($account);
+
+    visit(['/dashboard', '/recommandations', '/settings/profile'])
         ->assertNoJavaScriptErrors()
         ->assertNoConsoleLogs();
 });
@@ -64,7 +87,7 @@ test('les écrans du super administrateur se chargent sans erreur JavaScript', f
 
     $this->actingAs(User::factory()->superAdmin()->create());
 
-    visit(['/dashboard', '/cooperatives', '/users', '/crops'])
+    visit(['/dashboard', '/cooperatives', '/users', '/crops', '/rules'])
         ->assertNoJavaScriptErrors()
         ->assertNoConsoleLogs();
 });
