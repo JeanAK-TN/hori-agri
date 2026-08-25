@@ -42,14 +42,14 @@ test('an exploitation administrator sees no rule of another exploitation', funct
 });
 
 test('overriding a common rule creates a copy for the exploitation', function () {
-    $common = Rule::factory()->code('FERT-MAIS-01')->create([
-        'condition' => ['field' => 'npk_dose_kg_ha', 'op' => '<', 'value' => 100],
+    $common = Rule::factory()->code('TOM-TEST-01')->create([
+        'condition' => ['field' => 'topdressing_npk_kg_ha', 'op' => '<', 'value' => 100],
         'severity' => Severity::Medium,
     ]);
 
     $this->actingAs($this->exploitationAdmin)
         ->patch(route('rules.update', $common), [
-            'condition' => ['field' => 'npk_dose_kg_ha', 'op' => '<', 'value' => 120],
+            'condition' => ['field' => 'topdressing_npk_kg_ha', 'op' => '<', 'value' => 120],
             'severity' => Severity::High->value,
             'enabled' => true,
         ])
@@ -61,7 +61,7 @@ test('overriding a common rule creates a copy for the exploitation', function ()
 
     $override = Rule::withoutGlobalScopes()
         ->where('exploitation_id', $this->exploitation->id)
-        ->where('code', 'FERT-MAIS-01')
+        ->where('code', 'TOM-TEST-01')
         ->first();
 
     expect($override)->not->toBeNull()
@@ -70,10 +70,10 @@ test('overriding a common rule creates a copy for the exploitation', function ()
 });
 
 test('overriding twice updates the existing override', function () {
-    $common = Rule::factory()->code('FERT-MAIS-01')->create();
+    $common = Rule::factory()->code('TOM-TEST-01')->create();
 
     $payload = [
-        'condition' => ['field' => 'npk_dose_kg_ha', 'op' => '<', 'value' => 120],
+        'condition' => ['field' => 'topdressing_npk_kg_ha', 'op' => '<', 'value' => 120],
         'severity' => Severity::High->value,
         'enabled' => true,
     ];
@@ -85,7 +85,7 @@ test('overriding twice updates the existing override', function () {
 
     $this->actingAs($this->exploitationAdmin)->patch(route('rules.update', $override), [
         ...$payload,
-        'condition' => ['field' => 'npk_dose_kg_ha', 'op' => '<', 'value' => 140],
+        'condition' => ['field' => 'topdressing_npk_kg_ha', 'op' => '<', 'value' => 140],
     ]);
 
     expect(Rule::withoutGlobalScopes()->where('exploitation_id', $this->exploitation->id)->count())
@@ -98,7 +98,7 @@ test('overriding a rule of another exploitation answers not found', function () 
 
     $this->actingAs($this->exploitationAdmin)
         ->patch(route('rules.update', $foreign), [
-            'condition' => ['field' => 'sowing_month', 'op' => '=', 'value' => 4],
+            'condition' => ['field' => 'crop_name', 'op' => '=', 'value' => 'Tomate'],
             'severity' => Severity::High->value,
             'enabled' => true,
         ])
@@ -106,11 +106,11 @@ test('overriding a rule of another exploitation answers not found', function () 
 });
 
 test('the super_admin does not override, they maintain the common base', function () {
-    $common = Rule::factory()->code('FERT-MAIS-01')->create();
+    $common = Rule::factory()->code('TOM-TEST-01')->create();
 
     $this->actingAs(User::factory()->superAdmin()->create())
         ->patch(route('rules.update', $common), [
-            'condition' => ['field' => 'sowing_month', 'op' => '=', 'value' => 4],
+            'condition' => ['field' => 'crop_name', 'op' => '=', 'value' => 'Tomate'],
             'severity' => Severity::High->value,
             'enabled' => true,
         ])
@@ -118,7 +118,7 @@ test('the super_admin does not override, they maintain the common base', functio
 });
 
 test('an unusable condition is refused before it is stored', function () {
-    $common = Rule::factory()->code('FERT-MAIS-01')->create();
+    $common = Rule::factory()->code('TOM-TEST-01')->create();
 
     $this->actingAs($this->exploitationAdmin)
         ->patch(route('rules.update', $common), [

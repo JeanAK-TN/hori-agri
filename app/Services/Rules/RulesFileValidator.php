@@ -231,27 +231,20 @@ class RulesFileValidator
     }
 
     /**
-     * A context whose fifteen fields are filled, so that a condition can
-     * be exercised without any cycle and without any database.
+     * A context whose seven fields are filled, so that a condition can
+     * be exercised without any cycle and without any database. Les
+     * valeurs sont des fixtures d'exercice, pas des références.
      */
     public static function fakeContext(): EvaluationContext
     {
         return new EvaluationContext(
-            crop_name: 'Maïs',
-            region: 'Kara',
-            sowing_month: 4,
-            sowing_density_plants_ha: 50000,
-            seed_rate_kg_ha: 25.0,
-            npk_dose_kg_ha: 100.0,
-            urea_dose_kg_ha: 50.0,
-            potassium_dose_kg_ha: 30.0,
-            inoculant_used: false,
-            first_weeding_days_after_sowing: 20,
-            urea_days_after_sowing: 40,
-            consecutive_seasons_same_crop: 1,
-            yield_vs_zone_median_ratio: 1.0,
-            cost_vs_zone_median_ratio: 1.0,
-            input_cost_share_of_harvest_value: 0.3,
+            crop_name: 'Tomate',
+            planting_density_plants_ha: 30000,
+            topdressing_npk_kg_ha: 300.0,
+            organic_matter_t_ha: 1.5,
+            first_topdressing_days_after_transplanting: 15,
+            yield_kg_ha: 10000.0,
+            zone_median_yield_kg_ha: 11000.0,
         );
     }
 }

@@ -45,13 +45,14 @@ test('the averages by crop are computed by the database, one row per crop', func
 
     $rows = $this->dashboard->averagesByCrop(new DashboardFilters);
 
+    // L'ordre est alphabétique : Gombo avant Tomate.
     expect($rows)->toHaveCount(2)
-        ->and($rows[0]['label'])->toBe('Tomate')
-        ->and($rows[0]['cycles'])->toBe(2)
-        ->and($rows[0]['yield_kg_ha'])->toBe(1500.0)
-        ->and($rows[0]['production_cost_ha'])->toBe(60000.0)
-        ->and($rows[1]['label'])->toBe('Gombo')
-        ->and($rows[1]['yield_kg_ha'])->toBe(800.0);
+        ->and($rows[0]['label'])->toBe('Gombo')
+        ->and($rows[0]['yield_kg_ha'])->toBe(800.0)
+        ->and($rows[1]['label'])->toBe('Tomate')
+        ->and($rows[1]['cycles'])->toBe(2)
+        ->and($rows[1]['yield_kg_ha'])->toBe(1500.0)
+        ->and($rows[1]['production_cost_ha'])->toBe(60000.0);
 });
 
 test('the averages by village group the producers of one place', function () {

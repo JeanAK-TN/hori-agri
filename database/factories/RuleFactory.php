@@ -31,7 +31,7 @@ class RuleFactory extends Factory
             'code' => 'TEST-'.fake()->unique()->numerify('###'),
             'crop_id' => null,
             'family' => RuleFamily::A,
-            'condition' => ['field' => 'sowing_month', 'op' => '=', 'value' => 4],
+            'condition' => ['field' => 'crop_name', 'op' => '!=', 'value' => ''],
             'severity' => Severity::Medium,
             'message' => 'Message de règle de test',
             'action' => 'Action de règle de test',
@@ -58,13 +58,14 @@ class RuleFactory extends Factory
     /** A condition that is always true on any context. */
     public function alwaysFiring(): static
     {
-        return $this->firingWhen(['field' => 'sowing_month', 'op' => '>=', 'value' => 1]);
+        // La culture d'un cycle porte toujours un nom.
+        return $this->firingWhen(['field' => 'crop_name', 'op' => '!=', 'value' => '']);
     }
 
     /** A condition that is never true. */
     public function neverFiring(): static
     {
-        return $this->firingWhen(['field' => 'sowing_month', 'op' => '>', 'value' => 12]);
+        return $this->firingWhen(['field' => 'crop_name', 'op' => '=', 'value' => '']);
     }
 
     public function family(RuleFamily $family): static

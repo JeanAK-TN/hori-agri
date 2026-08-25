@@ -22,77 +22,72 @@ use Illuminate\Database\Seeder;
 use RuntimeException;
 
 /**
- * Le jeu d'épreuve du mémoire (SPEC section 14.3).
+ * Le jeu d'épreuve du mémoire (SPEC-CORRECTION section 10.1).
  *
- * CE DOSSIER EST UNE CONSTRUCTION, PAS UN RELEVÉ. Aucun de ces
- * producteurs, aucune de ces parcelles, aucune de ces opérations n'existe.
- * Les quantités et les coûts ont été choisis à rebours pour que les
- * indicateurs calculés tombent exactement sur les valeurs publiées dans
- * le mémoire : ils servent à vérifier la chaîne de calcul, jamais à
- * documenter une pratique agricole.
+ * CE DOSSIER EST UNE CONSTRUCTION, PAS UN RELEVÉ. Les quantités et les
+ * coûts viennent des ordres de grandeur de la fiche togolaise de la
+ * tomate et ne décrivent pas les pratiques réelles de la ferme ; ils ont
+ * été choisis à rebours pour que la chaîne de calcul retombe exactement
+ * sur les indicateurs publiés dans le mémoire.
  *
- * Structure imposée : une exploitation, trois producteurs du même village,
- * quatre parcelles, deux campagnes, vingt et une opérations, cinq
- * récoltes, dont deux échelonnées sur le cycle de manioc.
+ * Structure imposée : une exploitation, trois producteurs du même
+ * village, deux parcelles de tomate, deux campagnes, plusieurs passages
+ * de récolte par parcelle. NE PAS ajouter de parcelles de contexte pour
+ * atteindre cinq : le mémoire écrit que la zone du jeu d'épreuve ne
+ * contient que deux parcelles de tomate, et c'est de cette observation
+ * qu'est né le seuil de cinq. La famille C y est donc suspendue, et le
+ * moteur produit quatre recommandations sur la parcelle en écart
+ * (TOM-A01, TOM-A02, TOM-A03, TOM-B01), aucune sur la conforme.
  */
 class VerificationDatasetSeeder extends Seeder
 {
     public const VILLAGE = 'Kpéwa';
 
     /**
-     * Les indicateurs que les quatre cycles doivent retrouver, à l'unité
-     * de la première décimale près (SPEC section 14.3).
+     * Les indicateurs que les deux parcelles doivent retrouver
+     * exactement (SPEC-CORRECTION section 10.1). Les deux vendent à
+     * 250 FCFA le kilogramme : c'est ce prix qui rend rendement, coût et
+     * marge cohérents entre eux.
      *
-     * @var array<int, array{yield_kg_ha: float, production_cost_ha: float, gross_margin_ha: float}>
+     * @var array<string, array{yield_kg_ha: float, production_cost_ha: float, gross_margin_ha: float}>
      */
     public const EXPECTED_INDICATORS = [
-        1 => ['yield_kg_ha' => 900.0, 'production_cost_ha' => 97333.3, 'gross_margin_ha' => 82666.7],
-        2 => ['yield_kg_ha' => 800.0, 'production_cost_ha' => 74000.0, 'gross_margin_ha' => 206000.0],
-        3 => ['yield_kg_ha' => 9000.0, 'production_cost_ha' => 80000.0, 'gross_margin_ha' => 730000.0],
-        4 => ['yield_kg_ha' => 2600.0, 'production_cost_ha' => 185500.0, 'gross_margin_ha' => 334500.0],
+        'écart' => ['yield_kg_ha' => 7500.0, 'production_cost_ha' => 620000.0, 'gross_margin_ha' => 1255000.0],
+        'conforme' => ['yield_kg_ha' => 12500.0, 'production_cost_ha' => 1450000.0, 'gross_margin_ha' => 1675000.0],
     ];
 
     /**
-     * Les recommandations constatées sur ce dossier avec le fichier de
-     * règles du dépôt, code par code.
+     * Les codes attendus du moteur sur la parcelle en écart. TOM-C01
+     * n'y figure pas : la zone ne compte que deux parcelles comparables,
+     * la famille C est suspendue.
      *
-     * Le mémoire en annonce treize ; il en sort quatre ici, et l'écart
-     * s'explique en un mot : LES SEUILS DE rules.json SONT SIMULÉS. Le
-     * compte est figé pour détecter une dérive du moteur, pas pour
-     * prétendre reproduire le chiffre du mémoire. Il sera à reprendre le
-     * jour où les valeurs ITRA remplaceront les fixtures.
-     *
-     * @var array<int, array<int, string>>
+     * @var array<int, string>
      */
-    public const EXPECTED_RECOMMENDATION_CODES = [
-        // Semis hors fenêtre, dose de NPK et apport d'urée insuffisants.
-        1 => ['CAL-MAIS-02', 'FERT-MAIS-01', 'FERT-MAIS-02'],
-        // Semis tardif ; l'inoculation ayant eu lieu, INOC-SOJA-01 se tait.
-        2 => ['CAL-SOJA-01'],
-        // Manioc conduit sans écart repéré par les seuils simulés.
-        3 => [],
-        // Maïs conduit selon le référentiel : le moteur reste silencieux.
-        4 => [],
+    public const EXPECTED_CODES_ON_DEVIANT_PLOT = [
+        'TOM-A01',
+        'TOM-A02',
+        'TOM-A03',
+        'TOM-B01',
     ];
+
+    /**
+     * Les deux cycles construits, indexés par leur rôle dans le mémoire.
+     *
+     * @var array<string, CropCycle>
+     */
+    private array $cycles = [];
 
     public function __construct(
         private readonly IndicatorService $indicators,
         private readonly RecommendationService $engine,
     ) {}
 
-    /**
-     * Les quatre cycles, dans l'ordre du tableau du mémoire.
-     *
-     * @var array<int, CropCycle>
-     */
-    private array $cycles = [];
-
     public function run(): void
     {
         $exploitation = Exploitation::factory()->create([
             'name' => 'Exploitation du jeu d\'épreuve (construction)',
-            'region' => 'Kara',
-            'prefecture' => 'Kozah',
+            'region' => 'Maritime',
+            'prefecture' => 'Zio',
         ]);
 
         // Le seeder tourne hors requête HTTP : l'exploitation courante
@@ -107,10 +102,7 @@ class VerificationDatasetSeeder extends Seeder
     }
 
     /**
-     * Les cycles construits, dans l'ordre du mémoire, une fois le seeder
-     * passé.
-     *
-     * @return array<int, CropCycle>
+     * @return array<string, CropCycle>
      */
     public function cycles(): array
     {
@@ -119,29 +111,33 @@ class VerificationDatasetSeeder extends Seeder
 
     private function build(Exploitation $exploitation): void
     {
-        $maize = $this->crop('Maïs');
-        $soy = $this->crop('Soja');
-        $cassava = $this->crop('Manioc');
+        $tomato = Crop::firstWhere('name', 'Tomate');
 
-        $firstCampaign = Campaign::factory()->for($exploitation)
+        if ($tomato === null) {
+            throw new RuntimeException(
+                'La culture « Tomate » manque : chargez CropSeeder avant le jeu d\'épreuve.',
+            );
+        }
+
+        // Deux campagnes : la saison passée, vide, et la saison courante
+        // qui porte les deux cycles. Les deux cycles partagent campagne,
+        // culture et village : la zone de comparaison en compte deux.
+        Campaign::factory()->for($exploitation)
             ->between('2025-03-01', '2025-11-30')
             ->create(['label' => 'Campagne 2025']);
 
-        $secondCampaign = Campaign::factory()->for($exploitation)
+        $campaign = Campaign::factory()->for($exploitation)
             ->between('2026-03-01', '2026-11-30')
             ->create(['label' => 'Campagne 2026']);
 
-        // Trois producteurs du même village : la zone de comparaison ne
-        // se déclenchera pas pour autant, quatre cycles restant sous le
-        // seuil de cinq (SPEC section 9.3).
-        $kodjo = $this->farmer($exploitation, 'Kodjo', 'Amegah');
-        $afi = $this->farmer($exploitation, 'Afi', 'Bakoumey');
-        $sena = $this->farmer($exploitation, 'Sena', 'Doe');
+        // Trois producteurs du même village ; le troisième n'a pas encore
+        // de parcelle suivie.
+        $kossi = $this->farmer($exploitation, 'Kossi', 'Amenyo');
+        $abra = $this->farmer($exploitation, 'Abra', 'Kekeli');
+        $this->farmer($exploitation, 'Sena', 'Dogbe');
 
-        $this->cycles[1] = $this->firstCycle($kodjo, $firstCampaign, $maize);
-        $this->cycles[2] = $this->secondCycle($afi, $firstCampaign, $soy);
-        $this->cycles[3] = $this->thirdCycle($sena, $secondCampaign, $cassava);
-        $this->cycles[4] = $this->fourthCycle($kodjo, $secondCampaign, $maize);
+        $this->cycles['écart'] = $this->deviantPlot($kossi, $campaign, $tomato);
+        $this->cycles['conforme'] = $this->conformingPlot($abra, $campaign, $tomato);
 
         foreach ($this->cycles as $cycle) {
             $cycle->refresh();
@@ -153,117 +149,94 @@ class VerificationDatasetSeeder extends Seeder
     }
 
     /**
-     * Cycle 1 — maïs sur 0,75 ha, conduit en dessous du référentiel.
+     * Parcelle en écart : 0,20 ha, plantation claire, fumure incomplète
+     * et tardive.
      *
-     * 675 kg récoltés à 200 FCFA le kilogramme, 73 000 FCFA d'opérations.
-     * 675 / 0,75 = 900 kg/ha ; 73 000 / 0,75 = 97 333,3 FCFA/ha ;
-     * (135 000 − 73 000) / 0,75 = 82 666,7 FCFA/ha.
+     * 1 500 kg récoltés à 250 FCFA, 124 000 FCFA d'opérations :
+     * 1 500 / 0,20 = 7 500 kg/ha ; 124 000 / 0,20 = 620 000 FCFA/ha ;
+     * (375 000 - 124 000) / 0,20 = 1 255 000 FCFA/ha.
      */
-    private function firstCycle(Farmer $farmer, Campaign $campaign, Crop $crop): CropCycle
+    private function deviantPlot(Farmer $farmer, Campaign $campaign, Crop $tomato): CropCycle
     {
-        $cycle = $this->cycle($farmer, $campaign, $crop, 'Parcelle du bas-fond', 0.75, '2025-04-15');
+        $cycle = $this->cycle(
+            $farmer,
+            $campaign,
+            $tomato,
+            plotName: 'Planche du bas-fond',
+            areaHa: 0.20,
+            sowingDate: '2026-03-20',
+            transplantingDate: '2026-04-20',
+            // Plantation claire : bien sous les 33 000 plants/ha.
+            density: 20000,
+            staked: false,
+        );
 
         $this->operations($cycle, [
-            ['2025-04-05', OperationType::Tillage, null, null, null, 15000, 'Labour attelé'],
-            ['2025-04-15', OperationType::Sowing, InputType::Seed, 15, QuantityUnit::Kilogram, 9000, null],
-            ['2025-05-05', OperationType::Fertilization, InputType::Npk, 1, QuantityUnit::Bag50Kg, 22000, null],
-            // Premier sarclage tardif, trente-cinq jours après le semis.
-            ['2025-05-20', OperationType::Weeding, null, null, null, 8000, null],
-            ['2025-06-10', OperationType::Fertilization, InputType::Urea, 25, QuantityUnit::Kilogram, 13000, null],
-            ['2025-07-01', OperationType::Treatment, InputType::Herbicide, 2, QuantityUnit::Litre, 6000, null],
+            ['2026-03-10', OperationType::Tillage, null, null, null, 15000, null, 'Billonnage'],
+            // 100 kg de fumier : 0,5 t/ha, sous le minimum de la fiche.
+            ['2026-03-15', OperationType::Fertilization, InputType::Organic, 2, QuantityUnit::Bag50Kg, 10000, null, null],
+            ['2026-03-20', OperationType::Sowing, InputType::Seed, 0.1, QuantityUnit::Kilogram, 5000, null, 'Semis en pépinière'],
+            ['2026-05-01', OperationType::Irrigation, null, null, null, 20000, null, null],
+            // Premier apport de couverture à 25 jours : hors fenêtre, et
+            // 200 kg/ha en tout, loin des 350 attendus.
+            ['2026-05-15', OperationType::Fertilization, InputType::Npk, 40, QuantityUnit::Kilogram, 24000, null, null],
+            ['2026-05-20', OperationType::Weeding, null, null, null, 8000, null, null],
+            ['2026-06-01', OperationType::Treatment, InputType::Insecticide, 1, QuantityUnit::Litre, 12000, 15.0, 'Pression de Tuta absoluta'],
+            ['2026-07-05', OperationType::Harvest, null, null, null, 30000, null, 'Main-d\'œuvre de récolte'],
         ]);
 
-        $this->harvest($cycle, '2025-08-20', 675, 200, Quality::Average);
+        // La tomate se récolte en plusieurs passages.
+        $this->harvest($cycle, '2026-07-05', 600, 250, Quality::Average);
+        $this->harvest($cycle, '2026-07-20', 500, 250, Quality::Average);
+        $this->harvest($cycle, '2026-08-01', 400, 250, Quality::Poor);
 
         return $cycle;
     }
 
     /**
-     * Cycle 2 — soja sur 0,50 ha.
+     * Parcelle conforme : 0,25 ha, conduite conforme mais très
+     * fertilisée.
      *
-     * 400 kg à 350 FCFA, 37 000 FCFA d'opérations.
-     * 400 / 0,5 = 800 kg/ha ; 37 000 / 0,5 = 74 000 FCFA/ha ;
-     * (140 000 − 37 000) / 0,5 = 206 000 FCFA/ha.
+     * 3 125 kg récoltés à 250 FCFA, 362 500 FCFA d'opérations :
+     * 3 125 / 0,25 = 12 500 kg/ha ; 362 500 / 0,25 = 1 450 000 FCFA/ha ;
+     * (781 250 - 362 500) / 0,25 = 1 675 000 FCFA/ha.
      */
-    private function secondCycle(Farmer $farmer, Campaign $campaign, Crop $crop): CropCycle
+    private function conformingPlot(Farmer $farmer, Campaign $campaign, Crop $tomato): CropCycle
     {
-        $cycle = $this->cycle($farmer, $campaign, $crop, 'Parcelle de la route', 0.50, '2025-05-02');
+        $cycle = $this->cycle(
+            $farmer,
+            $campaign,
+            $tomato,
+            plotName: 'Planche du puits',
+            areaHa: 0.25,
+            sowingDate: '2026-03-15',
+            transplantingDate: '2026-04-10',
+            // L'écartement de la fiche : 0,60 m sur 0,50 m.
+            density: 33000,
+            staked: true,
+        );
 
         $this->operations($cycle, [
-            ['2025-04-10', OperationType::Tillage, null, null, null, 9000, null],
-            ['2025-05-02', OperationType::Sowing, InputType::Seed, 30, QuantityUnit::Kilogram, 8000, null],
-            ['2025-05-02', OperationType::Treatment, InputType::Inoculant, 1, QuantityUnit::Kilogram, 4000, 'Inoculation des semences'],
-            ['2025-06-01', OperationType::Weeding, null, null, null, 7000, null],
-            ['2025-06-15', OperationType::Fertilization, InputType::Npk, 20, QuantityUnit::Kilogram, 9000, null],
+            ['2026-03-08', OperationType::Tillage, null, null, null, 25000, null, 'Planches surélevées'],
+            // 300 kg de compost : 1,2 t/ha, au dessus du minimum.
+            ['2026-03-12', OperationType::Fertilization, InputType::Organic, 6, QuantityUnit::Bag50Kg, 45000, null, null],
+            ['2026-03-15', OperationType::Sowing, InputType::Seed, 0.2, QuantityUnit::Kilogram, 15000, null, 'Semis en pépinière'],
+            // Trois fractions de couverture vers 15, 45 et 65 jours :
+            // 100 kg en tout, soit 400 kg/ha.
+            ['2026-04-25', OperationType::Fertilization, InputType::Npk, 1, QuantityUnit::Bag50Kg, 40000, null, null],
+            ['2026-04-30', OperationType::Irrigation, null, null, null, 60000, null, null],
+            ['2026-05-05', OperationType::Weeding, null, null, null, 15000, null, null],
+            ['2026-05-25', OperationType::Fertilization, InputType::Npk, 1, QuantityUnit::Bag25Kg, 20000, null, null],
+            ['2026-06-01', OperationType::Treatment, InputType::Insecticide, 2, QuantityUnit::Litre, 47500, 2.0, null],
+            ['2026-06-14', OperationType::Fertilization, InputType::Npk, 1, QuantityUnit::Bag25Kg, 20000, null, null],
+            ['2026-07-15', OperationType::Harvest, null, null, null, 75000, null, 'Main-d\'œuvre de récolte'],
         ]);
 
-        $this->harvest($cycle, '2025-09-10', 400, 350, Quality::Good);
+        $this->harvest($cycle, '2026-07-15', 1200, 250, Quality::Good);
+        $this->harvest($cycle, '2026-08-01', 1100, 250, Quality::Good);
+        $this->harvest($cycle, '2026-08-20', 825, 250, Quality::Good);
 
         return $cycle;
-    }
-
-    /**
-     * Cycle 3 — manioc sur 1,20 ha, avec deux récoltes échelonnées.
-     *
-     * 4 800 puis 6 000 kg à 90 FCFA, 96 000 FCFA d'opérations.
-     * 10 800 / 1,2 = 9 000 kg/ha ; 96 000 / 1,2 = 80 000 FCFA/ha ;
-     * (972 000 − 96 000) / 1,2 = 730 000 FCFA/ha.
-     */
-    private function thirdCycle(Farmer $farmer, Campaign $campaign, Crop $crop): CropCycle
-    {
-        $cycle = $this->cycle($farmer, $campaign, $crop, 'Parcelle du plateau', 1.20, '2026-04-05');
-
-        $this->operations($cycle, [
-            ['2026-03-20', OperationType::Tillage, null, null, null, 25000, 'Buttage'],
-            ['2026-04-05', OperationType::Sowing, InputType::Seed, 12000, QuantityUnit::Unit, 20000, 'Boutures'],
-            ['2026-05-15', OperationType::Weeding, null, null, null, 18000, null],
-            ['2026-06-01', OperationType::Fertilization, InputType::Npk, 1, QuantityUnit::Bag50Kg, 18000, null],
-            ['2026-07-10', OperationType::Weeding, null, null, null, 15000, null],
-        ]);
-
-        $this->harvest($cycle, '2026-10-05', 4800, 90, Quality::Good);
-        $this->harvest($cycle, '2026-11-15', 6000, 90, Quality::Good);
-
-        return $cycle;
-    }
-
-    /**
-     * Cycle 4 — maïs sur 1,00 ha, conduit selon le référentiel.
-     *
-     * 2 600 kg à 200 FCFA, 185 500 FCFA d'opérations.
-     * 2 600 / 1 = 2 600 kg/ha ; 185 500 / 1 = 185 500 FCFA/ha ;
-     * (520 000 − 185 500) / 1 = 334 500 FCFA/ha.
-     */
-    private function fourthCycle(Farmer $farmer, Campaign $campaign, Crop $crop): CropCycle
-    {
-        $cycle = $this->cycle($farmer, $campaign, $crop, 'Parcelle de la maison', 1.00, '2026-04-18');
-
-        $this->operations($cycle, [
-            ['2026-04-01', OperationType::Tillage, null, null, null, 28000, null],
-            ['2026-04-18', OperationType::Sowing, InputType::Seed, 25, QuantityUnit::Kilogram, 17500, null],
-            ['2026-05-10', OperationType::Fertilization, InputType::Npk, 3, QuantityUnit::Bag50Kg, 66000, null],
-            // Premier sarclage à quinze jours, comme le veut le référentiel.
-            ['2026-05-03', OperationType::Weeding, null, null, null, 30000, null],
-            ['2026-06-15', OperationType::Fertilization, InputType::Urea, 2, QuantityUnit::Bag50Kg, 44000, null],
-        ]);
-
-        $this->harvest($cycle, '2026-09-20', 2600, 200, Quality::Good);
-
-        return $cycle;
-    }
-
-    private function crop(string $name): Crop
-    {
-        $crop = Crop::where('name', $name)->first();
-
-        if ($crop === null) {
-            throw new RuntimeException(sprintf(
-                'La culture « %s » manque : chargez CropSeeder avant le jeu d\'épreuve.',
-                $name,
-            ));
-        }
-
-        return $crop;
     }
 
     private function farmer(Exploitation $exploitation, string $firstName, string $lastName): Farmer
@@ -281,21 +254,30 @@ class VerificationDatasetSeeder extends Seeder
         string $plotName,
         float $areaHa,
         string $sowingDate,
+        string $transplantingDate,
+        int $density,
+        bool $staked,
     ): CropCycle {
-        $plot = Plot::factory()->ofFarmer($farmer)->withArea($areaHa)->create(['name' => $plotName]);
+        $plot = Plot::factory()->ofFarmer($farmer)->withArea($areaHa)->create([
+            'name' => $plotName,
+            'soil_preparation' => 'planches',
+        ]);
 
         return CropCycle::factory()->on($plot, $campaign, $crop)->create([
             'sowing_date' => $sowingDate,
+            'transplanting_date' => $transplantingDate,
+            'density' => $density,
+            'staked' => $staked,
             'status' => CycleStatus::InProgress,
         ]);
     }
 
     /**
-     * @param  array<int, array{0: string, 1: OperationType, 2: InputType|null, 3: float|int|null, 4: QuantityUnit|null, 5: float, 6: string|null}>  $rows
+     * @param  array<int, array{0: string, 1: OperationType, 2: InputType|null, 3: float|int|null, 4: QuantityUnit|null, 5: float, 6: float|null, 7: string|null}>  $rows
      */
     private function operations(CropCycle $cycle, array $rows): void
     {
-        foreach ($rows as [$date, $type, $inputType, $quantity, $unit, $cost, $notes]) {
+        foreach ($rows as [$date, $type, $inputType, $quantity, $unit, $cost, $observedRate, $notes]) {
             Operation::factory()->forCycle($cycle)->create([
                 'date' => $date,
                 'type' => $type,
@@ -304,6 +286,7 @@ class VerificationDatasetSeeder extends Seeder
                 'quantity' => $quantity,
                 'unit' => $unit,
                 'cost' => $cost,
+                'observed_rate' => $observedRate,
                 'notes' => $notes,
             ]);
         }

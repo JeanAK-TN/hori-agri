@@ -22,8 +22,8 @@ beforeEach(function () {
 });
 
 test('l origine de chaque seuil est lisible sans rien déplier', function () {
-    Rule::factory()->code('FERT-MAIS-01')->create([
-        'source' => 'ITRA, fiche technique tomate 2021, page 12',
+    Rule::factory()->code('TOM-TEST-01')->create([
+        'source' => 'Fiche de démonstration, page 12',
         'threshold_status' => ThresholdStatus::Sourced,
     ]);
     Rule::factory()->code('COUT-PAIR-01')->convention()->create([
@@ -35,7 +35,7 @@ test('l origine de chaque seuil est lisible sans rien déplier', function () {
     $page = visit('/rules')->resize(360, 800);
 
     $page->assertSee('Source togolaise publiée')
-        ->assertSee('ITRA, fiche technique tomate 2021, page 12')
+        ->assertSee('Fiche de démonstration, page 12')
         ->assertSee('Convention à confirmer')
         ->assertSee('SEUIL SIMULÉ')
         // Une convention arrive inactive tant que l'exploitation ne l'a
@@ -49,27 +49,27 @@ test('l origine de chaque seuil est lisible sans rien déplier', function () {
     // La source est du texte de la page, pas le contenu d'un <details>.
     $page->assertScript(
         "[...document.querySelectorAll('details')]
-            .some((d) => d.textContent.includes('ITRA, fiche technique'))",
+            .some((d) => d.textContent.includes('Fiche de démonstration'))",
         false,
     );
 });
 
-test('les quinze champs interrogeables sont annoncés', function () {
+test('les sept champs interrogeables sont annoncés', function () {
     Rule::factory()->create();
 
     $this->actingAs($this->exploitationAdmin);
 
     visit('/rules')
-        ->assertSee('Les 15 champs interrogeables')
-        ->assertSee('mois de semis')
-        ->assertSee('dose de NPK')
-        ->assertSee('rendement face à la médiane de la zone')
+        ->assertSee('Les 7 champs interrogeables')
+        ->assertSee('densité de plantation')
+        ->assertSee('NPK de couverture cumulé')
+        ->assertSee('rendement médian des parcelles comparables')
         ->assertNoJavaScriptErrors();
 });
 
 test('surcharger un seuil laisse la règle commune intacte', function () {
-    $common = Rule::factory()->code('FERT-MAIS-01')->create([
-        'condition' => ['field' => 'npk_dose_kg_ha', 'op' => '<', 'value' => 100],
+    $common = Rule::factory()->code('TOM-TEST-01')->create([
+        'condition' => ['field' => 'topdressing_npk_kg_ha', 'op' => '<', 'value' => 100],
         'severity' => Severity::Medium,
     ]);
 
@@ -77,10 +77,10 @@ test('surcharger un seuil laisse la règle commune intacte', function () {
 
     $page = visit('/rules')->resize(390, 844);
 
-    $page->click('[data-test=override-FERT-MAIS-01]')
-        ->assertSee('Surcharger FERT-MAIS-01')
+    $page->click('[data-test=override-TOM-TEST-01]')
+        ->assertSee('Surcharger TOM-TEST-01')
         ->fill('#condition', json_encode(
-            ['field' => 'npk_dose_kg_ha', 'op' => '<', 'value' => 120],
+            ['field' => 'topdressing_npk_kg_ha', 'op' => '<', 'value' => 120],
         ))
         ->click('#severity')
         ->click('[role=option]:has-text("Élevée")')
@@ -97,19 +97,19 @@ test('surcharger un seuil laisse la règle commune intacte', function () {
         ->where('exploitation_id', $this->exploitation->id)
         ->sole();
 
-    expect($override->code)->toBe('FERT-MAIS-01')
+    expect($override->code)->toBe('TOM-TEST-01')
         ->and($override->condition['value'])->toBe(120)
         ->and($override->severity)->toBe(Severity::High);
 });
 
 test('une condition mal formée est refusée sans quitter la boîte', function () {
-    Rule::factory()->code('FERT-MAIS-01')->create();
+    Rule::factory()->code('TOM-TEST-01')->create();
 
     $this->actingAs($this->exploitationAdmin);
 
     $page = visit('/rules');
 
-    $page->click('[data-test=override-FERT-MAIS-01]')
+    $page->click('[data-test=override-TOM-TEST-01]')
         ->fill('#condition', json_encode(
             ['field' => 'champ_inconnu', 'op' => '=', 'value' => 4],
         ))
@@ -117,19 +117,19 @@ test('une condition mal formée est refusée sans quitter la boîte', function (
 
     $page->assertSee('champ_inconnu')
         // La boîte reste ouverte : la saisie n'est pas perdue.
-        ->assertSee('Surcharger FERT-MAIS-01')
+        ->assertSee('Surcharger TOM-TEST-01')
         ->assertNoJavaScriptErrors();
 
     expect(Rule::withoutGlobalScopes()->count())->toBe(1);
 });
 
 test('un super_admin maintient la base commune et ne surcharge pas', function () {
-    Rule::factory()->code('FERT-MAIS-01')->create();
+    Rule::factory()->code('TOM-TEST-01')->create();
 
     $this->actingAs(User::factory()->superAdmin()->create());
 
     visit('/rules')
-        ->assertSee('FERT-MAIS-01')
+        ->assertSee('TOM-TEST-01')
         ->assertDontSee('Surcharger')
         ->assertNoJavaScriptErrors();
 });

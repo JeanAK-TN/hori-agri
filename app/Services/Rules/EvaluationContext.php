@@ -4,22 +4,26 @@ namespace App\Services\Rules;
 
 use App\Enums\InputType;
 use App\Enums\OperationType;
-use App\Models\Campaign;
 use App\Models\CropCycle;
 use App\Models\Operation;
 use Illuminate\Support\Collection;
 
 /**
- * The immutable object a rule reads (SPEC section 9.4).
+ * The immutable object a rule reads (SPEC section 9.4, corrigée).
  *
- * It exposes exactly fifteen fields. No other field is interrogable by a
- * rule: adding one means changing this class and documenting it in the
+ * It exposes exactly seven fields, taillés pour le maraîchage : la fiche
+ * togolaise de la tomate compte le calendrier de fertilisation à partir
+ * du repiquage, pas du semis. No other field is interrogable by a rule:
+ * adding one means changing this class and documenting it in the
  * specification.
  *
  * A null field is not zero. A condition on a null field is false, except
  * for the operators != and not_in where it is true — that behaviour
  * lives in RuleEvaluator and is the most likely source of error of the
- * whole engine.
+ * whole engine. Chez INSECTGO la densité n'est pas renseignée, parce que
+ * la ferme travaille en planches : TOM-A01 ne se déclenche alors pas, et
+ * c'est le résultat attendu. Le moteur ne conclut pas plutôt que de
+ * conclure mal.
  */
 final readonly class EvaluationContext
 {
@@ -29,38 +33,22 @@ final readonly class EvaluationContext
      */
     public const FIELD_LABELS = [
         'crop_name' => ['libellé' => 'culture', 'unité' => ''],
-        'region' => ['libellé' => 'région', 'unité' => ''],
-        'sowing_month' => ['libellé' => 'mois de semis', 'unité' => ''],
-        'sowing_density_plants_ha' => ['libellé' => 'densité de semis', 'unité' => 'plants/ha'],
-        'seed_rate_kg_ha' => ['libellé' => 'dose de semence', 'unité' => 'kg/ha'],
-        'npk_dose_kg_ha' => ['libellé' => 'dose de NPK', 'unité' => 'kg/ha'],
-        'urea_dose_kg_ha' => ['libellé' => 'dose d\'urée', 'unité' => 'kg/ha'],
-        'potassium_dose_kg_ha' => ['libellé' => 'dose de potassium', 'unité' => 'kg/ha'],
-        'inoculant_used' => ['libellé' => 'inoculant employé', 'unité' => ''],
-        'first_weeding_days_after_sowing' => ['libellé' => 'premier sarclage', 'unité' => 'jours après semis'],
-        'urea_days_after_sowing' => ['libellé' => 'apport d\'urée', 'unité' => 'jours après semis'],
-        'consecutive_seasons_same_crop' => ['libellé' => 'campagnes consécutives de la même culture', 'unité' => ''],
-        'yield_vs_zone_median_ratio' => ['libellé' => 'rendement face à la médiane de la zone', 'unité' => ''],
-        'cost_vs_zone_median_ratio' => ['libellé' => 'coût face à la médiane de la zone', 'unité' => ''],
-        'input_cost_share_of_harvest_value' => ['libellé' => 'part des intrants dans la récolte', 'unité' => ''],
+        'planting_density_plants_ha' => ['libellé' => 'densité de plantation', 'unité' => 'plants/ha'],
+        'topdressing_npk_kg_ha' => ['libellé' => 'NPK de couverture cumulé', 'unité' => 'kg/ha'],
+        'organic_matter_t_ha' => ['libellé' => 'matière organique apportée', 'unité' => 't/ha'],
+        'first_topdressing_days_after_transplanting' => ['libellé' => 'premier apport de couverture', 'unité' => 'jours après repiquage'],
+        'yield_kg_ha' => ['libellé' => 'rendement', 'unité' => 'kg/ha'],
+        'zone_median_yield_kg_ha' => ['libellé' => 'rendement médian des parcelles comparables', 'unité' => 'kg/ha'],
     ];
 
     public function __construct(
         public string $crop_name,
-        public string $region,
-        public int $sowing_month,
-        public ?int $sowing_density_plants_ha,
-        public ?float $seed_rate_kg_ha,
-        public ?float $npk_dose_kg_ha,
-        public ?float $urea_dose_kg_ha,
-        public ?float $potassium_dose_kg_ha,
-        public bool $inoculant_used,
-        public ?int $first_weeding_days_after_sowing,
-        public ?int $urea_days_after_sowing,
-        public int $consecutive_seasons_same_crop,
-        public ?float $yield_vs_zone_median_ratio,
-        public ?float $cost_vs_zone_median_ratio,
-        public ?float $input_cost_share_of_harvest_value,
+        public ?int $planting_density_plants_ha,
+        public ?float $topdressing_npk_kg_ha,
+        public ?float $organic_matter_t_ha,
+        public ?int $first_topdressing_days_after_transplanting,
+        public ?float $yield_kg_ha,
+        public ?float $zone_median_yield_kg_ha,
     ) {}
 
     /**
@@ -72,50 +60,27 @@ final readonly class EvaluationContext
         $cycle->loadMissing([
             'crop',
             'plot',
-            'campaign',
-            'exploitation',
             'operations',
+            'harvests',
             'indicator',
         ]);
 
         $area = (float) $cycle->plot->area_ha;
         $operations = $cycle->operations;
-        $indicator = $cycle->indicator;
 
         return new self(
             crop_name: $cycle->crop->name,
-            region: $cycle->exploitation->region,
-            sowing_month: (int) $cycle->sowing_date->month,
-            sowing_density_plants_ha: $cycle->density,
-            seed_rate_kg_ha: self::dosePerHectare(
-                $operations->filter(fn (Operation $operation): bool => $operation->type === OperationType::Sowing),
-                InputType::Seed,
-                $area,
-            ),
-            npk_dose_kg_ha: self::dosePerHectare($operations, InputType::Npk, $area),
-            urea_dose_kg_ha: self::dosePerHectare($operations, InputType::Urea, $area),
-            potassium_dose_kg_ha: self::dosePerHectare($operations, InputType::Potassium, $area),
-            inoculant_used: $operations->contains(
-                fn (Operation $operation): bool => $operation->input_type === InputType::Inoculant,
-            ),
-            first_weeding_days_after_sowing: self::daysAfterSowing(
-                $cycle,
-                $operations->filter(fn (Operation $operation): bool => $operation->type === OperationType::Weeding),
-            ),
-            urea_days_after_sowing: self::daysAfterSowing(
-                $cycle,
-                $operations->filter(fn (Operation $operation): bool => $operation->type === OperationType::Fertilization
-                    && $operation->input_type === InputType::Urea),
-            ),
-            consecutive_seasons_same_crop: self::consecutiveSeasons($cycle),
-            yield_vs_zone_median_ratio: self::asFloat($indicator?->yield_vs_zone_median),
-            cost_vs_zone_median_ratio: self::asFloat($indicator?->cost_vs_zone_median),
-            input_cost_share_of_harvest_value: self::asFloat($indicator?->input_cost_share),
+            planting_density_plants_ha: $cycle->density,
+            topdressing_npk_kg_ha: self::topdressingNpkPerHectare($cycle, $operations, $area),
+            organic_matter_t_ha: self::organicMatterPerHectare($operations, $area),
+            first_topdressing_days_after_transplanting: self::firstTopdressingDaysAfterTransplanting($cycle, $operations),
+            yield_kg_ha: self::yieldPerHectare($cycle, $area),
+            zone_median_yield_kg_ha: self::asFloat($cycle->indicator?->zone_median_yield_kg_ha),
         );
     }
 
     /**
-     * Read a field by name, refusing anything outside the fifteen.
+     * Read a field by name, refusing anything outside the seven.
      */
     public function get(string $field): mixed
     {
@@ -136,11 +101,7 @@ final readonly class EvaluationContext
         $unit = self::FIELD_LABELS[$field]['unité'];
 
         if ($value === null) {
-            return $label.' non renseignée';
-        }
-
-        if (is_bool($value)) {
-            return $label.' : '.($value ? 'oui' : 'non');
+            return $label.' : valeur non renseignée';
         }
 
         $formatted = is_float($value)
@@ -151,24 +112,31 @@ final readonly class EvaluationContext
     }
 
     /**
-     * The sum of the quantities of an input, converted to kilograms and
-     * divided by the area (SPEC section 9.4).
+     * L'apport de couverture : la somme des fertilisations NPK
+     * postérieures au repiquage, ramenée à l'hectare (SPEC-CORRECTION
+     * section 4.1).
      *
-     * A quantity only counts if its unit converts to a mass: litres and
-     * units are ignored. An operation without quantity or without unit
-     * is ignored too. When nothing is eligible the dose is null, which
-     * is not the same as zero.
+     * Sans date de repiquage, impossible de séparer la fumure de fond de
+     * la couverture : le champ reste nul et TOM-A02 ne conclut pas. Une
+     * fertilisation portée au jour même du repiquage compte comme fumure
+     * de fond. A quantity only counts if its unit converts to a mass;
+     * when nothing is eligible the dose is null, which is not zero.
      *
      * @param  Collection<int, Operation>  $operations
      */
-    private static function dosePerHectare(Collection $operations, InputType $inputType, float $area): ?float
-    {
-        if ($area <= 0) {
+    private static function topdressingNpkPerHectare(
+        CropCycle $cycle,
+        Collection $operations,
+        float $area,
+    ): ?float {
+        if ($cycle->transplanting_date === null || $area <= 0) {
             return null;
         }
 
         $eligible = $operations
-            ->filter(fn (Operation $operation): bool => $operation->input_type === $inputType)
+            ->filter(fn (Operation $operation): bool => $operation->type === OperationType::Fertilization
+                && $operation->input_type === InputType::Npk
+                && $operation->date->greaterThan($cycle->transplanting_date))
             ->map(fn (Operation $operation): ?float => $operation->quantityInKilograms())
             ->filter(fn (?float $kilograms): bool => $kilograms !== null);
 
@@ -180,58 +148,77 @@ final readonly class EvaluationContext
     }
 
     /**
-     * Days between the sowing and the earliest operation of a set.
+     * La matière organique apportée sur le cycle, en tonnes par hectare :
+     * toutes les opérations dont la nature d'intrant est organique,
+     * quelle que soit leur place dans le calendrier (le minimum de la
+     * fiche est annuel).
      *
      * @param  Collection<int, Operation>  $operations
      */
-    private static function daysAfterSowing(CropCycle $cycle, Collection $operations): ?int
+    private static function organicMatterPerHectare(Collection $operations, float $area): ?float
     {
-        $first = $operations->sortBy('date')->first();
+        if ($area <= 0) {
+            return null;
+        }
+
+        $eligible = $operations
+            ->filter(fn (Operation $operation): bool => $operation->input_type === InputType::Organic)
+            ->map(fn (Operation $operation): ?float => $operation->quantityInKilograms())
+            ->filter(fn (?float $kilograms): bool => $kilograms !== null);
+
+        if ($eligible->isEmpty()) {
+            return null;
+        }
+
+        return round($eligible->sum() / 1000 / $area, 4);
+    }
+
+    /**
+     * Le nombre de jours entre le repiquage et la première opération de
+     * fertilisation postérieure à cette date (SPEC-CORRECTION section
+     * 5.2). Si la date de repiquage est nulle, le champ vaut null et
+     * TOM-B01 ne se déclenche pas.
+     *
+     * @param  Collection<int, Operation>  $operations
+     */
+    private static function firstTopdressingDaysAfterTransplanting(
+        CropCycle $cycle,
+        Collection $operations,
+    ): ?int {
+        if ($cycle->transplanting_date === null) {
+            return null;
+        }
+
+        $first = $operations
+            ->filter(fn (Operation $operation): bool => $operation->type === OperationType::Fertilization
+                && $operation->date->greaterThan($cycle->transplanting_date))
+            ->sortBy('date')
+            ->first();
 
         if ($first === null) {
             return null;
         }
 
-        return (int) $cycle->sowing_date->startOfDay()->diffInDays($first->date->startOfDay());
+        return (int) $cycle->transplanting_date->startOfDay()
+            ->diffInDays($first->date->startOfDay());
     }
 
     /**
-     * Number of consecutive campaigns, ordered by start date, where the
-     * same plot carried the same crop, the current cycle included
-     * (SPEC section 9.4).
-     *
-     * The count stops at the first campaign that carried another crop or
-     * nothing at all.
+     * La somme des récoltes du cycle sur la superficie de la parcelle :
+     * la tomate se récolte en plusieurs passages (SPEC section 9.2).
+     * Sans récolte, pas de rendement : le champ reste nul.
      */
-    private static function consecutiveSeasons(CropCycle $cycle): int
+    private static function yieldPerHectare(CropCycle $cycle, float $area): ?float
     {
-        $campaigns = Campaign::query()
-            // L'exploitation du cycle, et non celle de l'utilisateur :
-            // le calcul tourne aussi hors contexte HTTP.
-            ->where('exploitation_id', $cycle->exploitation_id)
-            ->where('start_date', '<=', $cycle->campaign->start_date)
-            ->orderByDesc('start_date')
-            ->pluck('id');
-
-        $seasons = 0;
-
-        foreach ($campaigns as $campaignId) {
-            $carriedSameCrop = CropCycle::query()
-                ->where('exploitation_id', $cycle->exploitation_id)
-                ->where('plot_id', $cycle->plot_id)
-                ->where('crop_id', $cycle->crop_id)
-                ->where('campaign_id', $campaignId)
-                ->exists();
-
-            if (! $carriedSameCrop) {
-                break;
-            }
-
-            $seasons++;
+        if ($area <= 0 || $cycle->harvests->isEmpty()) {
+            return null;
         }
 
-        // Le cycle courant en fait partie : la suite vaut au moins un.
-        return max($seasons, 1);
+        $harvested = $cycle->harvests->sum(
+            fn ($harvest): float => (float) $harvest->quantity_kg,
+        );
+
+        return round($harvested / $area, 2);
     }
 
     private static function asFloat(?string $value): ?float

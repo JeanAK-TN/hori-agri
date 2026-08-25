@@ -17,6 +17,7 @@ use App\Models\Recommendation;
 use App\Models\Rule;
 use App\Models\User;
 use App\Services\Rules\RecommendationService;
+use Database\Seeders\RuleSeeder;
 
 /*
 | Hypothèse H2 : le moteur produit des recommandations explicables
@@ -40,7 +41,8 @@ beforeEach(function () {
         $farmer = Farmer::factory()->for($this->exploitation)->inVillage($village)->create();
         $plot = Plot::factory()->ofFarmer($farmer)->withArea(1.0)->create();
         $cycle = CropCycle::factory()->on($plot, $this->campaign, $this->crop)->create([
-            'sowing_date' => '2026-04-15',
+            'sowing_date' => '2026-03-20',
+            'transplanting_date' => '2026-04-10',
         ]);
         Harvest::factory()->forCycle($cycle)->of($yieldKg, 100)->create();
 
@@ -52,8 +54,8 @@ test('the engine produces a recommendation on a cycle below the reference', func
     $cycle = ($this->openCycle)();
 
     Rule::factory()->code('FERT-TEST-01')->create([
-        'condition' => ['field' => 'npk_dose_kg_ha', 'op' => '<', 'value' => 100],
-        'message' => 'Fertilisation de fond insuffisante',
+        'condition' => ['field' => 'topdressing_npk_kg_ha', 'op' => '<', 'value' => 350],
+        'message' => 'Apport de couverture insuffisant',
     ]);
 
     $this->engine->runFor($cycle);
@@ -67,7 +69,7 @@ test('the engine produces a recommendation on a cycle below the reference', func
             InputType::Npk,
             1,
             QuantityUnit::Bag50Kg,
-        )->create();
+        )->on('2026-04-25')->create();
 
     $this->engine->runFor($cycle->fresh());
 
@@ -79,7 +81,7 @@ test('the engine produces a recommendation on a cycle below the reference', func
         ->and($recommendation->exploitation_id)->toBe($this->exploitation->id)
         // Le constat est suivi des valeurs observées, entre parenthèses.
         ->and($recommendation->generated_message)
-        ->toBe('Fertilisation de fond insuffisante (dose de NPK : 50 kg/ha)');
+        ->toBe('Apport de couverture insuffisant (NPK de couverture cumulé : 50 kg/ha)');
 });
 
 test('the engine stays silent on a conforming cycle', function () {
@@ -120,10 +122,10 @@ test('a second run creates no duplicate', function () {
 test('a rule of the exploitation replaces the common rule of the same code', function () {
     $cycle = ($this->openCycle)();
 
-    Rule::factory()->code('FERT-MAIS-01')->neverFiring()->create([
+    Rule::factory()->code('FERT-TEST-01')->neverFiring()->create([
         'message' => 'Message commun',
     ]);
-    Rule::factory()->code('FERT-MAIS-01')->alwaysFiring()
+    Rule::factory()->code('FERT-TEST-01')->alwaysFiring()
         ->ownedBy($this->exploitation)
         ->create(['message' => 'Message de l\'exploitation']);
 
@@ -138,10 +140,10 @@ test('the override of another exploitation is ignored', function () {
     $cycle = ($this->openCycle)();
     $otherExploitation = Exploitation::factory()->create();
 
-    Rule::factory()->code('FERT-MAIS-01')->neverFiring()->create([
+    Rule::factory()->code('FERT-TEST-01')->neverFiring()->create([
         'message' => 'Message commun',
     ]);
-    Rule::factory()->code('FERT-MAIS-01')->alwaysFiring()
+    Rule::factory()->code('FERT-TEST-01')->alwaysFiring()
         ->ownedBy($otherExploitation)
         ->create(['message' => 'Message du voisin']);
 
@@ -213,7 +215,7 @@ test('a recommendation that no longer fires is removed', function () {
 
     expect(Recommendation::count())->toBe(1);
 
-    $rule->forceFill(['condition' => ['field' => 'sowing_month', 'op' => '>', 'value' => 12]])->save();
+    $rule->forceFill(['condition' => ['field' => 'crop_name', 'op' => '=', 'value' => '']])->save();
 
     $this->engine->runFor($cycle->fresh());
 
@@ -228,7 +230,7 @@ test('an answered recommendation is kept even when the rule stops firing', funct
 
     Recommendation::first()->forceFill(['status' => $status])->save();
 
-    $rule->forceFill(['condition' => ['field' => 'sowing_month', 'op' => '>', 'value' => 12]])->save();
+    $rule->forceFill(['condition' => ['field' => 'crop_name', 'op' => '=', 'value' => '']])->save();
 
     $this->engine->runFor($cycle->fresh());
 
@@ -246,7 +248,7 @@ test('a read recommendation is removed like a new one', function () {
     $this->engine->runFor($cycle);
     Recommendation::first()->forceFill(['status' => RecoStatus::Read])->save();
 
-    $rule->forceFill(['condition' => ['field' => 'sowing_month', 'op' => '>', 'value' => 12]])->save();
+    $rule->forceFill(['condition' => ['field' => 'crop_name', 'op' => '=', 'value' => '']])->save();
 
     $this->engine->runFor($cycle->fresh());
 
@@ -289,6 +291,52 @@ test('the other families keep applying below the threshold', function () {
     $this->engine->runFor($cycle);
 
     expect(Recommendation::count())->toBe(1);
+});
+
+/*
+| Le comportement sur la valeur nulle, épinglé sur les vraies règles
+| togolaises (SPEC-CORRECTION section 4.2). Chez INSECTGO, la densité
+| n'est pas renseignée : la ferme travaille en planches et ne compte pas
+| ses plants à l'hectare. Le moteur ne conclut pas plutôt que de
+| conclure mal.
+*/
+
+test('a tomato cycle without density produces no TOM-A01 and raises no error', function () {
+    $this->seed(RuleSeeder::class);
+
+    $cycle = ($this->openCycle)();
+    $cycle->update(['density' => null]);
+
+    $this->engine->runFor($cycle->fresh());
+
+    expect(
+        Recommendation::whereHas(
+            'rule',
+            fn ($query) => $query->where('code', 'TOM-A01'),
+        )->count(),
+    )->toBe(0);
+});
+
+test('a cycle without transplanting date produces no TOM-B01', function () {
+    $this->seed(RuleSeeder::class);
+
+    $cycle = ($this->openCycle)();
+    $cycle->update(['transplanting_date' => null]);
+
+    // Un apport tardif est bien là, mais sans date de repiquage le champ
+    // reste nul et TOM-B01 ne conclut pas.
+    Operation::factory()->forCycle($cycle)
+        ->bringing(OperationType::Fertilization, InputType::Npk, 1, QuantityUnit::Bag50Kg)
+        ->on('2026-06-01')->create();
+
+    $this->engine->runFor($cycle->fresh());
+
+    expect(
+        Recommendation::whereHas(
+            'rule',
+            fn ($query) => $query->where('code', 'TOM-B01'),
+        )->count(),
+    )->toBe(0);
 });
 
 /*

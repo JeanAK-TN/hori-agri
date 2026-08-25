@@ -13,12 +13,15 @@ use App\Models\Operation;
 use App\Models\Plot;
 use App\Services\Indicators\IndicatorService;
 use App\Services\Rules\EvaluationContext;
+use App\Services\Rules\InvalidConditionException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
 /*
-| Les quinze champs se dérivent d'un cycle complet (SPEC section 14.1).
+| Les sept champs se dérivent d'un cycle complet (SPEC-CORRECTION
+| section 4.1). La fiche togolaise compte le calendrier de fertilisation
+| à partir du repiquage, pas du semis.
 */
 
 beforeEach(function () {
@@ -34,237 +37,172 @@ beforeEach(function () {
 
     $this->cycle = CropCycle::factory()
         ->on($this->plot, $this->campaign, $this->crop)
-        ->create(['sowing_date' => '2026-04-15', 'density' => 50000]);
+        ->create([
+            'sowing_date' => '2026-03-20',
+            'transplanting_date' => '2026-04-10',
+            'density' => 30000,
+        ]);
 });
 
-test('the fifteen fields derive from a complete cycle', function () {
+test('the seven fields derive from a complete cycle', function () {
+    // Fumure de fond organique avant le repiquage : une tonne au labour.
     Operation::factory()->forCycle($this->cycle)
-        ->bringing(OperationType::Sowing, InputType::Seed, 50, QuantityUnit::Kilogram)
-        ->on('2026-04-15')->create();
+        ->bringing(OperationType::Fertilization, InputType::Organic, 20, QuantityUnit::Bag50Kg)
+        ->on('2026-03-25')->create();
+    // Couverture : deux fractions de NPK après le repiquage.
     Operation::factory()->forCycle($this->cycle)
         ->bringing(OperationType::Fertilization, InputType::Npk, 4, QuantityUnit::Bag50Kg)
-        ->on('2026-04-20')->create();
+        ->on('2026-04-25')->create();
     Operation::factory()->forCycle($this->cycle)
-        ->bringing(OperationType::Fertilization, InputType::Urea, 2, QuantityUnit::Bag50Kg)
+        ->bringing(OperationType::Fertilization, InputType::Npk, 2, QuantityUnit::Bag50Kg)
         ->on('2026-05-25')->create();
-    Operation::factory()->forCycle($this->cycle)
-        ->bringing(OperationType::Sowing, InputType::Inoculant, 1, QuantityUnit::Kilogram)
-        ->on('2026-04-15')->create();
     Operation::factory()->forCycle($this->cycle)
         ->on('2026-05-05')->create(['type' => OperationType::Weeding]);
 
-    Harvest::factory()->forCycle($this->cycle)->of(2000, 100)->create();
-    app(IndicatorService::class)->computeFor($this->cycle);
+    // La tomate se récolte en plusieurs passages : deux récoltes.
+    Harvest::factory()->forCycle($this->cycle)->of(14000, 200)->on('2026-07-10')->create();
+    Harvest::factory()->forCycle($this->cycle)->of(6000, 200)->on('2026-07-25')->create();
 
     $context = EvaluationContext::fromCycle($this->cycle->fresh());
 
     expect($context->crop_name)->toBe('Tomate')
-        ->and($context->region)->toBe('Kara')
-        ->and($context->sowing_month)->toBe(4)
-        ->and($context->sowing_density_plants_ha)->toBe(50000)
-        // 50 kg sur 2 ha
-        ->and($context->seed_rate_kg_ha)->toBe(25.0)
-        // 4 sacs de 50 kg sur 2 ha
-        ->and($context->npk_dose_kg_ha)->toBe(100.0)
-        // 2 sacs de 50 kg sur 2 ha
-        ->and($context->urea_dose_kg_ha)->toBe(50.0)
-        ->and($context->potassium_dose_kg_ha)->toBeNull()
-        ->and($context->inoculant_used)->toBeTrue()
-        // du 15/04 au 05/05
-        ->and($context->first_weeding_days_after_sowing)->toBe(20)
-        // du 15/04 au 25/05
-        ->and($context->urea_days_after_sowing)->toBe(40)
-        ->and($context->consecutive_seasons_same_crop)->toBe(1)
-        ->and($context->yield_vs_zone_median_ratio)->toBeNull()
-        ->and($context->cost_vs_zone_median_ratio)->toBeNull()
-        ->and($context->input_cost_share_of_harvest_value)->toBe(0.0);
+        // La densité renseignée sur le cycle, telle quelle.
+        ->and($context->planting_density_plants_ha)->toBe(30000)
+        // 6 sacs de 50 kg après repiquage sur 2 ha : 150 kg/ha. La
+        // fumure organique de fond n'y entre pas.
+        ->and($context->topdressing_npk_kg_ha)->toBe(150.0)
+        // 20 sacs de 50 kg, soit une tonne, sur 2 ha : 0,5 t/ha.
+        ->and($context->organic_matter_t_ha)->toBe(0.5)
+        // Du 10 avril au 25 avril : quinze jours.
+        ->and($context->first_topdressing_days_after_transplanting)->toBe(15)
+        // 20 000 kg sur 2 ha, tous passages confondus.
+        ->and($context->yield_kg_ha)->toBe(10000.0);
 });
 
-test('a fifty kilogram bag counts as fifty kilograms', function () {
-    Operation::factory()->forCycle($this->cycle)
-        ->bringing(OperationType::Fertilization, InputType::Npk, 3, QuantityUnit::Bag50Kg)
-        ->create();
-
-    // 3 sacs de 50 kg, soit 150 kg, sur 2 ha.
-    expect(EvaluationContext::fromCycle($this->cycle)->npk_dose_kg_ha)->toBe(75.0);
-});
-
-test('a twenty-five kilogram bag counts as twenty-five kilograms', function () {
-    Operation::factory()->forCycle($this->cycle)
-        ->bringing(OperationType::Fertilization, InputType::Npk, 4, QuantityUnit::Bag25Kg)
-        ->create();
-
-    expect(EvaluationContext::fromCycle($this->cycle)->npk_dose_kg_ha)->toBe(50.0);
-});
-
-test('an operation in litres never enters a dose in kilograms per hectare', function () {
-    Operation::factory()->forCycle($this->cycle)
-        ->bringing(OperationType::Treatment, InputType::Npk, 10, QuantityUnit::Litre)
-        ->create();
-
-    expect(EvaluationContext::fromCycle($this->cycle)->npk_dose_kg_ha)->toBeNull();
-});
-
-test('an operation in units never enters a dose either', function () {
-    Operation::factory()->forCycle($this->cycle)
-        ->bringing(OperationType::Fertilization, InputType::Npk, 3, QuantityUnit::Unit)
-        ->create();
-
-    expect(EvaluationContext::fromCycle($this->cycle)->npk_dose_kg_ha)->toBeNull();
-});
-
-test('an operation without quantity or without unit is ignored', function () {
-    Operation::factory()->forCycle($this->cycle)->create([
-        'type' => OperationType::Fertilization,
-        'input_type' => InputType::Npk,
-        'quantity' => null,
-        'unit' => QuantityUnit::Kilogram,
+test('the field list carries exactly the seven documented names', function () {
+    expect(array_keys(EvaluationContext::FIELD_LABELS))->toBe([
+        'crop_name',
+        'planting_density_plants_ha',
+        'topdressing_npk_kg_ha',
+        'organic_matter_t_ha',
+        'first_topdressing_days_after_transplanting',
+        'yield_kg_ha',
+        'zone_median_yield_kg_ha',
     ]);
-    Operation::factory()->forCycle($this->cycle)->create([
-        'type' => OperationType::Fertilization,
-        'input_type' => InputType::Npk,
-        'quantity' => 40,
-        'unit' => null,
-    ]);
-
-    expect(EvaluationContext::fromCycle($this->cycle)->npk_dose_kg_ha)->toBeNull();
 });
 
-test('convertible and non convertible quantities mix without contaminating each other', function () {
-    Operation::factory()->forCycle($this->cycle)
-        ->bringing(OperationType::Fertilization, InputType::Npk, 2, QuantityUnit::Bag50Kg)
-        ->create();
-    Operation::factory()->forCycle($this->cycle)
-        ->bringing(OperationType::Fertilization, InputType::Npk, 10, QuantityUnit::Litre)
-        ->on('2026-05-01')->create();
+test('a missing density stays null, it does not become zero', function () {
+    // Chez INSECTGO la densité n'est pas renseignée : la ferme travaille
+    // en planches et ne compte pas ses plants à l'hectare
+    // (SPEC-CORRECTION section 4.2).
+    $this->cycle->update(['density' => null]);
 
-    // Seuls les 100 kg comptent, sur 2 ha.
-    expect(EvaluationContext::fromCycle($this->cycle)->npk_dose_kg_ha)->toBe(50.0);
+    $context = EvaluationContext::fromCycle($this->cycle->fresh());
+
+    expect($context->planting_density_plants_ha)->toBeNull();
 });
 
-test('the seed rate only counts the seed brought at sowing', function () {
+test('without a transplanting date the two topdressing fields stay null', function () {
+    $this->cycle->update(['transplanting_date' => null]);
+
     Operation::factory()->forCycle($this->cycle)
-        ->bringing(OperationType::Sowing, InputType::Seed, 40, QuantityUnit::Kilogram)
-        ->create();
-    // De la semence apportée hors du semis n'entre pas dans la dose.
-    Operation::factory()->forCycle($this->cycle)
-        ->bringing(OperationType::Treatment, InputType::Seed, 100, QuantityUnit::Kilogram)
-        ->on('2026-05-01')->create();
-
-    expect(EvaluationContext::fromCycle($this->cycle)->seed_rate_kg_ha)->toBe(20.0);
-});
-
-test('the first weeding is the earliest one', function () {
-    Operation::factory()->forCycle($this->cycle)->on('2026-06-10')
-        ->create(['type' => OperationType::Weeding]);
-    Operation::factory()->forCycle($this->cycle)->on('2026-05-05')
-        ->create(['type' => OperationType::Weeding]);
-
-    expect(EvaluationContext::fromCycle($this->cycle)->first_weeding_days_after_sowing)->toBe(20);
-});
-
-test('a cycle without weeding leaves the field null rather than zero', function () {
-    expect(EvaluationContext::fromCycle($this->cycle)->first_weeding_days_after_sowing)->toBeNull();
-});
-
-test('urea brought outside a fertilization does not count as the urea date', function () {
-    Operation::factory()->forCycle($this->cycle)
-        ->bringing(OperationType::Treatment, InputType::Urea, 1, QuantityUnit::Bag50Kg)
+        ->bringing(OperationType::Fertilization, InputType::Npk, 4, QuantityUnit::Bag50Kg)
         ->on('2026-04-25')->create();
 
-    expect(EvaluationContext::fromCycle($this->cycle)->urea_days_after_sowing)->toBeNull();
+    $context = EvaluationContext::fromCycle($this->cycle->fresh());
+
+    // Sans repiquage, impossible de séparer la fumure de fond de la
+    // couverture : le moteur ne conclut pas plutôt que de conclure mal.
+    expect($context->topdressing_npk_kg_ha)->toBeNull()
+        ->and($context->first_topdressing_days_after_transplanting)->toBeNull();
 });
 
-/*
-| consecutive_seasons_same_crop (SPEC section 9.4).
-*/
+test('a fertilization on the transplanting day counts as basal dressing', function () {
+    Operation::factory()->forCycle($this->cycle)
+        ->bringing(OperationType::Fertilization, InputType::Npk, 4, QuantityUnit::Bag50Kg)
+        ->on('2026-04-10')->create();
 
-test('consecutive seasons count the campaigns carrying the same crop', function () {
-    $earlier = Campaign::factory()->for($this->exploitation)
-        ->between('2025-03-01', '2025-11-30')->create(['label' => '2025']);
-    $earliest = Campaign::factory()->for($this->exploitation)
-        ->between('2024-03-01', '2024-11-30')->create(['label' => '2024']);
+    $context = EvaluationContext::fromCycle($this->cycle->fresh());
 
-    CropCycle::factory()->on($this->plot, $earlier, $this->crop)->create();
-    CropCycle::factory()->on($this->plot, $earliest, $this->crop)->create();
-
-    expect(EvaluationContext::fromCycle($this->cycle)->consecutive_seasons_same_crop)->toBe(3);
+    expect($context->topdressing_npk_kg_ha)->toBeNull()
+        ->and($context->first_topdressing_days_after_transplanting)->toBeNull();
 });
 
-test('the count stops at the first campaign carrying another crop', function () {
-    $earlier = Campaign::factory()->for($this->exploitation)
-        ->between('2025-03-01', '2025-11-30')->create(['label' => '2025']);
-    $earliest = Campaign::factory()->for($this->exploitation)
-        ->between('2024-03-01', '2024-11-30')->create(['label' => '2024']);
+test('a quantity in litres does not enter a dose in kilograms', function () {
+    Operation::factory()->forCycle($this->cycle)
+        ->bringing(OperationType::Fertilization, InputType::Npk, 10, QuantityUnit::Litre)
+        ->on('2026-04-25')->create();
 
-    // La campagne intermédiaire a porté du gombo : la suite s'arrête là,
-    // même si la même culture revient plus tôt.
-    CropCycle::factory()->on($this->plot, $earlier, Crop::factory()->named('Gombo')->create())->create();
-    CropCycle::factory()->on($this->plot, $earliest, $this->crop)->create();
+    $context = EvaluationContext::fromCycle($this->cycle->fresh());
 
-    expect(EvaluationContext::fromCycle($this->cycle)->consecutive_seasons_same_crop)->toBe(1);
+    // Le litre ne se convertit pas en masse : la dose reste nulle plutôt
+    // que fausse.
+    expect($context->topdressing_npk_kg_ha)->toBeNull();
 });
 
-test('a campaign without any cycle on the plot breaks the run', function () {
-    Campaign::factory()->for($this->exploitation)
-        ->between('2025-03-01', '2025-11-30')->create(['label' => '2025']);
+test('without any organic operation the organic matter stays null', function () {
+    Operation::factory()->forCycle($this->cycle)
+        ->bringing(OperationType::Fertilization, InputType::Npk, 2, QuantityUnit::Bag50Kg)
+        ->on('2026-04-25')->create();
 
-    expect(EvaluationContext::fromCycle($this->cycle)->consecutive_seasons_same_crop)->toBe(1);
+    $context = EvaluationContext::fromCycle($this->cycle->fresh());
+
+    expect($context->organic_matter_t_ha)->toBeNull();
 });
 
-test('the same crop on another plot does not extend the run', function () {
-    $earlier = Campaign::factory()->for($this->exploitation)
-        ->between('2025-03-01', '2025-11-30')->create(['label' => '2025']);
-    $otherPlot = Plot::factory()->ofFarmer($this->farmer)->withArea(1.0)->create();
+test('without any harvest the yield stays null', function () {
+    $context = EvaluationContext::fromCycle($this->cycle->fresh());
 
-    CropCycle::factory()->on($otherPlot, $earlier, $this->crop)->create();
-
-    expect(EvaluationContext::fromCycle($this->cycle)->consecutive_seasons_same_crop)->toBe(1);
+    expect($context->yield_kg_ha)->toBeNull();
 });
 
-/*
-| Les trois champs venus des indicateurs.
-*/
+test('the yield sums every harvest pass of the cycle', function () {
+    Harvest::factory()->forCycle($this->cycle)->of(3000, 200)->on('2026-07-10')->create();
+    Harvest::factory()->forCycle($this->cycle)->of(2000, 200)->on('2026-07-25')->create();
+    Harvest::factory()->forCycle($this->cycle)->of(1000, 200)->on('2026-08-08')->create();
 
-test('the three ratio fields are read from the indicators', function () {
-    Harvest::factory()->forCycle($this->cycle)->of(2400, 100)->create();
-    Operation::factory()->forCycle($this->cycle)->costing(100000)->create();
+    $context = EvaluationContext::fromCycle($this->cycle->fresh());
 
-    foreach ([1600, 1800, 2000, 2200] as $yield) {
-        $peerFarmer = Farmer::factory()->for($this->exploitation)->inVillage('Bassar')->create();
-        $peerPlot = Plot::factory()->ofFarmer($peerFarmer)->withArea(1.0)->create();
-        $peer = CropCycle::factory()->on($peerPlot, $this->campaign, $this->crop)->create();
-        Harvest::factory()->forCycle($peer)->of($yield, 100)->create();
-        Operation::factory()->forCycle($peer)->costing(50000)->create();
-    }
+    expect($context->yield_kg_ha)->toBe(3000.0);
+});
+
+test('the zone median comes from the indicators of the comparable cycles', function () {
+    Harvest::factory()->forCycle($this->cycle)->of(2000, 200)->create();
 
     app(IndicatorService::class)->computeFor($this->cycle);
 
     $context = EvaluationContext::fromCycle($this->cycle->fresh());
 
-    // 2 400 kg sur 2 ha, soit 1 200 kg/ha, contre une médiane de 1 800.
-    expect($context->yield_vs_zone_median_ratio)->toBe(0.667)
-        ->and($context->cost_vs_zone_median_ratio)->toBe(1.0)
-        // 100 000 de coûts d'intrants sur 240 000 de récolte
-        ->and($context->input_cost_share_of_harvest_value)->toBe(0.0);
+    // Seul cycle de la zone : la médiane est son propre rendement.
+    expect($context->zone_median_yield_kg_ha)->toBe(1000.0);
 });
 
-test('a cycle without indicators leaves the three ratios null', function () {
-    $context = EvaluationContext::fromCycle($this->cycle);
+test('without computed indicators the zone median stays null', function () {
+    $context = EvaluationContext::fromCycle($this->cycle->fresh());
 
-    expect($context->yield_vs_zone_median_ratio)->toBeNull()
-        ->and($context->cost_vs_zone_median_ratio)->toBeNull()
-        ->and($context->input_cost_share_of_harvest_value)->toBeNull();
+    expect($context->zone_median_yield_kg_ha)->toBeNull();
 });
 
-test('a field is described with its label, its value and its unit', function () {
-    Operation::factory()->forCycle($this->cycle)
-        ->bringing(OperationType::Fertilization, InputType::Npk, 2, QuantityUnit::Bag50Kg)
-        ->create();
+/*
+| L'accès aux champs et leur écriture en français, qui complète le
+| message d'une recommandation (SPEC section 9.7).
+*/
 
-    $context = EvaluationContext::fromCycle($this->cycle);
+test('get refuses a field outside the seven', function () {
+    $context = EvaluationContext::fromCycle($this->cycle->fresh());
 
-    expect($context->describe('npk_dose_kg_ha'))->toBe('dose de NPK : 50 kg/ha')
-        ->and($context->describe('potassium_dose_kg_ha'))->toBe('dose de potassium non renseignée')
-        ->and($context->describe('inoculant_used'))->toBe('inoculant employé : non');
+    expect(fn () => $context->get('npk_dose_kg_ha'))
+        ->toThrow(InvalidConditionException::class, 'npk_dose_kg_ha');
+});
+
+test('describe writes the value with its unit, and says when nothing is known', function () {
+    Harvest::factory()->forCycle($this->cycle)->of(15000, 200)->create();
+
+    $context = EvaluationContext::fromCycle($this->cycle->fresh());
+
+    expect($context->describe('yield_kg_ha'))->toBe('rendement : 7 500 kg/ha')
+        ->and($context->describe('planting_density_plants_ha'))
+        ->toBe('densité de plantation : 30000 plants/ha')
+        ->and($context->describe('organic_matter_t_ha'))
+        ->toBe('matière organique apportée : valeur non renseignée');
 });
