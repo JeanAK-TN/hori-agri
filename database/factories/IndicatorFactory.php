@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\Cooperative;
 use App\Models\CropCycle;
+use App\Models\Exploitation;
 use App\Models\Indicator;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -23,7 +23,7 @@ class IndicatorFactory extends Factory
     public function definition(): array
     {
         return [
-            'cooperative_id' => Cooperative::factory(),
+            'exploitation_id' => Exploitation::factory(),
             'crop_cycle_id' => CropCycle::factory(),
             'yield_kg_ha' => 1000,
             'production_cost_ha' => 80000,

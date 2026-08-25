@@ -3,9 +3,9 @@
 use App\Enums\RecoStatus;
 use App\Enums\Severity;
 use App\Models\Campaign;
-use App\Models\Cooperative;
 use App\Models\Crop;
 use App\Models\CropCycle;
+use App\Models\Exploitation;
 use App\Models\Recommendation;
 use App\Models\Rule;
 use App\Models\User;
@@ -21,13 +21,13 @@ use Illuminate\Support\Facades\DB;
 */
 
 beforeEach(function () {
-    $this->cooperative = Cooperative::factory()->create();
-    $this->admin = User::factory()->coopAdmin()->for($this->cooperative)->create();
+    $this->exploitation = Exploitation::factory()->create();
+    $this->admin = User::factory()->exploitationAdmin()->for($this->exploitation)->create();
 
     $this->maize = Crop::factory()->named('Maïs')->create();
     $this->soy = Crop::factory()->named('Soja')->create();
 
-    $this->campaign = Campaign::factory()->for($this->cooperative)
+    $this->campaign = Campaign::factory()->for($this->exploitation)
         ->between('2026-03-01', '2026-11-30')->create(['label' => 'Campagne 2026']);
 
     $this->dashboard = app(DashboardService::class);
@@ -38,10 +38,10 @@ beforeEach(function () {
 
 test('the averages by crop are computed by the database, one row per crop', function () {
     // Maïs : 1 000 et 2 000 kg/ha → moyenne 1 500.
-    cycleYielding($this->cooperative, $this->maize, $this->campaign, 'Bassar', 1.0, 1000, 50000);
-    cycleYielding($this->cooperative, $this->maize, $this->campaign, 'Bassar', 1.0, 2000, 70000);
+    cycleYielding($this->exploitation, $this->maize, $this->campaign, 'Bassar', 1.0, 1000, 50000);
+    cycleYielding($this->exploitation, $this->maize, $this->campaign, 'Bassar', 1.0, 2000, 70000);
     // Soja : 800 kg/ha.
-    cycleYielding($this->cooperative, $this->soy, $this->campaign, 'Bassar', 1.0, 800, 40000);
+    cycleYielding($this->exploitation, $this->soy, $this->campaign, 'Bassar', 1.0, 800, 40000);
 
     $rows = $this->dashboard->averagesByCrop(new DashboardFilters);
 
@@ -55,9 +55,9 @@ test('the averages by crop are computed by the database, one row per crop', func
 });
 
 test('the averages by village group the producers of one place', function () {
-    cycleYielding($this->cooperative, $this->maize, $this->campaign, 'Bassar', 1.0, 1000, 50000);
-    cycleYielding($this->cooperative, $this->maize, $this->campaign, 'Bassar', 1.0, 1400, 50000);
-    cycleYielding($this->cooperative, $this->maize, $this->campaign, 'Kara', 1.0, 600, 50000);
+    cycleYielding($this->exploitation, $this->maize, $this->campaign, 'Bassar', 1.0, 1000, 50000);
+    cycleYielding($this->exploitation, $this->maize, $this->campaign, 'Bassar', 1.0, 1400, 50000);
+    cycleYielding($this->exploitation, $this->maize, $this->campaign, 'Kara', 1.0, 600, 50000);
 
     $rows = $this->dashboard->averagesByVillage(new DashboardFilters);
 
@@ -69,11 +69,11 @@ test('the averages by village group the producers of one place', function () {
 });
 
 test('the averages by campaign separate the seasons', function () {
-    $previous = Campaign::factory()->for($this->cooperative)
+    $previous = Campaign::factory()->for($this->exploitation)
         ->between('2025-03-01', '2025-11-30')->create(['label' => 'Campagne 2025']);
 
-    cycleYielding($this->cooperative, $this->maize, $previous, 'Bassar', 1.0, 900, 40000);
-    cycleYielding($this->cooperative, $this->maize, $this->campaign, 'Bassar', 1.0, 1500, 60000);
+    cycleYielding($this->exploitation, $this->maize, $previous, 'Bassar', 1.0, 900, 40000);
+    cycleYielding($this->exploitation, $this->maize, $this->campaign, 'Bassar', 1.0, 1500, 60000);
 
     $rows = $this->dashboard->averagesByCampaign(new DashboardFilters);
 
@@ -86,14 +86,14 @@ test('the averages by campaign separate the seasons', function () {
 
 test('the gross margin follows the sale price of the harvest', function () {
     // 1 000 kg à 100 FCFA = 100 000 de valeur, moins 40 000 de coût.
-    cycleYielding($this->cooperative, $this->maize, $this->campaign, 'Bassar', 1.0, 1000, 40000);
+    cycleYielding($this->exploitation, $this->maize, $this->campaign, 'Bassar', 1.0, 1000, 40000);
 
     expect($this->dashboard->headline(new DashboardFilters)['gross_margin_ha'])->toBe(60000.0);
 });
 
 test('an abandoned cycle says nothing and leaves every average', function () {
-    $kept = cycleYielding($this->cooperative, $this->maize, $this->campaign, 'Bassar', 1.0, 1000, 50000);
-    $given = cycleYielding($this->cooperative, $this->maize, $this->campaign, 'Bassar', 1.0, 3000, 50000);
+    $kept = cycleYielding($this->exploitation, $this->maize, $this->campaign, 'Bassar', 1.0, 1000, 50000);
+    $given = cycleYielding($this->exploitation, $this->maize, $this->campaign, 'Bassar', 1.0, 3000, 50000);
 
     $given->abandon();
 
@@ -106,8 +106,8 @@ test('an abandoned cycle says nothing and leaves every average', function () {
 });
 
 test('the filters narrow the averages the same way everywhere', function () {
-    cycleYielding($this->cooperative, $this->maize, $this->campaign, 'Bassar', 1.0, 1000, 50000);
-    cycleYielding($this->cooperative, $this->soy, $this->campaign, 'Bassar', 1.0, 400, 30000);
+    cycleYielding($this->exploitation, $this->maize, $this->campaign, 'Bassar', 1.0, 1000, 50000);
+    cycleYielding($this->exploitation, $this->soy, $this->campaign, 'Bassar', 1.0, 400, 30000);
 
     $onlyMaize = new DashboardFilters(cropId: $this->maize->id);
 
@@ -121,7 +121,7 @@ test('the filters narrow the averages the same way everywhere', function () {
 */
 
 test('the recommendations are counted by severity, zeros included', function () {
-    $cycle = cycleYielding($this->cooperative, $this->maize, $this->campaign, 'Bassar', 1.0, 1000, 50000);
+    $cycle = cycleYielding($this->exploitation, $this->maize, $this->campaign, 'Bassar', 1.0, 1000, 50000);
 
     foreach ([Severity::High, Severity::High, Severity::Medium] as $index => $severity) {
         Recommendation::factory()
@@ -141,7 +141,7 @@ test('the recommendations are counted by severity, zeros included', function () 
 });
 
 test('the applied share counts only the recommendations answered', function () {
-    $cycle = cycleYielding($this->cooperative, $this->maize, $this->campaign, 'Bassar', 1.0, 1000, 50000);
+    $cycle = cycleYielding($this->exploitation, $this->maize, $this->campaign, 'Bassar', 1.0, 1000, 50000);
 
     $statuses = [
         RecoStatus::Applied,
@@ -168,7 +168,7 @@ test('the applied share counts only the recommendations answered', function () {
 });
 
 test('with nothing answered the share stays undefined rather than zero', function () {
-    $cycle = cycleYielding($this->cooperative, $this->maize, $this->campaign, 'Bassar', 1.0, 1000, 50000);
+    $cycle = cycleYielding($this->exploitation, $this->maize, $this->campaign, 'Bassar', 1.0, 1000, 50000);
 
     Recommendation::factory()
         ->forCycle($cycle)
@@ -189,7 +189,7 @@ test('the plots below the zone median exclude the zones under five cycles', func
     // Quatre cycles seulement : la zone n'est pas comparable, aucun
     // rapport n'a été calculé (SPEC section 9.3).
     foreach ([600, 800, 1000, 1200] as $harvested) {
-        cycleYielding($this->cooperative, $this->maize, $this->campaign, 'Bassar', 1.0, $harvested, 50000);
+        cycleYielding($this->exploitation, $this->maize, $this->campaign, 'Bassar', 1.0, $harvested, 50000);
     }
 
     expect($this->dashboard->plotsBelowZoneMedian(new DashboardFilters))
@@ -200,7 +200,7 @@ test('from five comparable cycles the plots below the median are counted', funct
     // Rendements 600, 800, 1 000, 1 200, 1 400 : médiane 1 000, deux
     // cycles en dessous.
     foreach ([600, 800, 1000, 1200, 1400] as $harvested) {
-        $cycle = cycleYielding($this->cooperative, $this->maize, $this->campaign, 'Bassar', 1.0, $harvested, 50000);
+        $cycle = cycleYielding($this->exploitation, $this->maize, $this->campaign, 'Bassar', 1.0, $harvested, 50000);
     }
 
     // Les zones se recalculent au fil des ajouts : on repasse sur tous
@@ -218,7 +218,7 @@ test('from five comparable cycles the plots below the median are counted', funct
 
 test('every aggregate is a query, never a collection walked in PHP', function () {
     foreach (range(1, 6) as $index) {
-        cycleYielding($this->cooperative, $this->maize, $this->campaign, 'Bassar', 1.0, 500 * $index, 50000);
+        cycleYielding($this->exploitation, $this->maize, $this->campaign, 'Bassar', 1.0, 500 * $index, 50000);
     }
 
     $rowsRead = 0;
@@ -242,14 +242,14 @@ test('every aggregate is a query, never a collection walked in PHP', function ()
     expect($rowsRead)->toBe(7);
 });
 
-test('the aggregates of a cooperative stop at its own border', function () {
-    cycleYielding($this->cooperative, $this->maize, $this->campaign, 'Bassar', 1.0, 1000, 50000);
+test('the aggregates of an exploitation stop at its own border', function () {
+    cycleYielding($this->exploitation, $this->maize, $this->campaign, 'Bassar', 1.0, 1000, 50000);
 
-    $otherCooperative = Cooperative::factory()->create();
-    $otherCampaign = Campaign::factory()->for($otherCooperative)
+    $otherExploitation = Exploitation::factory()->create();
+    $otherCampaign = Campaign::factory()->for($otherExploitation)
         ->between('2026-03-01', '2026-11-30')->create();
 
-    cycleYielding($otherCooperative, $this->maize, $otherCampaign, 'Bassar', 1.0, 9000, 50000);
+    cycleYielding($otherExploitation, $this->maize, $otherCampaign, 'Bassar', 1.0, 9000, 50000);
 
     $this->actingAs($this->admin);
 

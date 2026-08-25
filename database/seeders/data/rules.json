@@ -52,7 +52,7 @@
         "message": "Apport de potassium absent ou faible",
         "action": "Prévoir un apport de potassium au semis sur les sols les plus sableux de la parcelle.",
         "estimated_gain": "+150 kg/ha",
-        "source": "À confirmer avec la coopérative",
+        "source": "À confirmer avec l'exploitation",
         "threshold_status": "convention",
         "enabled": false
     },
@@ -128,7 +128,7 @@
         "message": "Apport d'urée trop tardif pour être pleinement valorisé",
         "action": "Avancer l'apport d'urée autour de la sixième semaine après le semis.",
         "estimated_gain": "+200 kg/ha",
-        "source": "À confirmer avec la coopérative",
+        "source": "À confirmer avec l'exploitation",
         "threshold_status": "convention",
         "enabled": false
     },
@@ -147,7 +147,7 @@
         "message": "Maïs répété sur la même parcelle depuis plusieurs campagnes",
         "action": "Insérer une légumineuse dans la rotation à la prochaine campagne pour rompre le cycle des bioagresseurs.",
         "estimated_gain": "+450 kg/ha",
-        "source": "À confirmer avec la coopérative",
+        "source": "À confirmer avec l'exploitation",
         "threshold_status": "convention",
         "enabled": false
     },
@@ -261,7 +261,7 @@
         "message": "Manioc répété sur la même parcelle",
         "action": "Alterner avec une autre culture pour préserver la fertilité du sol.",
         "estimated_gain": "+1500 kg/ha",
-        "source": "À confirmer avec la coopérative",
+        "source": "À confirmer avec l'exploitation",
         "threshold_status": "convention",
         "enabled": false
     },
@@ -275,7 +275,7 @@
         "message": "Rendement nettement inférieur à la médiane des parcelles semblables du village",
         "action": "Comparer l'itinéraire technique avec celui des parcelles voisines de même culture et de même campagne.",
         "estimated_gain": "+20 % de rendement",
-        "source": "Comparaison interne aux parcelles de la coopérative",
+        "source": "Comparaison interne aux parcelles de l'exploitation",
         "threshold_status": "sourced",
         "enabled": true
     },
@@ -289,7 +289,7 @@
         "message": "Coût de production supérieur à la médiane des parcelles semblables",
         "action": "Passer en revue les postes de dépense les plus lourds du cycle avec le technicien.",
         "estimated_gain": "20000 FCFA/ha",
-        "source": "Comparaison interne aux parcelles de la coopérative",
+        "source": "Comparaison interne aux parcelles de l'exploitation",
         "threshold_status": "sourced",
         "enabled": true
     },
@@ -303,7 +303,7 @@
         "message": "Les intrants absorbent une part élevée de la valeur de la récolte",
         "action": "Revoir les doses et la date des apports pour améliorer leur valorisation.",
         "estimated_gain": "15000 FCFA/ha",
-        "source": "À confirmer avec la coopérative",
+        "source": "À confirmer avec l'exploitation",
         "threshold_status": "convention",
         "enabled": false
     }

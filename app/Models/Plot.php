@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Enums\SoilType;
-use App\Models\Concerns\BelongsToCooperative;
+use App\Models\Concerns\BelongsToExploitation;
 use Database\Factories\PlotFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -14,7 +14,7 @@ use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
- * @property int $cooperative_id
+ * @property int $exploitation_id
  * @property int $farmer_id
  * @property string $name
  * @property string $area_ha
@@ -37,7 +37,7 @@ use Illuminate\Support\Carbon;
 class Plot extends Model
 {
     /** @use HasFactory<PlotFactory> */
-    use BelongsToCooperative, HasFactory;
+    use BelongsToExploitation, HasFactory;
 
     /**
      * @return array<string, string>

@@ -24,7 +24,7 @@ use Inertia\Response;
 class CropCycleController extends Controller
 {
     /**
-     * List the cycles of the cooperative, filterable by campaign and by
+     * List the cycles of the exploitation, filterable by campaign and by
      * crop (SPEC section 11).
      */
     public function index(Request $request): Response

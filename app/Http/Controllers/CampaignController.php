@@ -13,7 +13,7 @@ use Inertia\Response;
 class CampaignController extends Controller
 {
     /**
-     * List the campaigns of the cooperative, most recent first.
+     * List the campaigns of the exploitation, most recent first.
      */
     public function index(): Response
     {

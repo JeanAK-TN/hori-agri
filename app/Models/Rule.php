@@ -5,8 +5,8 @@ namespace App\Models;
 use App\Enums\RuleFamily;
 use App\Enums\Severity;
 use App\Enums\ThresholdStatus;
-use App\Models\Scopes\CooperativeRuleScope;
-use App\Models\Scopes\CurrentCooperative;
+use App\Models\Scopes\CurrentExploitation;
+use App\Models\Scopes\ExploitationRuleScope;
 use Database\Factories\RuleFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -19,11 +19,11 @@ use Illuminate\Support\Carbon;
  * One row of the knowledge base (SPEC section 6.2).
  *
  * The condition is a tree of conditions in JSON, deliberately poor so it
- * stays readable by the technical lead of a cooperative. No agronomic
+ * stays readable by the technical lead of an exploitation. No agronomic
  * condition ever appears in a PHP file (rule 4).
  *
  * @property int $id
- * @property int|null $cooperative_id
+ * @property int|null $exploitation_id
  * @property string $code
  * @property int|null $crop_id
  * @property RuleFamily $family
@@ -58,12 +58,12 @@ class Rule extends Model
 
     protected static function booted(): void
     {
-        static::addGlobalScope(new CooperativeRuleScope);
+        static::addGlobalScope(new ExploitationRuleScope);
 
-        // Une règle créée par un administrateur de coopérative lui
+        // Une règle créée par un administrateur d'exploitation lui
         // appartient ; une règle créée par le super_admin est commune.
         static::creating(function (Rule $rule): void {
-            $rule->cooperative_id ??= CurrentCooperative::id();
+            $rule->exploitation_id ??= CurrentExploitation::id();
         });
     }
 
@@ -82,11 +82,11 @@ class Rule extends Model
     }
 
     /**
-     * @return BelongsTo<Cooperative, $this>
+     * @return BelongsTo<Exploitation, $this>
      */
-    public function cooperative(): BelongsTo
+    public function exploitation(): BelongsTo
     {
-        return $this->belongsTo(Cooperative::class);
+        return $this->belongsTo(Exploitation::class);
     }
 
     /**
@@ -106,12 +106,12 @@ class Rule extends Model
     }
 
     /**
-     * A rule carried by a cooperative overrides the common one that
+     * A rule carried by an exploitation overrides the common one that
      * shares its code (SPEC section 9.6).
      */
     public function isOverride(): bool
     {
-        return $this->cooperative_id !== null;
+        return $this->exploitation_id !== null;
     }
 
     /**

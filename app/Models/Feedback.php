@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\Concerns\BelongsToCooperative;
+use App\Models\Concerns\BelongsToExploitation;
 use Database\Factories\FeedbackFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -17,7 +17,7 @@ use Illuminate\Support\Carbon;
  * signed-in account, resolved server side.
  *
  * @property int $id
- * @property int $cooperative_id
+ * @property int $exploitation_id
  * @property int $recommendation_id
  * @property int $farmer_id
  * @property bool $applied
@@ -30,7 +30,7 @@ use Illuminate\Support\Carbon;
 class Feedback extends Model
 {
     /** @use HasFactory<FeedbackFactory> */
-    use BelongsToCooperative, HasFactory;
+    use BelongsToExploitation, HasFactory;
 
     /**
      * « Feedback » se pluralise en « feedback » pour Laravel ; la table

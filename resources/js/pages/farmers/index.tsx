@@ -53,7 +53,7 @@ export default function FarmersIndex({ farmers, filters }: Props) {
             <div className="space-y-6 p-4 md:p-6">
                 <PageHeader
                     title="Producteurs"
-                    description="Les producteurs suivis par votre coopérative."
+                    description="Les producteurs suivis par votre exploitation."
                 >
                     <Button asChild className="h-12">
                         <Link href={create()}>
@@ -94,7 +94,7 @@ export default function FarmersIndex({ farmers, filters }: Props) {
                         description={
                             filters.recherche
                                 ? 'Essayez un autre nom, village ou numéro.'
-                                : 'Enregistrez le premier producteur de votre coopérative.'
+                                : 'Enregistrez le premier producteur de votre exploitation.'
                         }
                     >
                         {!filters.recherche && (

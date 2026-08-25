@@ -54,7 +54,7 @@ class FortifyServiceProvider extends ServiceProvider
                 return null;
             }
 
-            if ($user->cooperative?->isSuspended()) {
+            if ($user->exploitation?->isSuspended()) {
                 return null;
             }
 

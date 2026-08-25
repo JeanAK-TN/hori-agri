@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Cooperative;
+use App\Models\Exploitation;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -12,7 +12,7 @@ class DatabaseSeeder extends Seeder
      * Seed the application's database with development accounts.
      *
      * Everything below is a test fixture (SPEC rule 2) : no data about
-     * the real Hori cooperative is ever seeded.
+     * the real Hori exploitation is ever seeded.
      */
     public function run(): void
     {
@@ -29,23 +29,23 @@ class DatabaseSeeder extends Seeder
             'phone' => '00000000',
         ]);
 
-        $cooperative = Cooperative::factory()->create([
-            'name' => 'Coopérative de démonstration (fixture)',
+        $exploitation = Exploitation::factory()->create([
+            'name' => 'Exploitation de démonstration (fixture)',
             'region' => 'Kara',
             'prefecture' => 'Kozah',
         ]);
 
-        User::factory()->coopAdmin()->for($cooperative)->create([
-            'name' => 'Administrateur de coopérative (fixture)',
+        User::factory()->exploitationAdmin()->for($exploitation)->create([
+            'name' => 'Administrateur d\'exploitation (fixture)',
             'phone' => '00000001',
         ]);
 
-        User::factory()->technician()->for($cooperative)->create([
+        User::factory()->technician()->for($exploitation)->create([
             'name' => 'Technicien (fixture)',
             'phone' => '00000002',
         ]);
 
-        User::factory()->farmer()->for($cooperative)->create([
+        User::factory()->farmer()->for($exploitation)->create([
             'name' => 'Agriculteur (fixture)',
             'phone' => '00000003',
         ]);

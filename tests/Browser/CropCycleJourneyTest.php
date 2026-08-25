@@ -3,9 +3,9 @@
 use App\Enums\CycleStatus;
 use App\Enums\SoilType;
 use App\Models\Campaign;
-use App\Models\Cooperative;
 use App\Models\Crop;
 use App\Models\CropCycle;
+use App\Models\Exploitation;
 use App\Models\Farmer;
 use App\Models\Plot;
 use App\Models\User;
@@ -20,15 +20,15 @@ use App\Models\User;
 */
 
 beforeEach(function () {
-    $this->cooperative = Cooperative::factory()->create();
-    $this->technician = User::factory()->technician()->for($this->cooperative)->create();
-    $this->farmer = Farmer::factory()->for($this->cooperative)->create([
+    $this->exploitation = Exploitation::factory()->create();
+    $this->technician = User::factory()->technician()->for($this->exploitation)->create();
+    $this->farmer = Farmer::factory()->for($this->exploitation)->create([
         'first_name' => 'Kossi',
         'last_name' => 'Amegan',
         'village' => 'Bassar',
     ]);
     $this->campaign = Campaign::factory()
-        ->for($this->cooperative)
+        ->for($this->exploitation)
         ->between('2026-03-01', '2026-11-30')
         ->create(['label' => '2026 grande saison']);
     $this->crop = Crop::factory()->named('Maïs')->create();
@@ -58,7 +58,7 @@ test('un technicien enregistre une parcelle depuis un téléphone', function () 
     expect($plot)->not->toBeNull()
         ->and($plot->soil_type)->toBe(SoilType::Ferrugineux)
         ->and((float) $plot->area_ha)->toBe(0.75)
-        ->and($plot->cooperative_id)->toBe($this->cooperative->id);
+        ->and($plot->exploitation_id)->toBe($this->exploitation->id);
 });
 
 test('un technicien ouvre un cycle cultural et le doublon est refusé', function () {
@@ -140,7 +140,7 @@ test('la liste des cycles se filtre par campagne', function () {
     $plot = Plot::factory()->ofFarmer($this->farmer)->create();
     $soja = Crop::factory()->named('Soja')->create();
     $otherCampaign = Campaign::factory()
-        ->for($this->cooperative)
+        ->for($this->exploitation)
         ->between('2025-03-01', '2025-11-30')
         ->create(['label' => '2025 grande saison']);
 

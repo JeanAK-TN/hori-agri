@@ -4,9 +4,9 @@ use App\Enums\InputType;
 use App\Enums\OperationType;
 use App\Enums\QuantityUnit;
 use App\Models\Campaign;
-use App\Models\Cooperative;
 use App\Models\Crop;
 use App\Models\CropCycle;
+use App\Models\Exploitation;
 use App\Models\Farmer;
 use App\Models\Harvest;
 use App\Models\Operation;
@@ -22,14 +22,14 @@ uses(RefreshDatabase::class);
 */
 
 beforeEach(function () {
-    $this->cooperative = Cooperative::factory()->create(['region' => 'Kara']);
+    $this->exploitation = Exploitation::factory()->create(['region' => 'Kara']);
     $this->crop = Crop::factory()->named('Maïs')->create();
     $this->campaign = Campaign::factory()
-        ->for($this->cooperative)
+        ->for($this->exploitation)
         ->between('2026-03-01', '2026-11-30')
         ->create(['label' => '2026 grande saison']);
 
-    $this->farmer = Farmer::factory()->for($this->cooperative)->inVillage('Bassar')->create();
+    $this->farmer = Farmer::factory()->for($this->exploitation)->inVillage('Bassar')->create();
     $this->plot = Plot::factory()->ofFarmer($this->farmer)->withArea(2.0)->create();
 
     $this->cycle = CropCycle::factory()
@@ -180,9 +180,9 @@ test('urea brought outside a fertilization does not count as the urea date', fun
 */
 
 test('consecutive seasons count the campaigns carrying the same crop', function () {
-    $earlier = Campaign::factory()->for($this->cooperative)
+    $earlier = Campaign::factory()->for($this->exploitation)
         ->between('2025-03-01', '2025-11-30')->create(['label' => '2025']);
-    $earliest = Campaign::factory()->for($this->cooperative)
+    $earliest = Campaign::factory()->for($this->exploitation)
         ->between('2024-03-01', '2024-11-30')->create(['label' => '2024']);
 
     CropCycle::factory()->on($this->plot, $earlier, $this->crop)->create();
@@ -192,9 +192,9 @@ test('consecutive seasons count the campaigns carrying the same crop', function 
 });
 
 test('the count stops at the first campaign carrying another crop', function () {
-    $earlier = Campaign::factory()->for($this->cooperative)
+    $earlier = Campaign::factory()->for($this->exploitation)
         ->between('2025-03-01', '2025-11-30')->create(['label' => '2025']);
-    $earliest = Campaign::factory()->for($this->cooperative)
+    $earliest = Campaign::factory()->for($this->exploitation)
         ->between('2024-03-01', '2024-11-30')->create(['label' => '2024']);
 
     // La campagne intermédiaire a porté du soja : la suite s'arrête là,
@@ -206,14 +206,14 @@ test('the count stops at the first campaign carrying another crop', function () 
 });
 
 test('a campaign without any cycle on the plot breaks the run', function () {
-    Campaign::factory()->for($this->cooperative)
+    Campaign::factory()->for($this->exploitation)
         ->between('2025-03-01', '2025-11-30')->create(['label' => '2025']);
 
     expect(EvaluationContext::fromCycle($this->cycle)->consecutive_seasons_same_crop)->toBe(1);
 });
 
 test('the same crop on another plot does not extend the run', function () {
-    $earlier = Campaign::factory()->for($this->cooperative)
+    $earlier = Campaign::factory()->for($this->exploitation)
         ->between('2025-03-01', '2025-11-30')->create(['label' => '2025']);
     $otherPlot = Plot::factory()->ofFarmer($this->farmer)->withArea(1.0)->create();
 
@@ -231,7 +231,7 @@ test('the three ratio fields are read from the indicators', function () {
     Operation::factory()->forCycle($this->cycle)->costing(100000)->create();
 
     foreach ([1600, 1800, 2000, 2200] as $yield) {
-        $peerFarmer = Farmer::factory()->for($this->cooperative)->inVillage('Bassar')->create();
+        $peerFarmer = Farmer::factory()->for($this->exploitation)->inVillage('Bassar')->create();
         $peerPlot = Plot::factory()->ofFarmer($peerFarmer)->withArea(1.0)->create();
         $peer = CropCycle::factory()->on($peerPlot, $this->campaign, $this->crop)->create();
         Harvest::factory()->forCycle($peer)->of($yield, 100)->create();

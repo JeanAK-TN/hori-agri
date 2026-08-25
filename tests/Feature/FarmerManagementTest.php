@@ -1,17 +1,17 @@
 <?php
 
 use App\Enums\Gender;
-use App\Models\Cooperative;
+use App\Models\Exploitation;
 use App\Models\Farmer;
 use App\Models\User;
 use Inertia\Testing\AssertableInertia as Assert;
 
 beforeEach(function () {
-    $this->cooperative = Cooperative::factory()->create();
-    $this->technician = User::factory()->technician()->for($this->cooperative)->create();
+    $this->exploitation = Exploitation::factory()->create();
+    $this->technician = User::factory()->technician()->for($this->exploitation)->create();
 });
 
-test('a technician registers a producer without ever naming the cooperative', function () {
+test('a technician registers a producer without ever naming the exploitation', function () {
     $response = $this->actingAs($this->technician)
         ->post(route('farmers.store'), [
             'first_name' => 'Kossi',
@@ -27,14 +27,14 @@ test('a technician registers a producer without ever naming the cooperative', fu
 
     $response->assertRedirect(route('farmers.show', $farmer));
 
-    expect($farmer->cooperative_id)->toBe($this->cooperative->id)
+    expect($farmer->exploitation_id)->toBe($this->exploitation->id)
         ->and($farmer->gender)->toBe(Gender::Male)
         ->and($farmer->phone)->toBe('90112233')
         ->and($farmer->village)->toBe('Bassar');
 });
 
 test('a producer record can be consulted', function () {
-    $farmer = Farmer::factory()->for($this->cooperative)->create([
+    $farmer = Farmer::factory()->for($this->exploitation)->create([
         'first_name' => 'Afi',
         'last_name' => 'Doe',
         'village' => 'Kandé',
@@ -51,7 +51,7 @@ test('a producer record can be consulted', function () {
 });
 
 test('a producer record can be corrected', function () {
-    $farmer = Farmer::factory()->for($this->cooperative)->create([
+    $farmer = Farmer::factory()->for($this->exploitation)->create([
         'village' => 'Ancien village',
     ]);
 
@@ -73,7 +73,7 @@ test('the first name, last name and village are required', function () {
 });
 
 test('the list is paginated server side', function () {
-    Farmer::factory()->count(25)->for($this->cooperative)->create();
+    Farmer::factory()->count(25)->for($this->exploitation)->create();
 
     $this->actingAs($this->technician)
         ->get(route('farmers.index'))
@@ -86,12 +86,12 @@ test('the list is paginated server side', function () {
 });
 
 test('the list can be searched by name, village or phone', function () {
-    Farmer::factory()->for($this->cooperative)->create([
+    Farmer::factory()->for($this->exploitation)->create([
         'first_name' => 'Kossi',
         'last_name' => 'Amegan',
         'village' => 'Bassar',
     ]);
-    Farmer::factory()->for($this->cooperative)->create([
+    Farmer::factory()->for($this->exploitation)->create([
         'first_name' => 'Afi',
         'last_name' => 'Doe',
         'village' => 'Kandé',
@@ -105,8 +105,8 @@ test('the list can be searched by name, village or phone', function () {
         );
 });
 
-test('a producer can be attached to a farmer account of the same cooperative', function () {
-    $account = User::factory()->farmer()->for($this->cooperative)->create();
+test('a producer can be attached to a farmer account of the same exploitation', function () {
+    $account = User::factory()->farmer()->for($this->exploitation)->create();
 
     $this->actingAs($this->technician)
         ->post(route('farmers.store'), [
@@ -120,7 +120,7 @@ test('a producer can be attached to a farmer account of the same cooperative', f
     expect(Farmer::firstWhere('user_id', $account->id))->not->toBeNull();
 });
 
-test('a producer cannot be attached to an account of another cooperative', function () {
+test('a producer cannot be attached to an account of another exploitation', function () {
     $foreignAccount = User::factory()->farmer()->create();
 
     $this->actingAs($this->technician)
@@ -134,7 +134,7 @@ test('a producer cannot be attached to an account of another cooperative', funct
 });
 
 test('a producer cannot be attached to a technician account', function () {
-    $technicianAccount = User::factory()->technician()->for($this->cooperative)->create();
+    $technicianAccount = User::factory()->technician()->for($this->exploitation)->create();
 
     $this->actingAs($this->technician)
         ->post(route('farmers.store'), [
@@ -147,8 +147,8 @@ test('a producer cannot be attached to a technician account', function () {
 });
 
 test('an account cannot be attached to two producers', function () {
-    $account = User::factory()->farmer()->for($this->cooperative)->create();
-    Farmer::factory()->for($this->cooperative)->create(['user_id' => $account->id]);
+    $account = User::factory()->farmer()->for($this->exploitation)->create();
+    Farmer::factory()->for($this->exploitation)->create(['user_id' => $account->id]);
 
     $this->actingAs($this->technician)
         ->post(route('farmers.store'), [
@@ -160,10 +160,10 @@ test('an account cannot be attached to two producers', function () {
         ->assertSessionHasErrors('user_id');
 });
 
-test('the creation form only offers unattached accounts of the cooperative', function () {
-    $free = User::factory()->farmer()->for($this->cooperative)->create(['name' => 'Compte libre']);
-    $taken = User::factory()->farmer()->for($this->cooperative)->create(['name' => 'Compte pris']);
-    Farmer::factory()->for($this->cooperative)->create(['user_id' => $taken->id]);
+test('the creation form only offers unattached accounts of the exploitation', function () {
+    $free = User::factory()->farmer()->for($this->exploitation)->create(['name' => 'Compte libre']);
+    $taken = User::factory()->farmer()->for($this->exploitation)->create(['name' => 'Compte pris']);
+    Farmer::factory()->for($this->exploitation)->create(['user_id' => $taken->id]);
     User::factory()->farmer()->create(['name' => 'Compte voisin']);
 
     $this->actingAs($this->technician)
@@ -176,7 +176,7 @@ test('the creation form only offers unattached accounts of the cooperative', fun
 });
 
 test('a producer is not visible to the farmer role', function () {
-    $farmer = User::factory()->farmer()->for($this->cooperative)->create();
+    $farmer = User::factory()->farmer()->for($this->exploitation)->create();
 
     $this->actingAs($farmer)
         ->get(route('farmers.index'))

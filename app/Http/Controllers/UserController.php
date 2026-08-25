@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\Role;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
-use App\Models\Cooperative;
+use App\Models\Exploitation;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -16,8 +16,8 @@ class UserController extends Controller
 {
     /**
      * List the accounts the current user is allowed to see: every account
-     * for the super_admin, the accounts of their own cooperative for a
-     * cooperative administrator.
+     * for the super_admin, the accounts of their own exploitation for an
+     * exploitation administrator.
      */
     public function index(Request $request): Response
     {
@@ -27,7 +27,7 @@ class UserController extends Controller
 
         $users = User::query()
             ->visibleTo($viewer)
-            ->with('cooperative:id,name')
+            ->with('exploitation:id,name')
             ->orderBy('name')
             ->paginate(20)
             ->through(fn (User $user): array => [
@@ -37,7 +37,7 @@ class UserController extends Controller
                 'email' => $user->email,
                 'role' => $user->role->value,
                 'role_label' => $user->role->label(),
-                'cooperative' => $user->cooperative?->only(['id', 'name']),
+                'exploitation' => $user->exploitation?->only(['id', 'name']),
             ]);
 
         return Inertia::render('users/index', [
@@ -48,8 +48,8 @@ class UserController extends Controller
                     'label' => $role->label(),
                 ])
                 ->values(),
-            'cooperatives' => $viewer->isSuperAdmin()
-                ? Cooperative::query()->orderBy('name')->get(['id', 'name'])
+            'exploitations' => $viewer->isSuperAdmin()
+                ? Exploitation::query()->orderBy('name')->get(['id', 'name'])
                 : null,
         ]);
     }

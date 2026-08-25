@@ -16,7 +16,7 @@ class DashboardController extends Controller
     public function __construct(private readonly DashboardService $dashboard) {}
 
     /**
-     * Le tableau de bord de la coopérative (SPEC section 12).
+     * Le tableau de bord de l'exploitation (SPEC section 12).
      */
     public function index(Request $request): Response
     {

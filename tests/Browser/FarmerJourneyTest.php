@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Cooperative;
+use App\Models\Exploitation;
 use App\Models\Farmer;
 use App\Models\User;
 
@@ -11,8 +11,8 @@ use App\Models\User;
 */
 
 test('un technicien se connecte et enregistre un producteur depuis un téléphone', function () {
-    $cooperative = Cooperative::factory()->create();
-    User::factory()->technician()->for($cooperative)->create([
+    $exploitation = Exploitation::factory()->create();
+    User::factory()->technician()->for($exploitation)->create([
         'phone' => '90112233',
     ]);
 
@@ -40,13 +40,13 @@ test('un technicien se connecte et enregistre un producteur depuis un téléphon
     $farmer = Farmer::withoutGlobalScopes()->firstWhere('last_name', 'Amegan');
 
     expect($farmer)->not->toBeNull()
-        ->and($farmer->cooperative_id)->toBe($cooperative->id)
+        ->and($farmer->exploitation_id)->toBe($exploitation->id)
         ->and($farmer->phone)->toBe('91223344');
 });
 
 test('la validation renvoie ses messages en français sans perdre la saisie', function () {
-    $cooperative = Cooperative::factory()->create();
-    $technician = User::factory()->technician()->for($cooperative)->create();
+    $exploitation = Exploitation::factory()->create();
+    $technician = User::factory()->technician()->for($exploitation)->create();
 
     $this->actingAs($technician);
 
@@ -69,15 +69,15 @@ test('la validation renvoie ses messages en français sans perdre la saisie', fu
 });
 
 test('la recherche filtre la liste sans recharger la page entière', function () {
-    $cooperative = Cooperative::factory()->create();
-    $technician = User::factory()->technician()->for($cooperative)->create();
+    $exploitation = Exploitation::factory()->create();
+    $technician = User::factory()->technician()->for($exploitation)->create();
 
-    Farmer::factory()->for($cooperative)->create([
+    Farmer::factory()->for($exploitation)->create([
         'first_name' => 'Kossi',
         'last_name' => 'Amegan',
         'village' => 'Bassar',
     ]);
-    Farmer::factory()->for($cooperative)->create([
+    Farmer::factory()->for($exploitation)->create([
         'first_name' => 'Afi',
         'last_name' => 'Doe',
         'village' => 'Kandé',

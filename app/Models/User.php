@@ -16,7 +16,7 @@ use LogicException;
 
 /**
  * @property int $id
- * @property int|null $cooperative_id
+ * @property int|null $exploitation_id
  * @property string $name
  * @property string $phone
  * @property string|null $email
@@ -26,7 +26,7 @@ use LogicException;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-#[Fillable(['cooperative_id', 'name', 'phone', 'email', 'password', 'role'])]
+#[Fillable(['exploitation_id', 'name', 'phone', 'email', 'password', 'role'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -34,7 +34,7 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     /**
-     * Enforce the invariant of SPEC section 5: cooperative_id is null
+     * Enforce the invariant of SPEC section 5: exploitation_id is null
      * if and only if the role is super_admin. The database cannot
      * express this rule simply, so the model guarantees it.
      */
@@ -43,9 +43,9 @@ class User extends Authenticatable
         static::saving(function (User $user): void {
             $isSuperAdmin = $user->role === Role::SuperAdmin;
 
-            if ($isSuperAdmin !== ($user->cooperative_id === null)) {
+            if ($isSuperAdmin !== ($user->exploitation_id === null)) {
                 throw new LogicException(
-                    'users.cooperative_id must be null if and only if the role is super_admin.',
+                    'users.exploitation_id must be null if and only if the role is super_admin.',
                 );
             }
         });
@@ -63,11 +63,11 @@ class User extends Authenticatable
     }
 
     /**
-     * @return BelongsTo<Cooperative, $this>
+     * @return BelongsTo<Exploitation, $this>
      */
-    public function cooperative(): BelongsTo
+    public function exploitation(): BelongsTo
     {
-        return $this->belongsTo(Cooperative::class);
+        return $this->belongsTo(Exploitation::class);
     }
 
     public function isSuperAdmin(): bool
@@ -77,7 +77,7 @@ class User extends Authenticatable
 
     /**
      * Accounts a given user is allowed to see. The users table is not
-     * covered by CooperativeScope (Auth would recurse while resolving
+     * covered by ExploitationScope (Auth would recurse while resolving
      * the current user), so visibility lives in this local scope.
      *
      * @param  Builder<User>  $query
@@ -89,6 +89,6 @@ class User extends Authenticatable
             return $query;
         }
 
-        return $query->where('cooperative_id', $viewer->cooperative_id);
+        return $query->where('exploitation_id', $viewer->exploitation_id);
     }
 }

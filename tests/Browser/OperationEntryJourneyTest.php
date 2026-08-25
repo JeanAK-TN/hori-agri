@@ -4,9 +4,9 @@ use App\Enums\InputType;
 use App\Enums\OperationType;
 use App\Enums\QuantityUnit;
 use App\Models\Campaign;
-use App\Models\Cooperative;
 use App\Models\Crop;
 use App\Models\CropCycle;
+use App\Models\Exploitation;
 use App\Models\Farmer;
 use App\Models\Harvest;
 use App\Models\Operation;
@@ -20,13 +20,13 @@ use App\Models\User;
 */
 
 beforeEach(function () {
-    $this->cooperative = Cooperative::factory()->create();
-    $this->technician = User::factory()->technician()->for($this->cooperative)->create();
+    $this->exploitation = Exploitation::factory()->create();
+    $this->technician = User::factory()->technician()->for($this->exploitation)->create();
 
-    $farmer = Farmer::factory()->for($this->cooperative)->create();
+    $farmer = Farmer::factory()->for($this->exploitation)->create();
     $plot = Plot::factory()->ofFarmer($farmer)->create(['name' => 'Le bas-fond']);
     $campaign = Campaign::factory()
-        ->for($this->cooperative)
+        ->for($this->exploitation)
         ->between('2026-03-01', '2026-11-30')
         ->create(['label' => '2026 grande saison']);
 

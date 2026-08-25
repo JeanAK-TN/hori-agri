@@ -5,7 +5,7 @@ namespace App\Enums;
 enum Role: string implements HasLabel
 {
     case SuperAdmin = 'super_admin';
-    case CoopAdmin = 'coop_admin';
+    case ExploitationAdmin = 'exploitation_admin';
     case Technician = 'technician';
     case Farmer = 'farmer';
 
@@ -16,7 +16,7 @@ enum Role: string implements HasLabel
     {
         return match ($this) {
             self::SuperAdmin => 'Administrateur de la solution',
-            self::CoopAdmin => 'Administrateur de coopérative',
+            self::ExploitationAdmin => 'Administrateur d\'exploitation',
             self::Technician => 'Technicien',
             self::Farmer => 'Agriculteur',
         };
@@ -24,10 +24,10 @@ enum Role: string implements HasLabel
 
     /**
      * Roles an actor is allowed to assign when creating or updating an
-     * account (SPEC section 5). The super_admin creates the cooperative
+     * account (SPEC section 5). The super_admin creates the exploitation
      * administrator; the latter manages the accounts of their own
-     * cooperative. No role can ever create a super_admin, which keeps the
-     * invariant "cooperative_id is null if and only if super_admin" true
+     * exploitation. No role can ever create a super_admin, which keeps the
+     * invariant "exploitation_id is null if and only if super_admin" true
      * for every account created through the interface.
      *
      * @return array<int, self>
@@ -35,8 +35,8 @@ enum Role: string implements HasLabel
     public static function assignableBy(self $actor): array
     {
         return match ($actor) {
-            self::SuperAdmin => [self::CoopAdmin],
-            self::CoopAdmin => [self::CoopAdmin, self::Technician, self::Farmer],
+            self::SuperAdmin => [self::ExploitationAdmin],
+            self::ExploitationAdmin => [self::ExploitationAdmin, self::Technician, self::Farmer],
             self::Technician, self::Farmer => [],
         };
     }

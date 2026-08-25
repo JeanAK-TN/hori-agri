@@ -143,7 +143,7 @@ return [
     'attributes' => [
         'birth_year' => 'année de naissance',
         'contact' => 'contact',
-        'cooperative_id' => 'coopérative',
+        'exploitation_id' => 'exploitation',
         'current_password' => 'mot de passe actuel',
         'email' => 'adresse e-mail',
         'experience_years' => 'nombre d\'années d\'expérience',

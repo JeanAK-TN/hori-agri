@@ -315,7 +315,7 @@ class ImportService
         $farmer = Farmer::firstWhere('phone', $phone);
 
         if ($farmer === null) {
-            return sprintf('Aucun producteur de votre coopérative ne porte le numéro %s.', $phone);
+            return sprintf('Aucun producteur de votre exploitation ne porte le numéro %s.', $phone);
         }
 
         $plot = Plot::query()
@@ -340,7 +340,7 @@ class ImportService
         $campaign = Campaign::firstWhere('label', $entry['campagne']);
 
         if ($campaign === null) {
-            return sprintf('La campagne « %s » est inconnue de votre coopérative.', $entry['campagne']);
+            return sprintf('La campagne « %s » est inconnue de votre exploitation.', $entry['campagne']);
         }
 
         $cycle = CropCycle::query()

@@ -4,14 +4,14 @@ namespace Database\Factories;
 
 use App\Enums\CycleStatus;
 use App\Models\Campaign;
-use App\Models\Cooperative;
 use App\Models\Crop;
 use App\Models\CropCycle;
+use App\Models\Exploitation;
 use App\Models\Plot;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * Test fixture only — no real Hori cooperative data (SPEC rule 2).
+ * Test fixture only — no real Hori exploitation data (SPEC rule 2).
  *
  * @extends Factory<CropCycle>
  */
@@ -25,7 +25,7 @@ class CropCycleFactory extends Factory
     public function definition(): array
     {
         return [
-            'cooperative_id' => Cooperative::factory(),
+            'exploitation_id' => Exploitation::factory(),
             'plot_id' => Plot::factory(),
             'crop_id' => Crop::factory(),
             'variety_id' => null,
@@ -38,12 +38,12 @@ class CropCycleFactory extends Factory
 
     /**
      * Open the cycle on an existing plot and campaign, keeping the whole
-     * triple inside one cooperative.
+     * triple inside one exploitation.
      */
     public function on(Plot $plot, Campaign $campaign, Crop $crop): static
     {
         return $this->state(fn (array $attributes) => [
-            'cooperative_id' => $plot->cooperative_id,
+            'exploitation_id' => $plot->exploitation_id,
             'plot_id' => $plot->id,
             'campaign_id' => $campaign->id,
             'crop_id' => $crop->id,

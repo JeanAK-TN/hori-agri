@@ -4,9 +4,9 @@ use App\Enums\InputType;
 use App\Enums\OperationType;
 use App\Enums\QuantityUnit;
 use App\Models\Campaign;
-use App\Models\Cooperative;
 use App\Models\Crop;
 use App\Models\CropCycle;
+use App\Models\Exploitation;
 use App\Models\Farmer;
 use App\Models\Harvest;
 use App\Models\Operation;
@@ -23,17 +23,17 @@ use Inertia\Testing\AssertableInertia as Assert;
 */
 
 beforeEach(function () {
-    $this->cooperative = Cooperative::factory()->create();
-    $this->technician = User::factory()->technician()->for($this->cooperative)->create();
+    $this->exploitation = Exploitation::factory()->create();
+    $this->technician = User::factory()->technician()->for($this->exploitation)->create();
 
-    $this->farmer = Farmer::factory()->for($this->cooperative)->create([
+    $this->farmer = Farmer::factory()->for($this->exploitation)->create([
         'phone' => '90112233',
         'first_name' => 'Kossi',
         'last_name' => 'Amegan',
     ]);
     $this->plot = Plot::factory()->ofFarmer($this->farmer)->create(['name' => 'Le bas-fond']);
     $this->campaign = Campaign::factory()
-        ->for($this->cooperative)
+        ->for($this->exploitation)
         ->between('2026-03-01', '2026-11-30')
         ->create(['label' => '2026 grande saison']);
     $this->crop = Crop::factory()->named('Maïs')->create();
@@ -110,7 +110,7 @@ test('a valid file records its operations and harvests', function () {
         ->and($operation->input_type)->toBe(InputType::Npk)
         ->and($operation->unit)->toBe(QuantityUnit::Bag50Kg)
         ->and($operation->date->toDateString())->toBe('2026-04-20')
-        ->and($operation->cooperative_id)->toBe($this->cooperative->id);
+        ->and($operation->exploitation_id)->toBe($this->exploitation->id);
 });
 
 test('the run does not stop at the first faulty line', function () {
@@ -153,9 +153,9 @@ test('every rejection carries its own reason, line by line', function () {
             ->where('rapport.rejected', 6)
             ->where('rapport.lines.0.line', 2)
             ->where('rapport.lines.0.reason', 'La date est illisible : attendu JJ/MM/AAAA.')
-            ->where('rapport.lines.1.reason', 'Aucun producteur de votre coopérative ne porte le numéro 99999999.')
+            ->where('rapport.lines.1.reason', 'Aucun producteur de votre exploitation ne porte le numéro 99999999.')
             ->where('rapport.lines.2.reason', 'Le producteur Kossi Amegan n\'a aucune parcelle nommée « Parcelle inconnue ».')
-            ->where('rapport.lines.3.reason', 'La campagne « Campagne inconnue » est inconnue de votre coopérative.')
+            ->where('rapport.lines.3.reason', 'La campagne « Campagne inconnue » est inconnue de votre exploitation.')
             ->where('rapport.lines.4.reason', 'La date sort des bornes de la campagne (01/03/2026 au 30/11/2026).')
             ->where('rapport.lines.5.reason', 'Une opération de ce type n\'apporte aucun intrant : laissez la nature de l\'intrant vide.'),
         );
@@ -278,7 +278,7 @@ test('a file whose header misses a column is refused as a whole', function () {
     expect(Operation::count())->toBe(0);
 });
 
-test('an import of another cooperative finds nothing to write', function () {
+test('an import of another exploitation finds nothing to write', function () {
     $foreignTechnician = User::factory()->technician()->create();
 
     $this->actingAs($foreignTechnician)

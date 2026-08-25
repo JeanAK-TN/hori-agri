@@ -4,9 +4,9 @@ use App\Enums\RecoStatus;
 use App\Enums\Severity;
 use App\Enums\ThresholdStatus;
 use App\Models\Campaign;
-use App\Models\Cooperative;
 use App\Models\Crop;
 use App\Models\CropCycle;
+use App\Models\Exploitation;
 use App\Models\Farmer;
 use App\Models\Feedback;
 use App\Models\Plot;
@@ -23,13 +23,13 @@ use Inertia\Testing\AssertableInertia as Assert;
 */
 
 beforeEach(function () {
-    $this->cooperative = Cooperative::factory()->create();
-    $this->farmerAccount = User::factory()->farmer()->for($this->cooperative)->create();
-    $this->farmer = Farmer::factory()->for($this->cooperative)
+    $this->exploitation = Exploitation::factory()->create();
+    $this->farmerAccount = User::factory()->farmer()->for($this->exploitation)->create();
+    $this->farmer = Farmer::factory()->for($this->exploitation)
         ->create(['user_id' => $this->farmerAccount->id]);
 
     $crop = Crop::factory()->named('Maïs')->create();
-    $campaign = Campaign::factory()->for($this->cooperative)
+    $campaign = Campaign::factory()->for($this->exploitation)
         ->between('2026-03-01', '2026-11-30')->create();
     $plot = Plot::factory()->ofFarmer($this->farmer)->withArea(1.0)->create();
 
@@ -125,7 +125,7 @@ test('an answer already given is never walked back by a simple visit', function 
 test('a technician reads without marking anything read', function () {
     $recommendation = recommendationFor($this->cycle);
 
-    $this->actingAs(User::factory()->technician()->for($this->cooperative)->create())
+    $this->actingAs(User::factory()->technician()->for($this->exploitation)->create())
         ->get(route('recommendations.index'))
         ->assertInertia(fn (Assert $page) => $page
             ->has('recommendations.data', 1)
@@ -156,7 +156,7 @@ test('a producer answers, and their answer is kept with the recommendation', fun
         ->and($feedback->observed_result)->toBe('Le maïs a mieux tenu la sécheresse.')
         // Jamais lu du formulaire : déduit du compte connecté.
         ->and($feedback->farmer_id)->toBe($this->farmer->id)
-        ->and($feedback->cooperative_id)->toBe($this->cooperative->id);
+        ->and($feedback->exploitation_id)->toBe($this->exploitation->id);
 });
 
 test('answering twice corrects the answer instead of stacking one more', function () {
@@ -205,12 +205,12 @@ test('marking applied without saying what happened goes through the feedback', f
 
 test('this screen is closed to the roles the route table leaves out', function () {
     // SPEC section 10.2 : technicien et agriculteur, personne d'autre.
-    // L'administrateur de coopérative lit le tableau de bord.
+    // L'administrateur d'exploitation lit le tableau de bord.
     $this->actingAs(User::factory()->superAdmin()->create())
         ->get(route('recommendations.index'))
         ->assertForbidden();
 
-    $this->actingAs(User::factory()->coopAdmin()->for($this->cooperative)->create())
+    $this->actingAs(User::factory()->exploitationAdmin()->for($this->exploitation)->create())
         ->get(route('recommendations.index'))
         ->assertForbidden();
 });

@@ -3,12 +3,12 @@
 namespace Database\Factories;
 
 use App\Enums\Gender;
-use App\Models\Cooperative;
+use App\Models\Exploitation;
 use App\Models\Farmer;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * Test fixture only — no real Hori cooperative data (SPEC rule 2).
+ * Test fixture only — no real Hori exploitation data (SPEC rule 2).
  *
  * @extends Factory<Farmer>
  */
@@ -22,7 +22,7 @@ class FarmerFactory extends Factory
     public function definition(): array
     {
         return [
-            'cooperative_id' => Cooperative::factory(),
+            'exploitation_id' => Exploitation::factory(),
             'user_id' => null,
             'first_name' => fake()->firstName(),
             'last_name' => fake()->lastName(),

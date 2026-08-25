@@ -152,7 +152,7 @@ test('the validator refuses a convention left enabled', function () {
     ]]);
 
     expect($problems)->toContain(
-        'CONV-01 : un seuil de convention ne peut pas être actif tant que la coopérative ne l\'a pas confirmé.',
+        'CONV-01 : un seuil de convention ne peut pas être actif tant que l\'exploitation ne l\'a pas confirmé.',
     );
 });
 

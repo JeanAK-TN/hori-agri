@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Enums\RecoStatus;
-use App\Models\Concerns\BelongsToCooperative;
+use App\Models\Concerns\BelongsToExploitation;
 use Database\Factories\RecommendationFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -16,7 +16,7 @@ use Illuminate\Support\Carbon;
  * The output of the engine (SPEC section 6.2).
  *
  * @property int $id
- * @property int $cooperative_id
+ * @property int $exploitation_id
  * @property int $crop_cycle_id
  * @property int $rule_id
  * @property int $priority
@@ -30,7 +30,7 @@ use Illuminate\Support\Carbon;
 class Recommendation extends Model
 {
     /** @use HasFactory<RecommendationFactory> */
-    use BelongsToCooperative, HasFactory;
+    use BelongsToExploitation, HasFactory;
 
     /**
      * A recommendation is born new: the farmer moves it along.

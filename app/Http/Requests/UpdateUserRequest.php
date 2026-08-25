@@ -22,7 +22,7 @@ class UpdateUserRequest extends FormRequest
      * Determine if the user is authorized to make this request.
      *
      * The policy response is returned as is rather than as a boolean, so
-     * that a request aimed at another cooperative keeps answering
+     * that a request aimed at another exploitation keeps answering
      * "not found" instead of "forbidden" (SPEC section 7.2).
      */
     public function authorize(): Response
@@ -54,8 +54,8 @@ class UpdateUserRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * The cooperative of an account is never modified here: an account
-     * does not move from one cooperative to another.
+     * The exploitation of an account is never modified here: an account
+     * does not move from one exploitation to another.
      *
      * @return array<string, ValidationRule|array<mixed>|string>
      */

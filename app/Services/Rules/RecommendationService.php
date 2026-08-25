@@ -19,7 +19,7 @@ use Illuminate\Support\Collection;
  *  1. the cycle is loaded; without any harvest the run stops;
  *  2. IndicatorService computes and stores the indicators;
  *  3. the fifteen-field evaluation context is built;
- *  4. the applicable rules are selected and the cooperative override
+ *  4. the applicable rules are selected and the exploitation override
  *     is applied;
  *  5. RuleEvaluator evaluates each condition tree;
  *  6. every true condition creates or updates a recommendation;
@@ -69,9 +69,9 @@ class RecommendationService
      * The rules that apply to a cycle (SPEC section 9.6).
      *
      * Are kept those that are enabled, whose crop is null or the crop of
-     * the cycle, and whose cooperative is null or the cooperative of the
+     * the cycle, and whose exploitation is null or the exploitation of the
      * cycle. Then the override applies: when two kept rules share a
-     * code, the one carried by a cooperative replaces the common one.
+     * code, the one carried by an exploitation replaces the common one.
      *
      * @return Collection<int, Rule>
      */
@@ -80,8 +80,8 @@ class RecommendationService
         return Rule::withoutGlobalScopes()
             ->where('enabled', true)
             ->where(fn ($query) => $query
-                ->whereNull('cooperative_id')
-                ->orWhere('cooperative_id', $cycle->cooperative_id))
+                ->whereNull('exploitation_id')
+                ->orWhere('exploitation_id', $cycle->exploitation_id))
             ->where(fn ($query) => $query
                 ->whereNull('crop_id')
                 ->orWhere('crop_id', $cycle->crop_id))
@@ -108,11 +108,11 @@ class RecommendationService
             ->withoutGlobalScopes()
             ->firstOrNew(['rule_id' => $rule->id]);
 
-        // La coopérative vient du cycle : le moteur tourne aussi depuis
+        // L'exploitation vient du cycle : le moteur tourne aussi depuis
         // un import ou une commande, où le trait n'a personne à
         // interroger. Le reste passe par fill() pour que les casts
         // s'appliquent, notamment sur la date.
-        $recommendation->cooperative_id = $cycle->cooperative_id;
+        $recommendation->exploitation_id = $cycle->exploitation_id;
 
         $recommendation->fill([
             'generated_message' => $this->composeMessage($rule, $context),

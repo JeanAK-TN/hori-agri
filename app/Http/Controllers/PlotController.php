@@ -15,7 +15,7 @@ use Inertia\Response;
 class PlotController extends Controller
 {
     /**
-     * List the plots of the current cooperative.
+     * List the plots of the current exploitation.
      */
     public function index(Request $request): Response
     {

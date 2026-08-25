@@ -8,14 +8,14 @@ use App\Enums\OperationType;
 use App\Enums\Quality;
 use App\Enums\QuantityUnit;
 use App\Models\Campaign;
-use App\Models\Cooperative;
 use App\Models\Crop;
 use App\Models\CropCycle;
+use App\Models\Exploitation;
 use App\Models\Farmer;
 use App\Models\Harvest;
 use App\Models\Operation;
 use App\Models\Plot;
-use App\Models\Scopes\CurrentCooperative;
+use App\Models\Scopes\CurrentExploitation;
 use App\Services\Indicators\IndicatorService;
 use App\Services\Rules\RecommendationService;
 use Illuminate\Database\Seeder;
@@ -31,7 +31,7 @@ use RuntimeException;
  * le mémoire : ils servent à vérifier la chaîne de calcul, jamais à
  * documenter une pratique agricole.
  *
- * Structure imposée : une coopérative, trois producteurs du même village,
+ * Structure imposée : une exploitation, trois producteurs du même village,
  * quatre parcelles, deux campagnes, vingt et une opérations, cinq
  * récoltes, dont deux échelonnées sur le cycle de manioc.
  */
@@ -89,20 +89,20 @@ class VerificationDatasetSeeder extends Seeder
 
     public function run(): void
     {
-        $cooperative = Cooperative::factory()->create([
-            'name' => 'Coopérative du jeu d\'épreuve (construction)',
+        $exploitation = Exploitation::factory()->create([
+            'name' => 'Exploitation du jeu d\'épreuve (construction)',
             'region' => 'Kara',
             'prefecture' => 'Kozah',
         ]);
 
-        // Le seeder tourne hors requête HTTP : la coopérative courante
+        // Le seeder tourne hors requête HTTP : l'exploitation courante
         // est posée à la main, sinon le trait n'a personne à interroger.
-        CurrentCooperative::set($cooperative->id);
+        CurrentExploitation::set($exploitation->id);
 
         try {
-            $this->build($cooperative);
+            $this->build($exploitation);
         } finally {
-            CurrentCooperative::clear();
+            CurrentExploitation::clear();
         }
     }
 
@@ -117,26 +117,26 @@ class VerificationDatasetSeeder extends Seeder
         return $this->cycles;
     }
 
-    private function build(Cooperative $cooperative): void
+    private function build(Exploitation $exploitation): void
     {
         $maize = $this->crop('Maïs');
         $soy = $this->crop('Soja');
         $cassava = $this->crop('Manioc');
 
-        $firstCampaign = Campaign::factory()->for($cooperative)
+        $firstCampaign = Campaign::factory()->for($exploitation)
             ->between('2025-03-01', '2025-11-30')
             ->create(['label' => 'Campagne 2025']);
 
-        $secondCampaign = Campaign::factory()->for($cooperative)
+        $secondCampaign = Campaign::factory()->for($exploitation)
             ->between('2026-03-01', '2026-11-30')
             ->create(['label' => 'Campagne 2026']);
 
         // Trois producteurs du même village : la zone de comparaison ne
         // se déclenchera pas pour autant, quatre cycles restant sous le
         // seuil de cinq (SPEC section 9.3).
-        $kodjo = $this->farmer($cooperative, 'Kodjo', 'Amegah');
-        $afi = $this->farmer($cooperative, 'Afi', 'Bakoumey');
-        $sena = $this->farmer($cooperative, 'Sena', 'Doe');
+        $kodjo = $this->farmer($exploitation, 'Kodjo', 'Amegah');
+        $afi = $this->farmer($exploitation, 'Afi', 'Bakoumey');
+        $sena = $this->farmer($exploitation, 'Sena', 'Doe');
 
         $this->cycles[1] = $this->firstCycle($kodjo, $firstCampaign, $maize);
         $this->cycles[2] = $this->secondCycle($afi, $firstCampaign, $soy);
@@ -266,9 +266,9 @@ class VerificationDatasetSeeder extends Seeder
         return $crop;
     }
 
-    private function farmer(Cooperative $cooperative, string $firstName, string $lastName): Farmer
+    private function farmer(Exploitation $exploitation, string $firstName, string $lastName): Farmer
     {
-        return Farmer::factory()->for($cooperative)->inVillage(self::VILLAGE)->create([
+        return Farmer::factory()->for($exploitation)->inVillage(self::VILLAGE)->create([
             'first_name' => $firstName,
             'last_name' => $lastName,
         ]);

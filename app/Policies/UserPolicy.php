@@ -13,7 +13,7 @@ class UserPolicy
      */
     public function viewAny(User $user): bool
     {
-        return in_array($user->role, [Role::SuperAdmin, Role::CoopAdmin], true);
+        return in_array($user->role, [Role::SuperAdmin, Role::ExploitationAdmin], true);
     }
 
     /**
@@ -21,13 +21,13 @@ class UserPolicy
      */
     public function create(User $user): bool
     {
-        return in_array($user->role, [Role::SuperAdmin, Role::CoopAdmin], true);
+        return in_array($user->role, [Role::SuperAdmin, Role::ExploitationAdmin], true);
     }
 
     /**
      * Determine whether the user can update the account.
      *
-     * A cross-cooperative request answers "not found", never "forbidden",
+     * A cross-exploitation request answers "not found", never "forbidden",
      * so as not to reveal the existence of the resource (SPEC section 7.2).
      */
     public function update(User $user, User $model): Response
@@ -36,11 +36,11 @@ class UserPolicy
             return Response::allow();
         }
 
-        if ($user->role !== Role::CoopAdmin) {
+        if ($user->role !== Role::ExploitationAdmin) {
             return Response::deny();
         }
 
-        if ($model->cooperative_id !== $user->cooperative_id) {
+        if ($model->exploitation_id !== $user->exploitation_id) {
             return Response::denyAsNotFound();
         }
 

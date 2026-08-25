@@ -111,7 +111,7 @@ function OverrideDialog({
                     <DialogTitle>Surcharger {rule.code}</DialogTitle>
                     <DialogDescription>
                         La règle commune n'est pas modifiée : une copie portant
-                        le même code est enregistrée pour votre coopérative, et
+                        le même code est enregistrée pour votre exploitation, et
                         c'est elle que le moteur retiendra.
                     </DialogDescription>
                 </DialogHeader>
@@ -183,8 +183,8 @@ function OverrideDialog({
                                     defaultChecked={rule.enabled}
                                 />
                                 <Label htmlFor="enabled">
-                                    Cette règle s'évalue sur les cycles de ma
-                                    coopérative
+                                    Cette règle s'évalue sur les cycles de mon
+                                    exploitation
                                 </Label>
                             </div>
                             <InputError message={errors.enabled} />
@@ -264,7 +264,7 @@ export default function RulesIndex({
                                             {rule.is_override && (
                                                 <Badge variant="default">
                                                     Surcharge de votre
-                                                    coopérative
+                                                    exploitation
                                                 </Badge>
                                             )}
                                             {rule.is_overridden && (

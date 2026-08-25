@@ -50,7 +50,7 @@ export default function PlotsIndex({ plots, filters }: Props) {
             <div className="space-y-6 p-4 md:p-6">
                 <PageHeader
                     title="Parcelles"
-                    description="Les parcelles suivies par votre coopérative."
+                    description="Les parcelles suivies par votre exploitation."
                 >
                     <Button asChild className="h-12">
                         <Link href={create()}>
@@ -91,7 +91,7 @@ export default function PlotsIndex({ plots, filters }: Props) {
                         description={
                             filters.recherche
                                 ? 'Essayez un autre nom de parcelle, de producteur ou de village.'
-                                : 'Enregistrez la première parcelle de votre coopérative.'
+                                : 'Enregistrez la première parcelle de votre exploitation.'
                         }
                     >
                         {!filters.recherche && (

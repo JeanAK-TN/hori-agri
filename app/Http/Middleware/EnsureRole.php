@@ -7,10 +7,10 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Restricts a route to one or more roles: `role:coop_admin,technician`.
+ * Restricts a route to one or more roles: `role:exploitation_admin,technician`.
  *
  * A role mismatch is a plain 403 — the 404 rule of SPEC section 7.2
- * only applies to resources of another cooperative, which the global
+ * only applies to resources of another exploitation, which the global
  * scope already hides from route model binding.
  */
 class EnsureRole

@@ -10,7 +10,7 @@ use Illuminate\Auth\Access\Response;
 
 /**
  * Recording operations is the work of the technician (SPEC section 5).
- * The cooperative administrator reads the itinerary but does not fill
+ * The exploitation administrator reads the itinerary but does not fill
  * it in.
  */
 class OperationPolicy

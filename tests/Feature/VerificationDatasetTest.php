@@ -1,7 +1,7 @@
 <?php
 
 use App\Models\Campaign;
-use App\Models\Cooperative;
+use App\Models\Exploitation;
 use App\Models\Farmer;
 use App\Models\Harvest;
 use App\Models\Indicator;
@@ -36,7 +36,7 @@ beforeEach(function () {
 });
 
 test('the structure is the one the dissertation describes', function () {
-    expect(Cooperative::count())->toBe(1)
+    expect(Exploitation::count())->toBe(1)
         ->and(Farmer::withoutGlobalScopes()->count())->toBe(3)
         ->and(Plot::withoutGlobalScopes()->count())->toBe(4)
         ->and(Campaign::withoutGlobalScopes()->count())->toBe(2)
@@ -179,6 +179,6 @@ test('the dataset says of itself that it is a construction', function () {
     $source = file_get_contents(database_path('seeders/VerificationDatasetSeeder.php'));
 
     expect($source)->toContain('CONSTRUCTION, PAS UN RELEVÉ')
-        ->and(Cooperative::first()->name)->toContain('construction')
+        ->and(Exploitation::first()->name)->toContain('construction')
         ->and(Rule::withoutGlobalScopes()->count())->toBe(0);
 });

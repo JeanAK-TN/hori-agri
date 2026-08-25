@@ -1,9 +1,9 @@
 <?php
 
 use App\Models\Campaign;
-use App\Models\Cooperative;
 use App\Models\Crop;
 use App\Models\CropCycle;
+use App\Models\Exploitation;
 use App\Models\Farmer;
 use App\Models\Plot;
 use App\Models\User;
@@ -17,11 +17,11 @@ use Database\Seeders\VarietySeeder;
 */
 
 test('les écrans du technicien se chargent sans erreur JavaScript', function () {
-    $cooperative = Cooperative::factory()->create();
-    $technician = User::factory()->technician()->for($cooperative)->create();
-    $farmer = Farmer::factory()->for($cooperative)->create();
+    $exploitation = Exploitation::factory()->create();
+    $technician = User::factory()->technician()->for($exploitation)->create();
+    $farmer = Farmer::factory()->for($exploitation)->create();
     $plot = Plot::factory()->ofFarmer($farmer)->create();
-    $campaign = Campaign::factory()->for($cooperative)->create();
+    $campaign = Campaign::factory()->for($exploitation)->create();
     $cycle = CropCycle::factory()
         ->on($plot, $campaign, Crop::factory()->create())
         ->create();
@@ -51,8 +51,8 @@ test('les écrans du technicien se chargent sans erreur JavaScript', function ()
     $pages->assertNoJavaScriptErrors()->assertNoConsoleLogs();
 });
 
-test('les écrans de l administrateur de coopérative se chargent sans erreur JavaScript', function () {
-    $this->actingAs(User::factory()->coopAdmin()->create());
+test('les écrans de l administrateur d exploitation se chargent sans erreur JavaScript', function () {
+    $this->actingAs(User::factory()->exploitationAdmin()->create());
 
     visit([
         '/dashboard',
@@ -69,9 +69,9 @@ test('les écrans de l administrateur de coopérative se chargent sans erreur Ja
 });
 
 test('les écrans de l agriculteur se chargent sans erreur JavaScript', function () {
-    $cooperative = Cooperative::factory()->create();
-    $account = User::factory()->farmer()->for($cooperative)->create();
-    Farmer::factory()->for($cooperative)->create(['user_id' => $account->id]);
+    $exploitation = Exploitation::factory()->create();
+    $account = User::factory()->farmer()->for($exploitation)->create();
+    Farmer::factory()->for($exploitation)->create(['user_id' => $account->id]);
 
     $this->actingAs($account);
 
@@ -81,13 +81,13 @@ test('les écrans de l agriculteur se chargent sans erreur JavaScript', function
 });
 
 test('les écrans du super administrateur se chargent sans erreur JavaScript', function () {
-    Cooperative::factory()->count(2)->create();
+    Exploitation::factory()->count(2)->create();
     $this->seed(CropSeeder::class);
     $this->seed(VarietySeeder::class);
 
     $this->actingAs(User::factory()->superAdmin()->create());
 
-    visit(['/dashboard', '/cooperatives', '/users', '/crops', '/rules'])
+    visit(['/dashboard', '/exploitations', '/users', '/crops', '/rules'])
         ->assertNoJavaScriptErrors()
         ->assertNoConsoleLogs();
 });
@@ -97,7 +97,7 @@ test('la page de connexion est en français et sans erreur', function () {
         ->assertNoJavaScriptErrors()
         ->assertSee('Numéro de téléphone')
         ->assertSee('Se connecter')
-        ->assertSee("Les comptes sont créés par l'administrateur de votre coopérative.")
+        ->assertSee("Les comptes sont créés par l'administrateur de votre exploitation.")
         ->assertDontSee('Log in')
         ->assertDontSee('Email address');
 });

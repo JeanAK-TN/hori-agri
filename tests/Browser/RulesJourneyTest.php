@@ -2,7 +2,7 @@
 
 use App\Enums\Severity;
 use App\Enums\ThresholdStatus;
-use App\Models\Cooperative;
+use App\Models\Exploitation;
 use App\Models\Rule;
 use App\Models\User;
 
@@ -17,8 +17,8 @@ use App\Models\User;
 */
 
 beforeEach(function () {
-    $this->cooperative = Cooperative::factory()->create();
-    $this->coopAdmin = User::factory()->coopAdmin()->for($this->cooperative)->create();
+    $this->exploitation = Exploitation::factory()->create();
+    $this->exploitationAdmin = User::factory()->exploitationAdmin()->for($this->exploitation)->create();
 });
 
 test('l origine de chaque seuil est lisible sans rien déplier', function () {
@@ -30,7 +30,7 @@ test('l origine de chaque seuil est lisible sans rien déplier', function () {
         'source' => 'SEUIL SIMULÉ — à remplacer par la référence publiée',
     ]);
 
-    $this->actingAs($this->coopAdmin);
+    $this->actingAs($this->exploitationAdmin);
 
     $page = visit('/rules')->resize(360, 800);
 
@@ -38,7 +38,7 @@ test('l origine de chaque seuil est lisible sans rien déplier', function () {
         ->assertSee('ITRA, fiche technique maïs 2021, page 12')
         ->assertSee('Convention à confirmer')
         ->assertSee('SEUIL SIMULÉ')
-        // Une convention arrive inactive tant que la coopérative ne l'a
+        // Une convention arrive inactive tant que l'exploitation ne l'a
         // pas confirmée (SPEC section 10.4).
         ->assertSee('Inactive')
         ->assertNoJavaScriptErrors()
@@ -57,7 +57,7 @@ test('l origine de chaque seuil est lisible sans rien déplier', function () {
 test('les quinze champs interrogeables sont annoncés', function () {
     Rule::factory()->create();
 
-    $this->actingAs($this->coopAdmin);
+    $this->actingAs($this->exploitationAdmin);
 
     visit('/rules')
         ->assertSee('Les 15 champs interrogeables')
@@ -73,7 +73,7 @@ test('surcharger un seuil laisse la règle commune intacte', function () {
         'severity' => Severity::Medium,
     ]);
 
-    $this->actingAs($this->coopAdmin);
+    $this->actingAs($this->exploitationAdmin);
 
     $page = visit('/rules')->resize(390, 844);
 
@@ -86,15 +86,15 @@ test('surcharger un seuil laisse la règle commune intacte', function () {
         ->click('[role=option]:has-text("Élevée")')
         ->click('[data-test=save-override]');
 
-    $page->assertSee('Seuil surchargé pour votre coopérative')
-        ->assertSee('Surcharge de votre coopérative')
+    $page->assertSee('Seuil surchargé pour votre exploitation')
+        ->assertSee('Surcharge de votre exploitation')
         ->assertNoJavaScriptErrors();
 
     expect($common->fresh()->condition['value'])->toBe(100)
         ->and($common->fresh()->severity)->toBe(Severity::Medium);
 
     $override = Rule::withoutGlobalScopes()
-        ->where('cooperative_id', $this->cooperative->id)
+        ->where('exploitation_id', $this->exploitation->id)
         ->sole();
 
     expect($override->code)->toBe('FERT-MAIS-01')
@@ -105,7 +105,7 @@ test('surcharger un seuil laisse la règle commune intacte', function () {
 test('une condition mal formée est refusée sans quitter la boîte', function () {
     Rule::factory()->code('FERT-MAIS-01')->create();
 
-    $this->actingAs($this->coopAdmin);
+    $this->actingAs($this->exploitationAdmin);
 
     $page = visit('/rules');
 

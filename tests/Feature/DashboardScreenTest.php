@@ -2,8 +2,8 @@
 
 use App\Enums\RecoStatus;
 use App\Models\Campaign;
-use App\Models\Cooperative;
 use App\Models\Crop;
+use App\Models\Exploitation;
 use App\Models\Recommendation;
 use App\Models\Rule;
 use App\Models\User;
@@ -17,22 +17,22 @@ use Inertia\Testing\AssertableInertia as Assert;
 */
 
 beforeEach(function () {
-    $this->cooperative = Cooperative::factory()->create();
-    $this->admin = User::factory()->coopAdmin()->for($this->cooperative)->create();
+    $this->exploitation = Exploitation::factory()->create();
+    $this->admin = User::factory()->exploitationAdmin()->for($this->exploitation)->create();
 
     $this->maize = Crop::factory()->named('Maïs')->create();
     $this->soy = Crop::factory()->named('Soja')->create();
 
-    $this->campaign = Campaign::factory()->for($this->cooperative)
+    $this->campaign = Campaign::factory()->for($this->exploitation)
         ->between('2026-03-01', '2026-11-30')->create(['label' => 'Campagne 2026']);
 
     $this->actingAs($this->admin);
 });
 
 test('the screen carries every aggregate the specification asks for', function () {
-    cycleYielding($this->cooperative, $this->maize, $this->campaign, 'Bassar', 1.0, 1000, 50000);
+    cycleYielding($this->exploitation, $this->maize, $this->campaign, 'Bassar', 1.0, 1000, 50000);
 
-    $this->get(route('cooperative-dashboard.index'))
+    $this->get(route('exploitation-dashboard.index'))
         ->assertInertia(fn (Assert $page) => $page
             ->component('tableau-de-bord/index')
             ->where('headline.cycles', 1)
@@ -49,17 +49,17 @@ test('the screen carries every aggregate the specification asks for', function (
         );
 });
 
-test('the screen is closed to everyone but the cooperative administrator', function (string $state) {
+test('the screen is closed to everyone but the exploitation administrator', function (string $state) {
     $this->actingAs(User::factory()->{$state}()->create())
-        ->get(route('cooperative-dashboard.index'))
+        ->get(route('exploitation-dashboard.index'))
         ->assertForbidden();
 })->with(['superAdmin', 'technician', 'farmer']);
 
 test('the filters narrow the screen the way they narrow the service', function () {
-    cycleYielding($this->cooperative, $this->maize, $this->campaign, 'Bassar', 1.0, 1000, 50000);
-    cycleYielding($this->cooperative, $this->soy, $this->campaign, 'Bassar', 1.0, 400, 30000);
+    cycleYielding($this->exploitation, $this->maize, $this->campaign, 'Bassar', 1.0, 1000, 50000);
+    cycleYielding($this->exploitation, $this->soy, $this->campaign, 'Bassar', 1.0, 400, 30000);
 
-    $this->get(route('cooperative-dashboard.index', ['culture' => $this->maize->id]))
+    $this->get(route('exploitation-dashboard.index', ['culture' => $this->maize->id]))
         ->assertInertia(fn (Assert $page) => $page
             ->where('headline.cycles', 1)
             // JSON ne distingue pas 1000 de 1000.0 : on compare la valeur.
@@ -71,9 +71,9 @@ test('the filters narrow the screen the way they narrow the service', function (
 });
 
 test('an unknown filter value simply narrows to nothing', function () {
-    cycleYielding($this->cooperative, $this->maize, $this->campaign, 'Bassar', 1.0, 1000, 50000);
+    cycleYielding($this->exploitation, $this->maize, $this->campaign, 'Bassar', 1.0, 1000, 50000);
 
-    $this->get(route('cooperative-dashboard.index', ['culture' => 999999]))
+    $this->get(route('exploitation-dashboard.index', ['culture' => 999999]))
         ->assertInertia(fn (Assert $page) => $page
             ->where('headline.cycles', 0)
             ->has('byCrop', 0),
@@ -85,12 +85,12 @@ test('an unknown filter value simply narrows to nothing', function () {
 */
 
 test('the export repeats exactly what the screen shows, field by field', function () {
-    cycleYielding($this->cooperative, $this->maize, $this->campaign, 'Bassar', 1.0, 1000, 50000);
-    cycleYielding($this->cooperative, $this->soy, $this->campaign, 'Kara', 1.0, 400, 30000);
+    cycleYielding($this->exploitation, $this->maize, $this->campaign, 'Bassar', 1.0, 1000, 50000);
+    cycleYielding($this->exploitation, $this->soy, $this->campaign, 'Kara', 1.0, 400, 30000);
 
     $expected = app(DashboardService::class)->summary(new DashboardFilters);
 
-    $response = $this->get(route('cooperative-dashboard.export'));
+    $response = $this->get(route('exploitation-dashboard.export'));
 
     $response->assertOk()
         ->assertHeader('content-type', 'text/csv; charset=UTF-8')
@@ -122,9 +122,9 @@ test('the export repeats exactly what the screen shows, field by field', functio
 });
 
 test('the export carries the byte order mark a French spreadsheet expects', function () {
-    cycleYielding($this->cooperative, $this->maize, $this->campaign, 'Bassar', 1.0, 1000, 50000);
+    cycleYielding($this->exploitation, $this->maize, $this->campaign, 'Bassar', 1.0, 1000, 50000);
 
-    $content = $this->get(route('cooperative-dashboard.export'))->streamedContent();
+    $content = $this->get(route('exploitation-dashboard.export'))->streamedContent();
 
     expect(str_starts_with($content, "\xEF\xBB\xBF"))->toBeTrue()
         // Les accents survivent au passage.
@@ -132,10 +132,10 @@ test('the export carries the byte order mark a French spreadsheet expects', func
 });
 
 test('the export obeys the same filters as the screen', function () {
-    cycleYielding($this->cooperative, $this->maize, $this->campaign, 'Bassar', 1.0, 1000, 50000);
-    cycleYielding($this->cooperative, $this->soy, $this->campaign, 'Kara', 1.0, 400, 30000);
+    cycleYielding($this->exploitation, $this->maize, $this->campaign, 'Bassar', 1.0, 1000, 50000);
+    cycleYielding($this->exploitation, $this->soy, $this->campaign, 'Kara', 1.0, 400, 30000);
 
-    $content = $this->get(route('cooperative-dashboard.export', [
+    $content = $this->get(route('exploitation-dashboard.export', [
         'culture' => $this->maize->id,
     ]))->streamedContent();
 
@@ -146,27 +146,27 @@ test('the export obeys the same filters as the screen', function () {
 
 test('an incalculable value stays empty in the file rather than becoming a zero', function () {
     // Sans prix de vente, la marge brute est incalculable.
-    cycleYielding($this->cooperative, $this->maize, $this->campaign, 'Bassar', 1.0, 1000, 50000, null);
+    cycleYielding($this->exploitation, $this->maize, $this->campaign, 'Bassar', 1.0, 1000, 50000, null);
 
-    $lines = parseCsv($this->get(route('cooperative-dashboard.export'))->streamedContent());
+    $lines = parseCsv($this->get(route('exploitation-dashboard.export'))->streamedContent());
 
     // Regroupement, libellé, cycles, rendement, coût, marge vide.
     expect($lines[1][3])->toBe('1000')
         ->and($lines[1][5])->toBe('');
 });
 
-test('the export of another cooperative never leaks into this one', function () {
-    cycleYielding($this->cooperative, $this->maize, $this->campaign, 'Bassar', 1.0, 1000, 50000);
+test('the export of another exploitation never leaks into this one', function () {
+    cycleYielding($this->exploitation, $this->maize, $this->campaign, 'Bassar', 1.0, 1000, 50000);
 
-    $otherCooperative = Cooperative::factory()->create();
-    $otherCampaign = Campaign::factory()->for($otherCooperative)
+    $otherExploitation = Exploitation::factory()->create();
+    $otherCampaign = Campaign::factory()->for($otherExploitation)
         ->between('2026-03-01', '2026-11-30')->create(['label' => 'Campagne voisine']);
 
-    cycleYielding($otherCooperative, $this->maize, $otherCampaign, 'Dapaong', 1.0, 9000, 50000);
+    cycleYielding($otherExploitation, $this->maize, $otherCampaign, 'Dapaong', 1.0, 9000, 50000);
 
     $this->actingAs($this->admin);
 
-    $content = $this->get(route('cooperative-dashboard.export'))->streamedContent();
+    $content = $this->get(route('exploitation-dashboard.export'))->streamedContent();
 
     expect($content)->not->toContain('Dapaong')
         ->and($content)->not->toContain('Campagne voisine')
@@ -174,7 +174,7 @@ test('the export of another cooperative never leaks into this one', function () 
 });
 
 test('the recommendations of the screen match those of the service', function () {
-    $cycle = cycleYielding($this->cooperative, $this->maize, $this->campaign, 'Bassar', 1.0, 1000, 50000);
+    $cycle = cycleYielding($this->exploitation, $this->maize, $this->campaign, 'Bassar', 1.0, 1000, 50000);
 
     Recommendation::factory()
         ->forCycle($cycle)
@@ -182,7 +182,7 @@ test('the recommendations of the screen match those of the service', function ()
         ->status(RecoStatus::Applied)
         ->create();
 
-    $this->get(route('cooperative-dashboard.index'))
+    $this->get(route('exploitation-dashboard.index'))
         ->assertInertia(fn (Assert $page) => $page
             ->where('appliedShare.applied', 1)
             ->where('appliedShare.answered', 1)
@@ -190,8 +190,8 @@ test('the recommendations of the screen match those of the service', function ()
         );
 });
 
-test('an empty cooperative gets an honest screen rather than a broken one', function () {
-    $this->get(route('cooperative-dashboard.index'))
+test('an empty exploitation gets an honest screen rather than a broken one', function () {
+    $this->get(route('exploitation-dashboard.index'))
         ->assertInertia(fn (Assert $page) => $page
             ->where('headline.cycles', 0)
             ->where('headline.yield_kg_ha', null)
@@ -200,8 +200,8 @@ test('an empty cooperative gets an honest screen rather than a broken one', func
             ->where('belowZoneMedian.below', 0),
         );
 
-    // L'export d'une coopérative vide ne contient que son en-tête.
-    expect(parseCsv($this->get(route('cooperative-dashboard.export'))->streamedContent()))
+    // L'export d'une exploitation vide ne contient que son en-tête.
+    expect(parseCsv($this->get(route('exploitation-dashboard.export'))->streamedContent()))
         ->toHaveCount(1);
 });
 

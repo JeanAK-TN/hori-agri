@@ -30,15 +30,15 @@ trait PlotValidationRules
     }
 
     /**
-     * The producer must belong to the current cooperative. The query
-     * goes through the scoped model rather than a raw cooperative_id
+     * The producer must belong to the current exploitation. The query
+     * goes through the scoped model rather than a raw exploitation_id
      * clause, which the isolation rules forbid (SPEC section 7.3).
      */
     private function existingFarmerRule(): Closure
     {
         return function (string $attribute, mixed $value, Closure $fail): void {
             if (! Farmer::whereKey($value)->exists()) {
-                $fail('Le producteur choisi est introuvable dans votre coopérative.');
+                $fail('Le producteur choisi est introuvable dans votre exploitation.');
             }
         };
     }

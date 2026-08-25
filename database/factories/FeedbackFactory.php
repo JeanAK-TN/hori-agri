@@ -34,7 +34,7 @@ class FeedbackFactory extends Factory
         $farmer = $recommendation->farmer();
 
         return $this->state(fn (array $attributes): array => [
-            'cooperative_id' => $recommendation->cooperative_id,
+            'exploitation_id' => $recommendation->exploitation_id,
             'recommendation_id' => $recommendation->id,
             'farmer_id' => $farmer?->id,
         ]);

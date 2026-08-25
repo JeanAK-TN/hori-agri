@@ -37,9 +37,9 @@ trait FarmerValidationRules
 
     /**
      * The optional account attached to a producer must be a farmer
-     * account of the same cooperative. The users table is deliberately
-     * outside CooperativeScope, so visibility is expressed through the
-     * dedicated local scope rather than a raw cooperative_id clause.
+     * account of the same exploitation. The users table is deliberately
+     * outside ExploitationScope, so visibility is expressed through the
+     * dedicated local scope rather than a raw exploitation_id clause.
      */
     private function linkableAccountRule(): Closure
     {
@@ -51,7 +51,7 @@ trait FarmerValidationRules
                 ->exists();
 
             if (! $isLinkable) {
-                $fail('Le compte choisi doit être un compte agriculteur de votre coopérative.');
+                $fail('Le compte choisi doit être un compte agriculteur de votre exploitation.');
             }
         };
     }

@@ -32,7 +32,7 @@ import { useChartColors } from '@/hooks/use-chart-colors';
 import {
     exportMethod as exportCsv,
     index,
-} from '@/routes/cooperative-dashboard';
+} from '@/routes/exploitation-dashboard';
 
 type Average = {
     label: string;
@@ -143,7 +143,7 @@ function AverageSection({
     );
 }
 
-export default function CooperativeDashboard({
+export default function ExploitationDashboard({
     headline,
     byCrop,
     byVillage,
@@ -185,7 +185,7 @@ export default function CooperativeDashboard({
             <div className="space-y-6 p-4 md:p-6">
                 <PageHeader
                     title="Tableau de bord"
-                    description="Ce que les cycles de la coopérative disent, une fois mis bout à bout."
+                    description="Ce que les cycles de l'exploitation disent, une fois mis bout à bout."
                 >
                     <Button variant="outline" className="h-12" asChild>
                         <a
@@ -404,6 +404,6 @@ export default function CooperativeDashboard({
     );
 }
 
-CooperativeDashboard.layout = {
+ExploitationDashboard.layout = {
     breadcrumbs: [{ title: 'Tableau de bord', href: index() }],
 };

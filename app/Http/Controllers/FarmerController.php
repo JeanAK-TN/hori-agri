@@ -17,8 +17,8 @@ use Inertia\Response;
 class FarmerController extends Controller
 {
     /**
-     * List the producers of the current cooperative. The global scope
-     * does the isolation, so no cooperative clause appears here.
+     * List the producers of the current exploitation. The global scope
+     * does the isolation, so no exploitation clause appears here.
      */
     public function index(Request $request): Response
     {
@@ -149,7 +149,7 @@ class FarmerController extends Controller
     }
 
     /**
-     * Farmer accounts of the cooperative that are not attached to any
+     * Farmer accounts of the exploitation that are not attached to any
      * producer yet, plus the one already attached to the record being
      * edited so that it stays selectable.
      *

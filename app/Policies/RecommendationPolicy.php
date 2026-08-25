@@ -9,14 +9,14 @@ use App\Models\User;
 /**
  * Qui lit une recommandation, et qui y répond (SPEC sections 5 et 11.2).
  *
- * Le technicien suit les producteurs de sa coopérative : il lit. Seul
+ * Le technicien suit les producteurs de son exploitation : il lit. Seul
  * l'agriculteur propriétaire de la parcelle concernée change l'état
- * d'une recommandation et enregistre un retour. L'administrateur de
- * coopérative lit les mêmes chiffres agrégés au tableau de bord.
+ * d'une recommandation et enregistre un retour. L'administrateur
+ * d'exploitation lit les mêmes chiffres agrégés au tableau de bord.
  *
- * L'isolation entre coopératives est déjà tenue par le scope global : une
- * recommandation d'une autre coopérative n'est jamais liée à la route, la
- * réponse est un 404. Ce qui se joue ici est le cas intra-coopérative,
+ * L'isolation entre exploitations est déjà tenue par le scope global : une
+ * recommandation d'une autre exploitation n'est jamais liée à la route, la
+ * réponse est un 404. Ce qui se joue ici est le cas intra-exploitation,
  * qui répond 403.
  */
 class RecommendationPolicy

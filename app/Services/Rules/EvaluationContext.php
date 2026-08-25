@@ -73,7 +73,7 @@ final readonly class EvaluationContext
             'crop',
             'plot',
             'campaign',
-            'cooperative',
+            'exploitation',
             'operations',
             'indicator',
         ]);
@@ -84,7 +84,7 @@ final readonly class EvaluationContext
 
         return new self(
             crop_name: $cycle->crop->name,
-            region: $cycle->cooperative->region,
+            region: $cycle->exploitation->region,
             sowing_month: (int) $cycle->sowing_date->month,
             sowing_density_plants_ha: $cycle->density,
             seed_rate_kg_ha: self::dosePerHectare(
@@ -206,9 +206,9 @@ final readonly class EvaluationContext
     private static function consecutiveSeasons(CropCycle $cycle): int
     {
         $campaigns = Campaign::query()
-            // La coopérative du cycle, et non celle de l'utilisateur :
+            // L'exploitation du cycle, et non celle de l'utilisateur :
             // le calcul tourne aussi hors contexte HTTP.
-            ->where('cooperative_id', $cycle->cooperative_id)
+            ->where('exploitation_id', $cycle->exploitation_id)
             ->where('start_date', '<=', $cycle->campaign->start_date)
             ->orderByDesc('start_date')
             ->pluck('id');
@@ -217,7 +217,7 @@ final readonly class EvaluationContext
 
         foreach ($campaigns as $campaignId) {
             $carriedSameCrop = CropCycle::query()
-                ->where('cooperative_id', $cycle->cooperative_id)
+                ->where('exploitation_id', $cycle->exploitation_id)
                 ->where('plot_id', $cycle->plot_id)
                 ->where('crop_id', $cycle->crop_id)
                 ->where('campaign_id', $campaignId)

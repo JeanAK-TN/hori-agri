@@ -23,7 +23,7 @@ export default function FarmerCreate({ genders, availableAccounts }: Props) {
             <div className="space-y-6 p-4 md:p-6">
                 <PageHeader
                     title="Nouveau producteur"
-                    description="Enregistrez la fiche d'un producteur de votre coopérative."
+                    description="Enregistrez la fiche d'un producteur de votre exploitation."
                 >
                     <Button asChild variant="outline" className="h-12">
                         <Link href={index()}>

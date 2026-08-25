@@ -4,11 +4,11 @@ namespace Database\Factories;
 
 use App\Enums\SeasonType;
 use App\Models\Campaign;
-use App\Models\Cooperative;
+use App\Models\Exploitation;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * Test fixture only — no real Hori cooperative data (SPEC rule 2).
+ * Test fixture only — no real Hori exploitation data (SPEC rule 2).
  *
  * @extends Factory<Campaign>
  */
@@ -24,7 +24,7 @@ class CampaignFactory extends Factory
         $year = fake()->numberBetween(2020, 2030);
 
         return [
-            'cooperative_id' => Cooperative::factory(),
+            'exploitation_id' => Exploitation::factory(),
             'label' => $year.' grande saison '.fake()->unique()->numerify('##'),
             'start_date' => $year.'-03-01',
             'end_date' => $year.'-11-30',

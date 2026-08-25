@@ -6,9 +6,9 @@ use App\Enums\QuantityUnit;
 use App\Enums\RecoStatus;
 use App\Enums\RuleFamily;
 use App\Models\Campaign;
-use App\Models\Cooperative;
 use App\Models\Crop;
 use App\Models\CropCycle;
+use App\Models\Exploitation;
 use App\Models\Farmer;
 use App\Models\Harvest;
 use App\Models\Operation;
@@ -29,15 +29,15 @@ use App\Services\Rules\RecommendationService;
 beforeEach(function () {
     $this->engine = app(RecommendationService::class);
 
-    $this->cooperative = Cooperative::factory()->create();
+    $this->exploitation = Exploitation::factory()->create();
     $this->crop = Crop::factory()->named('Maïs')->create();
     $this->campaign = Campaign::factory()
-        ->for($this->cooperative)
+        ->for($this->exploitation)
         ->between('2026-03-01', '2026-11-30')
         ->create();
 
     $this->openCycle = function (float $yieldKg = 1000, string $village = 'Bassar'): CropCycle {
-        $farmer = Farmer::factory()->for($this->cooperative)->inVillage($village)->create();
+        $farmer = Farmer::factory()->for($this->exploitation)->inVillage($village)->create();
         $plot = Plot::factory()->ofFarmer($farmer)->withArea(1.0)->create();
         $cycle = CropCycle::factory()->on($plot, $this->campaign, $this->crop)->create([
             'sowing_date' => '2026-04-15',
@@ -76,7 +76,7 @@ test('the engine produces a recommendation on a cycle below the reference', func
     expect($recommendation)->not->toBeNull()
         ->and($recommendation->status)->toBe(RecoStatus::New)
         ->and($recommendation->priority)->toBe(1)
-        ->and($recommendation->cooperative_id)->toBe($this->cooperative->id)
+        ->and($recommendation->exploitation_id)->toBe($this->exploitation->id)
         // Le constat est suivi des valeurs observées, entre parenthèses.
         ->and($recommendation->generated_message)
         ->toBe('Fertilisation de fond insuffisante (dose de NPK : 50 kg/ha)');
@@ -93,7 +93,7 @@ test('the engine stays silent on a conforming cycle', function () {
 });
 
 test('a cycle without any harvest produces nothing at all', function () {
-    $farmer = Farmer::factory()->for($this->cooperative)->create();
+    $farmer = Farmer::factory()->for($this->exploitation)->create();
     $plot = Plot::factory()->ofFarmer($farmer)->withArea(1.0)->create();
     $cycle = CropCycle::factory()->on($plot, $this->campaign, $this->crop)->create();
 
@@ -117,32 +117,32 @@ test('a second run creates no duplicate', function () {
         ->and(Recommendation::first()->id)->toBe($first->id);
 });
 
-test('a rule of the cooperative replaces the common rule of the same code', function () {
+test('a rule of the exploitation replaces the common rule of the same code', function () {
     $cycle = ($this->openCycle)();
 
     Rule::factory()->code('FERT-MAIS-01')->neverFiring()->create([
         'message' => 'Message commun',
     ]);
     Rule::factory()->code('FERT-MAIS-01')->alwaysFiring()
-        ->ownedBy($this->cooperative)
-        ->create(['message' => 'Message de la coopérative']);
+        ->ownedBy($this->exploitation)
+        ->create(['message' => 'Message de l\'exploitation']);
 
     $this->engine->runFor($cycle);
 
     expect(Recommendation::count())->toBe(1)
         ->and(Recommendation::first()->generated_message)
-        ->toStartWith('Message de la coopérative');
+        ->toStartWith('Message de l\'exploitation');
 });
 
-test('the override of another cooperative is ignored', function () {
+test('the override of another exploitation is ignored', function () {
     $cycle = ($this->openCycle)();
-    $otherCooperative = Cooperative::factory()->create();
+    $otherExploitation = Exploitation::factory()->create();
 
     Rule::factory()->code('FERT-MAIS-01')->neverFiring()->create([
         'message' => 'Message commun',
     ]);
     Rule::factory()->code('FERT-MAIS-01')->alwaysFiring()
-        ->ownedBy($otherCooperative)
+        ->ownedBy($otherExploitation)
         ->create(['message' => 'Message du voisin']);
 
     $this->engine->runFor($cycle);
@@ -171,7 +171,7 @@ test('a convention threshold produces nothing while it stays disabled', function
 
     expect(Recommendation::count())->toBe(0);
 
-    // La coopérative confirme le seuil : la règle se met à s'évaluer.
+    // L'exploitation confirme le seuil : la règle se met à s'évaluer.
     $rule->forceFill(['enabled' => true])->save();
 
     $this->engine->runFor($cycle->fresh());
@@ -296,8 +296,8 @@ test('the other families keep applying below the threshold', function () {
 */
 
 test('recording a harvest runs the engine on its own', function () {
-    $technician = User::factory()->technician()->for($this->cooperative)->create();
-    $farmer = Farmer::factory()->for($this->cooperative)->create();
+    $technician = User::factory()->technician()->for($this->exploitation)->create();
+    $farmer = Farmer::factory()->for($this->exploitation)->create();
     $plot = Plot::factory()->ofFarmer($farmer)->withArea(1.0)->create();
     $cycle = CropCycle::factory()->on($plot, $this->campaign, $this->crop)->create();
 

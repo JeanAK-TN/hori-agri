@@ -36,7 +36,7 @@ class FeedbackController extends Controller
 
             $feedback->fill($request->validated());
             $feedback->farmer_id = $farmer->id;
-            $feedback->cooperative_id = $recommendation->cooperative_id;
+            $feedback->exploitation_id = $recommendation->exploitation_id;
             $feedback->save();
 
             $recommendation->update([

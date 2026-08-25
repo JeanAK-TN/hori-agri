@@ -16,8 +16,8 @@ class RuleController extends Controller
 {
     /**
      * The knowledge base, with the origin of every threshold shown
-     * (SPEC section 11). The scope of the rules already limits a
-     * cooperative to the common rules and to its own.
+     * (SPEC section 11). The scope of the rules already limits an
+     * exploitation to the common rules and to its own.
      */
     public function index(Request $request): Response
     {
@@ -29,7 +29,7 @@ class RuleController extends Controller
             ->get();
 
         // Une surcharge remplace la règle commune de même code : c'est
-        // elle que la coopérative voit appliquer (SPEC section 9.6).
+        // elle que l'exploitation voit appliquer (SPEC section 9.6).
         $overriddenCodes = $rules
             ->filter(fn (Rule $rule): bool => $rule->isOverride())
             ->pluck('code')
@@ -68,15 +68,15 @@ class RuleController extends Controller
                 array_keys(EvaluationContext::FIELD_LABELS),
                 array_values(EvaluationContext::FIELD_LABELS),
             ),
-            'canOverride' => $request->user()->role === Role::CoopAdmin,
+            'canOverride' => $request->user()->role === Role::ExploitationAdmin,
         ]);
     }
 
     /**
-     * Override a threshold for one cooperative (SPEC section 11).
+     * Override a threshold for one exploitation (SPEC section 11).
      *
      * Overriding a common rule does not change it: a copy carrying the
-     * same code is created for the cooperative, and that copy is the one
+     * same code is created for the exploitation, and that copy is the one
      * the engine will keep.
      */
     public function update(UpdateRuleRequest $request, Rule $rule): RedirectResponse
@@ -86,12 +86,12 @@ class RuleController extends Controller
             : $rule->replicate(['created_at', 'updated_at']);
 
         $override->fill($request->validated());
-        $override->cooperative_id = $request->user()->cooperative_id;
+        $override->exploitation_id = $request->user()->exploitation_id;
         $override->save();
 
         Inertia::flash('toast', [
             'type' => 'success',
-            'message' => 'Seuil surchargé pour votre coopérative.',
+            'message' => 'Seuil surchargé pour votre exploitation.',
         ]);
 
         return to_route('rules.index');

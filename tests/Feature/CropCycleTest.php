@@ -2,9 +2,9 @@
 
 use App\Enums\CycleStatus;
 use App\Models\Campaign;
-use App\Models\Cooperative;
 use App\Models\Crop;
 use App\Models\CropCycle;
+use App\Models\Exploitation;
 use App\Models\Farmer;
 use App\Models\Plot;
 use App\Models\User;
@@ -13,13 +13,13 @@ use Illuminate\Database\QueryException;
 use Inertia\Testing\AssertableInertia as Assert;
 
 beforeEach(function () {
-    $this->cooperative = Cooperative::factory()->create();
-    $this->technician = User::factory()->technician()->for($this->cooperative)->create();
+    $this->exploitation = Exploitation::factory()->create();
+    $this->technician = User::factory()->technician()->for($this->exploitation)->create();
 
-    $farmer = Farmer::factory()->for($this->cooperative)->create();
+    $farmer = Farmer::factory()->for($this->exploitation)->create();
     $this->plot = Plot::factory()->ofFarmer($farmer)->create();
     $this->campaign = Campaign::factory()
-        ->for($this->cooperative)
+        ->for($this->exploitation)
         ->between('2026-03-01', '2026-11-30')
         ->create(['label' => '2026 grande saison']);
     $this->crop = Crop::factory()->named('Maïs')->create();
@@ -40,7 +40,7 @@ test('a cycle opens on a plot for a crop and a campaign', function () {
 
     $response->assertRedirect(route('cycles.show', $cycle));
 
-    expect($cycle->cooperative_id)->toBe($this->cooperative->id)
+    expect($cycle->exploitation_id)->toBe($this->exploitation->id)
         ->and($cycle->status)->toBe(CycleStatus::Planned)
         ->and($cycle->density)->toBe(50000)
         ->and($cycle->sowing_date->toDateString())->toBe('2026-04-15');
@@ -127,7 +127,7 @@ test('a variety of another crop is refused', function () {
     ])->assertSessionHasErrors('variety_id');
 });
 
-test('a plot of another cooperative cannot carry a cycle', function () {
+test('a plot of another exploitation cannot carry a cycle', function () {
     $foreignPlot = Plot::factory()->create();
 
     $this->post(route('cycles.store'), [
@@ -141,7 +141,7 @@ test('a plot of another cooperative cannot carry a cycle', function () {
 test('the list can be filtered by campaign and by crop', function () {
     $soja = Crop::factory()->named('Soja')->create();
     $otherCampaign = Campaign::factory()
-        ->for($this->cooperative)
+        ->for($this->exploitation)
         ->between('2025-03-01', '2025-11-30')
         ->create(['label' => '2025 grande saison']);
 

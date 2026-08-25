@@ -5,7 +5,7 @@ namespace App\Models;
 use App\Enums\InputType;
 use App\Enums\OperationType;
 use App\Enums\QuantityUnit;
-use App\Models\Concerns\BelongsToCooperative;
+use App\Models\Concerns\BelongsToExploitation;
 use Database\Factories\OperationFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -15,7 +15,7 @@ use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
- * @property int $cooperative_id
+ * @property int $exploitation_id
  * @property int $crop_cycle_id
  * @property OperationType $type
  * @property InputType|null $input_type
@@ -42,7 +42,7 @@ use Illuminate\Support\Carbon;
 class Operation extends Model
 {
     /** @use HasFactory<OperationFactory> */
-    use BelongsToCooperative, HasFactory;
+    use BelongsToExploitation, HasFactory;
 
     /**
      * @return array<string, string>

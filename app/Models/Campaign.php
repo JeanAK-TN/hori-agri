@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Enums\SeasonType;
-use App\Models\Concerns\BelongsToCooperative;
+use App\Models\Concerns\BelongsToExploitation;
 use Database\Factories\CampaignFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,7 +13,7 @@ use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
- * @property int $cooperative_id
+ * @property int $exploitation_id
  * @property string $label
  * @property Carbon $start_date
  * @property Carbon $end_date
@@ -25,7 +25,7 @@ use Illuminate\Support\Carbon;
 class Campaign extends Model
 {
     /** @use HasFactory<CampaignFactory> */
-    use BelongsToCooperative, HasFactory;
+    use BelongsToExploitation, HasFactory;
 
     /**
      * @return array<string, string>

@@ -356,7 +356,7 @@ export default function CropsIndex({ crops }: Props) {
             <div className="space-y-6 p-4 md:p-6">
                 <PageHeader
                     title="Référentiel des cultures"
-                    description="Commun à toutes les coopératives. Les valeurs de référence alimentent le moteur de recommandations."
+                    description="Commun à toutes les exploitations. Les valeurs de référence alimentent le moteur de recommandations."
                 >
                     <CropDialog />
                 </PageHeader>

@@ -13,10 +13,10 @@ import {
 } from 'lucide-react';
 import { dashboard } from '@/routes';
 import { index as campaigns } from '@/routes/campaigns';
-import { index as cooperativeDashboard } from '@/routes/cooperative-dashboard';
-import { index as cooperatives } from '@/routes/cooperatives';
 import { index as crops } from '@/routes/crops';
 import { index as cycles } from '@/routes/cycles';
+import { index as exploitationDashboard } from '@/routes/exploitation-dashboard';
+import { index as exploitations } from '@/routes/exploitations';
 import { index as farmers } from '@/routes/farmers';
 import { index as imports } from '@/routes/imports';
 import { index as plots } from '@/routes/plots';
@@ -32,7 +32,12 @@ type RoleNavItem = NavItem & {
     shortTitle?: string;
 };
 
-const ALL_ROLES: Role[] = ['super_admin', 'coop_admin', 'technician', 'farmer'];
+const ALL_ROLES: Role[] = [
+    'super_admin',
+    'exploitation_admin',
+    'technician',
+    'farmer',
+];
 
 const navigation: RoleNavItem[] = [
     {
@@ -42,17 +47,17 @@ const navigation: RoleNavItem[] = [
         roles: ALL_ROLES,
     },
     {
-        title: 'Coopératives',
-        href: cooperatives(),
+        title: 'Exploitations',
+        href: exploitations(),
         icon: Building2,
         roles: ['super_admin'],
-        shortTitle: 'Coop.',
+        shortTitle: 'Exploit.',
     },
     {
         title: 'Tableau de bord',
-        href: cooperativeDashboard(),
+        href: exploitationDashboard(),
         icon: ChartColumn,
-        roles: ['coop_admin'],
+        roles: ['exploitation_admin'],
         shortTitle: 'Synthèse',
     },
     // Placée haut à dessein : c'est la raison d'être de l'application,
@@ -68,32 +73,32 @@ const navigation: RoleNavItem[] = [
         title: 'Producteurs',
         href: farmers(),
         icon: Users,
-        roles: ['coop_admin', 'technician'],
+        roles: ['exploitation_admin', 'technician'],
     },
     {
         title: 'Parcelles',
         href: plots(),
         icon: LandPlot,
-        roles: ['coop_admin', 'technician'],
+        roles: ['exploitation_admin', 'technician'],
     },
     {
         title: 'Cycles culturaux',
         href: cycles(),
         icon: Sprout,
-        roles: ['coop_admin', 'technician'],
+        roles: ['exploitation_admin', 'technician'],
         shortTitle: 'Cycles',
     },
     {
         title: 'Campagnes',
         href: campaigns(),
         icon: CalendarRange,
-        roles: ['coop_admin', 'technician'],
+        roles: ['exploitation_admin', 'technician'],
     },
     {
         title: 'Import de données',
         href: imports(),
         icon: FileUp,
-        roles: ['coop_admin', 'technician'],
+        roles: ['exploitation_admin', 'technician'],
         shortTitle: 'Import',
     },
     {
@@ -106,14 +111,14 @@ const navigation: RoleNavItem[] = [
         title: 'Base de règles',
         href: rules(),
         icon: BookOpen,
-        roles: ['super_admin', 'coop_admin'],
+        roles: ['super_admin', 'exploitation_admin'],
         shortTitle: 'Règles',
     },
     {
         title: 'Comptes',
         href: users(),
         icon: Users,
-        roles: ['super_admin', 'coop_admin'],
+        roles: ['super_admin', 'exploitation_admin'],
     },
 ];
 

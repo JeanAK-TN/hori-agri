@@ -247,7 +247,7 @@ function EditDialog({
 
 export default function CampaignsIndex({ campaigns, seasonTypes }: Props) {
     const { auth } = usePage<{ auth: Auth }>().props;
-    const canManage = auth.user.role === 'coop_admin';
+    const canManage = auth.user.role === 'exploitation_admin';
 
     return (
         <>
@@ -256,7 +256,7 @@ export default function CampaignsIndex({ campaigns, seasonTypes }: Props) {
             <div className="space-y-6 p-4 md:p-6">
                 <PageHeader
                     title="Campagnes"
-                    description="Les campagnes agricoles de votre coopérative."
+                    description="Les campagnes agricoles de votre exploitation."
                 >
                     {canManage && <CreateDialog seasonTypes={seasonTypes} />}
                 </PageHeader>

@@ -5,9 +5,9 @@ namespace App\Services\Rules;
 /**
  * Evaluates a tree of conditions against a context (SPEC section 9.5).
  *
- * The evaluator knows neither agronomy nor cooperatives. It makes no
+ * The evaluator knows neither agronomy nor exploitations. It makes no
  * database call. The grammar is deliberately poor so that it stays
- * readable by the technical lead of a cooperative: three shapes, nine
+ * readable by the technical lead of an exploitation: three shapes, nine
  * operators, no function, no computation, no external call.
  */
 class RuleEvaluator

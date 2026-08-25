@@ -26,9 +26,9 @@ trait CampaignValidationRules
     }
 
     /**
-     * Two campaigns sharing a label inside one cooperative would make
+     * Two campaigns sharing a label inside one exploitation would make
      * every drop-down ambiguous. Uniqueness is checked through the
-     * scoped model, so it naturally applies per cooperative.
+     * scoped model, so it naturally applies per exploitation.
      */
     private function uniqueLabelRule(?Campaign $campaign): Closure
     {
@@ -39,7 +39,7 @@ trait CampaignValidationRules
                 ->exists();
 
             if ($exists) {
-                $fail('Une campagne portant ce libellé existe déjà dans votre coopérative.');
+                $fail('Une campagne portant ce libellé existe déjà dans votre exploitation.');
             }
         };
     }

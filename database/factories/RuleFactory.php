@@ -5,8 +5,8 @@ namespace Database\Factories;
 use App\Enums\RuleFamily;
 use App\Enums\Severity;
 use App\Enums\ThresholdStatus;
-use App\Models\Cooperative;
 use App\Models\Crop;
+use App\Models\Exploitation;
 use App\Models\Rule;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -27,7 +27,7 @@ class RuleFactory extends Factory
     public function definition(): array
     {
         return [
-            'cooperative_id' => null,
+            'exploitation_id' => null,
             'code' => 'TEST-'.fake()->unique()->numerify('###'),
             'crop_id' => null,
             'family' => RuleFamily::A,
@@ -87,10 +87,10 @@ class RuleFactory extends Factory
         return $this->state(fn (array $attributes) => ['crop_id' => $crop->id]);
     }
 
-    /** An override carried by one cooperative (SPEC section 9.6). */
-    public function ownedBy(Cooperative $cooperative): static
+    /** An override carried by one exploitation (SPEC section 9.6). */
+    public function ownedBy(Exploitation $exploitation): static
     {
-        return $this->state(fn (array $attributes) => ['cooperative_id' => $cooperative->id]);
+        return $this->state(fn (array $attributes) => ['exploitation_id' => $exploitation->id]);
     }
 
     public function disabled(): static

@@ -1,9 +1,9 @@
 <?php
 
 use App\Models\Campaign;
-use App\Models\Cooperative;
 use App\Models\Crop;
 use App\Models\CropCycle;
+use App\Models\Exploitation;
 use App\Models\Farmer;
 use App\Models\Harvest;
 use App\Models\Operation;
@@ -78,7 +78,7 @@ expect()->extend('toBeOne', function () {
  * bord, qui vérifient des moyennes vérifiables à la main.
  */
 function cycleYielding(
-    Cooperative $cooperative,
+    Exploitation $exploitation,
     Crop $crop,
     Campaign $campaign,
     string $village,
@@ -87,7 +87,7 @@ function cycleYielding(
     float $operationCost,
     ?float $unitPrice = 100.0,
 ): CropCycle {
-    $farmer = Farmer::factory()->for($cooperative)->inVillage($village)->create();
+    $farmer = Farmer::factory()->for($exploitation)->inVillage($village)->create();
     $plot = Plot::factory()->ofFarmer($farmer)->withArea($areaHa)->create();
     $cycle = CropCycle::factory()->on($plot, $campaign, $crop)->create();
 

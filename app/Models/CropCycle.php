@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Enums\CycleStatus;
-use App\Models\Concerns\BelongsToCooperative;
+use App\Models\Concerns\BelongsToExploitation;
 use Database\Factories\CropCycleFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -19,7 +19,7 @@ use LogicException;
  * a campaign (SPEC section 6).
  *
  * @property int $id
- * @property int $cooperative_id
+ * @property int $exploitation_id
  * @property int $plot_id
  * @property int $crop_id
  * @property int|null $variety_id
@@ -41,7 +41,7 @@ use LogicException;
 class CropCycle extends Model
 {
     /** @use HasFactory<CropCycleFactory> */
-    use BelongsToCooperative, HasFactory;
+    use BelongsToExploitation, HasFactory;
 
     /**
      * A cycle always opens as planned: the status is never taken from a

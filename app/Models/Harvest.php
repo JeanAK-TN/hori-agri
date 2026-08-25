@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Enums\Quality;
-use App\Models\Concerns\BelongsToCooperative;
+use App\Models\Concerns\BelongsToExploitation;
 use Database\Factories\HarvestFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,7 +13,7 @@ use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
- * @property int $cooperative_id
+ * @property int $exploitation_id
  * @property int $crop_cycle_id
  * @property Carbon $date
  * @property string $quantity_kg
@@ -34,7 +34,7 @@ use Illuminate\Support\Carbon;
 class Harvest extends Model
 {
     /** @use HasFactory<HarvestFactory> */
-    use BelongsToCooperative, HasFactory;
+    use BelongsToExploitation, HasFactory;
 
     /**
      * @return array<string, string>

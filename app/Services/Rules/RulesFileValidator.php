@@ -103,11 +103,11 @@ class RulesFileValidator
             $problems[] = sprintf('%s : « enabled » doit être vrai ou faux.', $code);
         }
 
-        // Une convention de travail reste à confirmer par la coopérative :
+        // Une convention de travail reste à confirmer par l'exploitation :
         // elle ne s'évalue pas tant qu'elle est active (SPEC 10.4).
         if ($threshold?->isConvention() === true && $entry['enabled'] === true) {
             $problems[] = sprintf(
-                '%s : un seuil de convention ne peut pas être actif tant que la coopérative ne l\'a pas confirmé.',
+                '%s : un seuil de convention ne peut pas être actif tant que l\'exploitation ne l\'a pas confirmé.',
                 $code,
             );
         }

@@ -5,9 +5,9 @@ use App\Enums\InputType;
 use App\Enums\OperationType;
 use App\Enums\QuantityUnit;
 use App\Models\Campaign;
-use App\Models\Cooperative;
 use App\Models\Crop;
 use App\Models\CropCycle;
+use App\Models\Exploitation;
 use App\Models\Farmer;
 use App\Models\Operation;
 use App\Models\Plot;
@@ -19,13 +19,13 @@ use App\Models\User;
 */
 
 beforeEach(function () {
-    $this->cooperative = Cooperative::factory()->create();
-    $this->technician = User::factory()->technician()->for($this->cooperative)->create();
+    $this->exploitation = Exploitation::factory()->create();
+    $this->technician = User::factory()->technician()->for($this->exploitation)->create();
 
-    $farmer = Farmer::factory()->for($this->cooperative)->create();
+    $farmer = Farmer::factory()->for($this->exploitation)->create();
     $plot = Plot::factory()->ofFarmer($farmer)->create();
     $campaign = Campaign::factory()
-        ->for($this->cooperative)
+        ->for($this->exploitation)
         ->between('2026-03-01', '2026-11-30')
         ->create(['label' => '2026 grande saison']);
 
@@ -52,7 +52,7 @@ test('a technician records a complete operation and it is saved', function () {
 
     $operation = Operation::firstWhere('crop_cycle_id', $this->cycle->id);
 
-    expect($operation->cooperative_id)->toBe($this->cooperative->id)
+    expect($operation->exploitation_id)->toBe($this->exploitation->id)
         ->and($operation->type)->toBe(OperationType::Fertilization)
         ->and($operation->input_type)->toBe(InputType::Npk)
         ->and($operation->unit)->toBe(QuantityUnit::Bag50Kg)
@@ -240,9 +240,9 @@ test('a closed cycle no longer accepts an operation', function () {
 });
 
 test('only a technician records an operation', function () {
-    $coopAdmin = User::factory()->coopAdmin()->for($this->cooperative)->create();
+    $exploitationAdmin = User::factory()->exploitationAdmin()->for($this->exploitation)->create();
 
-    $this->actingAs($coopAdmin)
+    $this->actingAs($exploitationAdmin)
         ->post(route('operations.store', $this->cycle), [
             'type' => OperationType::Tillage->value,
             'date' => '2026-04-20',

@@ -3,8 +3,8 @@
 namespace Database\Factories;
 
 use App\Enums\RecoStatus;
-use App\Models\Cooperative;
 use App\Models\CropCycle;
+use App\Models\Exploitation;
 use App\Models\Recommendation;
 use App\Models\Rule;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -24,7 +24,7 @@ class RecommendationFactory extends Factory
     public function definition(): array
     {
         return [
-            'cooperative_id' => Cooperative::factory(),
+            'exploitation_id' => Exploitation::factory(),
             'crop_cycle_id' => CropCycle::factory(),
             'rule_id' => Rule::factory(),
             'priority' => 1,
@@ -40,13 +40,13 @@ class RecommendationFactory extends Factory
     }
 
     /**
-     * Attach the recommendation to a cycle, and to the cooperative that
+     * Attach the recommendation to a cycle, and to the exploitation that
      * cycle belongs to.
      */
     public function forCycle(CropCycle $cycle): static
     {
         return $this->state(fn (array $attributes) => [
-            'cooperative_id' => $cycle->cooperative_id,
+            'exploitation_id' => $cycle->exploitation_id,
             'crop_cycle_id' => $cycle->id,
         ]);
     }

@@ -8,29 +8,29 @@ use App\Models\User;
 use Illuminate\Auth\Access\Response;
 
 /**
- * The knowledge base is read by the super_admin and by the cooperative
+ * The knowledge base is read by the super_admin and by the exploitation
  * administrators. Only the latter override a threshold, and only for
- * their own cooperative (SPEC sections 5 and 11).
+ * their own exploitation (SPEC sections 5 and 11).
  */
 class RulePolicy
 {
     public function viewAny(User $user): bool
     {
-        return in_array($user->role, [Role::SuperAdmin, Role::CoopAdmin], true);
+        return in_array($user->role, [Role::SuperAdmin, Role::ExploitationAdmin], true);
     }
 
     /**
-     * Overriding a rule means carrying a copy of it for one cooperative.
-     * A rule already belonging to another cooperative is out of reach,
+     * Overriding a rule means carrying a copy of it for one exploitation.
+     * A rule already belonging to another exploitation is out of reach,
      * and answers "not found" rather than "forbidden" (SPEC 7.2).
      */
     public function override(User $user, Rule $rule): Response
     {
-        if ($user->role !== Role::CoopAdmin) {
-            return Response::deny('Seul un administrateur de coopérative surcharge un seuil.');
+        if ($user->role !== Role::ExploitationAdmin) {
+            return Response::deny('Seul un administrateur d\'exploitation surcharge un seuil.');
         }
 
-        if ($rule->cooperative_id !== null && $rule->cooperative_id !== $user->cooperative_id) {
+        if ($rule->exploitation_id !== null && $rule->exploitation_id !== $user->exploitation_id) {
             return Response::denyAsNotFound();
         }
 

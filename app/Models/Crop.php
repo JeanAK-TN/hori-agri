@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
- * Common crop registry, shared by every cooperative and maintained by
+ * Common crop registry, shared by every exploitation and maintained by
  * the super_admin. Deliberately not scoped (SPEC section 7.1).
  *
  * Every reference value below comes from the seed files, never from the

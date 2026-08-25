@@ -3,13 +3,13 @@
 namespace Database\Factories;
 
 use App\Enums\Quality;
-use App\Models\Cooperative;
 use App\Models\CropCycle;
+use App\Models\Exploitation;
 use App\Models\Harvest;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * Test fixture only — no real Hori cooperative data (SPEC rule 2).
+ * Test fixture only — no real Hori exploitation data (SPEC rule 2).
  *
  * @extends Factory<Harvest>
  */
@@ -23,7 +23,7 @@ class HarvestFactory extends Factory
     public function definition(): array
     {
         return [
-            'cooperative_id' => Cooperative::factory(),
+            'exploitation_id' => Exploitation::factory(),
             'crop_cycle_id' => CropCycle::factory(),
             'date' => '2026-08-01',
             'quantity_kg' => 1000,
@@ -36,7 +36,7 @@ class HarvestFactory extends Factory
     public function forCycle(CropCycle $cycle): static
     {
         return $this->state(fn (array $attributes) => [
-            'cooperative_id' => $cycle->cooperative_id,
+            'exploitation_id' => $cycle->exploitation_id,
             'crop_cycle_id' => $cycle->id,
         ]);
     }

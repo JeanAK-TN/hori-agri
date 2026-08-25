@@ -132,7 +132,7 @@ test('the registry screen is reserved for the super_admin', function () {
             ->has('crops', 3),
         );
 
-    foreach (['coopAdmin', 'technician', 'farmer'] as $state) {
+    foreach (['exploitationAdmin', 'technician', 'farmer'] as $state) {
         $this->actingAs(User::factory()->{$state}()->create())
             ->get(route('crops.index'))
             ->assertForbidden();

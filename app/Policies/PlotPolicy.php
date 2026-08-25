@@ -7,9 +7,9 @@ use App\Models\Plot;
 use App\Models\User;
 
 /**
- * Plots are recorded by technicians and by the cooperative
- * administrator (SPEC section 5). Cross-cooperative access never reaches
- * this policy: CooperativeScope already hides the record.
+ * Plots are recorded by technicians and by the exploitation
+ * administrator (SPEC section 5). Cross-exploitation access never reaches
+ * this policy: ExploitationScope already hides the record.
  */
 class PlotPolicy
 {
@@ -35,6 +35,6 @@ class PlotPolicy
 
     private function manages(User $user): bool
     {
-        return in_array($user->role, [Role::CoopAdmin, Role::Technician], true);
+        return in_array($user->role, [Role::ExploitationAdmin, Role::Technician], true);
     }
 }

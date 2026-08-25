@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Cooperative;
+use App\Models\Exploitation;
 use App\Models\Farmer;
 use App\Models\User;
 
@@ -15,10 +15,10 @@ use App\Models\User;
 */
 
 beforeEach(function () {
-    $this->cooperative = Cooperative::factory()->create();
-    $this->technician = User::factory()->technician()->for($this->cooperative)->create();
+    $this->exploitation = Exploitation::factory()->create();
+    $this->technician = User::factory()->technician()->for($this->exploitation)->create();
 
-    Farmer::factory()->count(3)->for($this->cooperative)->create();
+    Farmer::factory()->count(3)->for($this->exploitation)->create();
 
     $this->actingAs($this->technician);
 });

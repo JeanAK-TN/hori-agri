@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 /*
 | Le test le plus important du projet (SPEC section 14.1).
 |
-| L'évaluateur ne connaît ni l'agronomie ni les coopératives, et n'émet
+| L'évaluateur ne connaît ni l'agronomie ni les exploitations, et n'émet
 | aucune requête : ces tests le prouvent opérateur par opérateur, dans le
 | cas vrai comme dans le cas faux, et sur la sémantique des nuls qui est
 | la source d'erreur la plus probable du moteur.

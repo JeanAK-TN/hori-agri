@@ -21,7 +21,7 @@ enum ThresholdStatus: string implements HasLabel
     }
 
     /**
-     * A working convention has to be confirmed by the cooperative before
+     * A working convention has to be confirmed by the exploitation before
      * it fires: such a rule is disabled by default (SPEC section 6.2).
      */
     public function isConvention(): bool

@@ -46,7 +46,7 @@ type Account = {
     email: string | null;
     role: string;
     role_label: string;
-    cooperative: { id: number; name: string } | null;
+    exploitation: { id: number; name: string } | null;
 };
 
 type RoleOption = { value: string; label: string };
@@ -54,20 +54,20 @@ type RoleOption = { value: string; label: string };
 type Props = {
     users: Paginated<Account>;
     assignableRoles: RoleOption[];
-    cooperatives: { id: number; name: string }[] | null;
+    exploitations: { id: number; name: string }[] | null;
 };
 
 type FieldsProps = {
     errors: Record<string, string>;
     assignableRoles: RoleOption[];
-    cooperatives: Props['cooperatives'];
+    exploitations: Props['exploitations'];
     account?: Account;
 };
 
 function AccountFields({
     errors,
     assignableRoles,
-    cooperatives,
+    exploitations,
     account,
 }: FieldsProps) {
     const isEdit = account !== undefined;
@@ -138,25 +138,25 @@ function AccountFields({
                 <InputError message={errors.role} />
             </div>
 
-            {!isEdit && cooperatives !== null && (
+            {!isEdit && exploitations !== null && (
                 <div className="grid gap-2">
-                    <Label htmlFor="cooperative_id">Coopérative</Label>
-                    <Select name="cooperative_id">
-                        <SelectTrigger id="cooperative_id" className="w-full">
-                            <SelectValue placeholder="Choisir une coopérative" />
+                    <Label htmlFor="exploitation_id">Exploitation</Label>
+                    <Select name="exploitation_id">
+                        <SelectTrigger id="exploitation_id" className="w-full">
+                            <SelectValue placeholder="Choisir une exploitation" />
                         </SelectTrigger>
                         <SelectContent>
-                            {cooperatives.map((cooperative) => (
+                            {exploitations.map((exploitation) => (
                                 <SelectItem
-                                    key={cooperative.id}
-                                    value={String(cooperative.id)}
+                                    key={exploitation.id}
+                                    value={String(exploitation.id)}
                                 >
-                                    {cooperative.name}
+                                    {exploitation.name}
                                 </SelectItem>
                             ))}
                         </SelectContent>
                     </Select>
-                    <InputError message={errors.cooperative_id} />
+                    <InputError message={errors.exploitation_id} />
                 </div>
             )}
 
@@ -195,7 +195,7 @@ function AccountFields({
 
 function CreateDialog({
     assignableRoles,
-    cooperatives,
+    exploitations,
 }: Omit<FieldsProps, 'errors' | 'account'>) {
     const [open, setOpen] = useState(false);
 
@@ -226,7 +226,7 @@ function CreateDialog({
                             <AccountFields
                                 errors={errors}
                                 assignableRoles={assignableRoles}
-                                cooperatives={cooperatives}
+                                exploitations={exploitations}
                             />
                             <DialogFooter>
                                 <Button
@@ -249,7 +249,7 @@ function CreateDialog({
 function EditDialog({
     account,
     assignableRoles,
-    cooperatives,
+    exploitations,
 }: Omit<FieldsProps, 'errors'> & { account: Account }) {
     const [open, setOpen] = useState(false);
 
@@ -281,7 +281,7 @@ function EditDialog({
                             <AccountFields
                                 errors={errors}
                                 assignableRoles={assignableRoles}
-                                cooperatives={cooperatives}
+                                exploitations={exploitations}
                                 account={account}
                             />
                             <DialogFooter>
@@ -305,10 +305,10 @@ function EditDialog({
 export default function UsersIndex({
     users,
     assignableRoles,
-    cooperatives,
+    exploitations,
 }: Props) {
     const { auth } = usePage<{ auth: Auth }>().props;
-    const showCooperative = auth.user.role === 'super_admin';
+    const showExploitation = auth.user.role === 'super_admin';
     const canCreate = assignableRoles.length > 0;
 
     return (
@@ -319,15 +319,15 @@ export default function UsersIndex({
                 <PageHeader
                     title="Comptes"
                     description={
-                        showCooperative
+                        showExploitation
                             ? 'Tous les comptes de la solution.'
-                            : 'Les comptes de votre coopérative.'
+                            : 'Les comptes de votre exploitation.'
                     }
                 >
                     {canCreate && (
                         <CreateDialog
                             assignableRoles={assignableRoles}
-                            cooperatives={cooperatives}
+                            exploitations={exploitations}
                         />
                     )}
                 </PageHeader>
@@ -361,16 +361,17 @@ export default function UsersIndex({
                                         </Badge>
                                     </div>
 
-                                    {showCooperative && account.cooperative && (
-                                        <p className="text-sm text-muted-foreground">
-                                            {account.cooperative.name}
-                                        </p>
-                                    )}
+                                    {showExploitation &&
+                                        account.exploitation && (
+                                            <p className="text-sm text-muted-foreground">
+                                                {account.exploitation.name}
+                                            </p>
+                                        )}
 
                                     <EditDialog
                                         account={account}
                                         assignableRoles={assignableRoles}
-                                        cooperatives={cooperatives}
+                                        exploitations={exploitations}
                                     />
                                 </li>
                             ))}
@@ -386,8 +387,8 @@ export default function UsersIndex({
                                         <TableHead>Téléphone</TableHead>
                                         <TableHead>Adresse e-mail</TableHead>
                                         <TableHead>Rôle</TableHead>
-                                        {showCooperative && (
-                                            <TableHead>Coopérative</TableHead>
+                                        {showExploitation && (
+                                            <TableHead>Exploitation</TableHead>
                                         )}
                                         <TableHead className="px-4 text-right">
                                             Actions
@@ -411,9 +412,9 @@ export default function UsersIndex({
                                                     {account.role_label}
                                                 </Badge>
                                             </TableCell>
-                                            {showCooperative && (
+                                            {showExploitation && (
                                                 <TableCell className="text-muted-foreground">
-                                                    {account.cooperative
+                                                    {account.exploitation
                                                         ?.name ?? '—'}
                                                 </TableCell>
                                             )}
@@ -424,8 +425,8 @@ export default function UsersIndex({
                                                         assignableRoles={
                                                             assignableRoles
                                                         }
-                                                        cooperatives={
-                                                            cooperatives
+                                                        exploitations={
+                                                            exploitations
                                                         }
                                                     />
                                                 </div>

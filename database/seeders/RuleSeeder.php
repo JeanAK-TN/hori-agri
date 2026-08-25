@@ -52,9 +52,9 @@ class RuleSeeder extends Seeder
             }
 
             // Les règles du fichier sont communes à toutes les
-            // coopératives : cooperative_id reste nul.
+            // exploitations : exploitation_id reste nul.
             Rule::withoutGlobalScopes()->updateOrCreate(
-                ['cooperative_id' => null, 'code' => $entry['code']],
+                ['exploitation_id' => null, 'code' => $entry['code']],
                 [
                     'crop_id' => $crop?->id,
                     'family' => $entry['family'],

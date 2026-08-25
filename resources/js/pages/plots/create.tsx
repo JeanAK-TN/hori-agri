@@ -26,7 +26,7 @@ export default function PlotCreate({
             <div className="space-y-6 p-4 md:p-6">
                 <PageHeader
                     title="Nouvelle parcelle"
-                    description="Rattachez la parcelle à un producteur de votre coopérative."
+                    description="Rattachez la parcelle à un producteur de votre exploitation."
                 >
                     <Button asChild variant="outline" className="h-12">
                         <Link href={index()}>

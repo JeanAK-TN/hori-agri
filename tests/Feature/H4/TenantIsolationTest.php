@@ -2,26 +2,26 @@
 
 use App\Enums\Role;
 use App\Models\Campaign;
-use App\Models\Cooperative;
 use App\Models\Crop;
 use App\Models\CropCycle;
+use App\Models\Exploitation;
 use App\Models\Farmer;
 use App\Models\Plot;
 use App\Models\User;
 use Inertia\Testing\AssertableInertia as Assert;
 
 /*
-| Hypothèse H4 : l'isolation entre coopératives (SPEC section 14.2).
-| Une demande portant sur une ressource d'une autre coopérative doit
+| Hypothèse H4 : l'isolation entre exploitations (SPEC section 14.2).
+| Une demande portant sur une ressource d'une autre exploitation doit
 | produire « ressource introuvable », jamais un refus d'accès, qui
 | révélerait l'existence de la ressource.
 */
 
-test('a cooperative administrator only sees the accounts of their own cooperative', function () {
-    $mine = Cooperative::factory()->create();
-    $other = Cooperative::factory()->create();
+test('an exploitation administrator only sees the accounts of their own exploitation', function () {
+    $mine = Exploitation::factory()->create();
+    $other = Exploitation::factory()->create();
 
-    $admin = User::factory()->coopAdmin()->for($mine)->create(['name' => 'Chez moi']);
+    $admin = User::factory()->exploitationAdmin()->for($mine)->create(['name' => 'Chez moi']);
     User::factory()->technician()->for($mine)->create(['name' => 'Mon technicien']);
     User::factory()->technician()->for($other)->create(['name' => 'Technicien voisin']);
 
@@ -36,8 +36,8 @@ test('a cooperative administrator only sees the accounts of their own cooperativ
 });
 
 test('the super_admin sees every account', function () {
-    $first = Cooperative::factory()->create();
-    $second = Cooperative::factory()->create();
+    $first = Exploitation::factory()->create();
+    $second = Exploitation::factory()->create();
 
     User::factory()->technician()->for($first)->create();
     User::factory()->technician()->for($second)->create();
@@ -48,8 +48,8 @@ test('the super_admin sees every account', function () {
         ->assertInertia(fn (Assert $page) => $page->has('users.data', 3));
 });
 
-test('updating an account of another cooperative answers not found, not forbidden', function () {
-    $admin = User::factory()->coopAdmin()->create();
+test('updating an account of another exploitation answers not found, not forbidden', function () {
+    $admin = User::factory()->exploitationAdmin()->create();
     $foreign = User::factory()->technician()->create();
 
     $this->actingAs($admin)
@@ -63,10 +63,10 @@ test('updating an account of another cooperative answers not found, not forbidde
     expect($foreign->fresh()->name)->not->toBe('Renommé de force');
 });
 
-test('a cooperative administrator can update an account of their own cooperative', function () {
-    $cooperative = Cooperative::factory()->create();
-    $admin = User::factory()->coopAdmin()->for($cooperative)->create();
-    $technician = User::factory()->technician()->for($cooperative)->create();
+test('an exploitation administrator can update an account of their own exploitation', function () {
+    $exploitation = Exploitation::factory()->create();
+    $admin = User::factory()->exploitationAdmin()->for($exploitation)->create();
+    $technician = User::factory()->technician()->for($exploitation)->create();
 
     $this->actingAs($admin)
         ->patch(route('users.update', $technician), [
@@ -80,7 +80,7 @@ test('a cooperative administrator can update an account of their own cooperative
 });
 
 test('an administrator cannot change their own role', function () {
-    $admin = User::factory()->coopAdmin()->create();
+    $admin = User::factory()->exploitationAdmin()->create();
 
     $this->actingAs($admin)
         ->patch(route('users.update', $admin), [
@@ -90,11 +90,11 @@ test('an administrator cannot change their own role', function () {
         ])
         ->assertSessionHasErrors('role');
 
-    expect($admin->fresh()->role)->toBe(Role::CoopAdmin);
+    expect($admin->fresh()->role)->toBe(Role::ExploitationAdmin);
 });
 
-test('a technician only sees the producers of their own cooperative', function () {
-    $mine = Cooperative::factory()->create();
+test('a technician only sees the producers of their own exploitation', function () {
+    $mine = Exploitation::factory()->create();
     $technician = User::factory()->technician()->for($mine)->create();
 
     Farmer::factory()->for($mine)->create(['last_name' => 'Chez moi']);
@@ -108,7 +108,7 @@ test('a technician only sees the producers of their own cooperative', function (
         );
 });
 
-test('consulting a producer of another cooperative answers not found', function () {
+test('consulting a producer of another exploitation answers not found', function () {
     $technician = User::factory()->technician()->create();
     $foreign = Farmer::factory()->create();
 
@@ -117,7 +117,7 @@ test('consulting a producer of another cooperative answers not found', function 
         ->assertNotFound();
 });
 
-test('updating a producer of another cooperative answers not found', function () {
+test('updating a producer of another exploitation answers not found', function () {
     $technician = User::factory()->technician()->create();
     $foreign = Farmer::factory()->create(['village' => 'Village voisin']);
 
@@ -132,7 +132,7 @@ test('updating a producer of another cooperative answers not found', function ()
     expect($foreign->fresh()->village)->toBe('Village voisin');
 });
 
-test('consulting a plot of another cooperative answers not found', function () {
+test('consulting a plot of another exploitation answers not found', function () {
     $technician = User::factory()->technician()->create();
     $foreign = Plot::factory()->create();
 
@@ -141,13 +141,13 @@ test('consulting a plot of another cooperative answers not found', function () {
         ->assertNotFound();
 });
 
-test('consulting a cycle of another cooperative answers not found', function () {
+test('consulting a cycle of another exploitation answers not found', function () {
     $technician = User::factory()->technician()->create();
 
     $foreignFarmer = Farmer::factory()->create();
     $foreignPlot = Plot::factory()->ofFarmer($foreignFarmer)->create();
     $foreignCampaign = Campaign::factory()
-        ->for($foreignFarmer->cooperative)
+        ->for($foreignFarmer->exploitation)
         ->create();
     $foreignCycle = CropCycle::factory()
         ->on($foreignPlot, $foreignCampaign, Crop::factory()->create())
@@ -158,13 +158,13 @@ test('consulting a cycle of another cooperative answers not found', function () 
         ->assertNotFound();
 });
 
-test('closing a cycle of another cooperative answers not found', function () {
+test('closing a cycle of another exploitation answers not found', function () {
     $technician = User::factory()->technician()->create();
 
     $foreignFarmer = Farmer::factory()->create();
     $foreignPlot = Plot::factory()->ofFarmer($foreignFarmer)->create();
     $foreignCampaign = Campaign::factory()
-        ->for($foreignFarmer->cooperative)
+        ->for($foreignFarmer->exploitation)
         ->create();
     $foreignCycle = CropCycle::factory()
         ->on($foreignPlot, $foreignCampaign, Crop::factory()->create())
@@ -175,8 +175,8 @@ test('closing a cycle of another cooperative answers not found', function () {
         ->assertNotFound();
 });
 
-test('the lists only carry the rows of the current cooperative', function () {
-    $mine = Cooperative::factory()->create();
+test('the lists only carry the rows of the current exploitation', function () {
+    $mine = Exploitation::factory()->create();
     $technician = User::factory()->technician()->for($mine)->create();
 
     $myFarmer = Farmer::factory()->for($mine)->create();
@@ -185,7 +185,7 @@ test('the lists only carry the rows of the current cooperative', function () {
 
     $foreignFarmer = Farmer::factory()->create();
     Plot::factory()->ofFarmer($foreignFarmer)->create(['name' => 'Parcelle voisine']);
-    Campaign::factory()->for($foreignFarmer->cooperative)->create(['label' => 'Campagne voisine']);
+    Campaign::factory()->for($foreignFarmer->exploitation)->create(['label' => 'Campagne voisine']);
 
     $this->actingAs($technician);
 
@@ -202,12 +202,12 @@ test('the lists only carry the rows of the current cooperative', function () {
         );
 });
 
-test('a cooperative administrator cannot reach the cooperative registry', function () {
-    $admin = User::factory()->coopAdmin()->create();
-    $cooperative = Cooperative::factory()->create();
+test('an exploitation administrator cannot reach the exploitation registry', function () {
+    $admin = User::factory()->exploitationAdmin()->create();
+    $exploitation = Exploitation::factory()->create();
 
     $this->actingAs($admin)
-        ->patch(route('cooperatives.update', $cooperative), [
+        ->patch(route('exploitations.update', $exploitation), [
             'name' => 'Renommée',
             'region' => 'Kara',
             'prefecture' => 'Kozah',

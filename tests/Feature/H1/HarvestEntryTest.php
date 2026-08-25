@@ -2,9 +2,9 @@
 
 use App\Enums\Quality;
 use App\Models\Campaign;
-use App\Models\Cooperative;
 use App\Models\Crop;
 use App\Models\CropCycle;
+use App\Models\Exploitation;
 use App\Models\Farmer;
 use App\Models\Harvest;
 use App\Models\Plot;
@@ -12,13 +12,13 @@ use App\Models\User;
 use Inertia\Testing\AssertableInertia as Assert;
 
 beforeEach(function () {
-    $this->cooperative = Cooperative::factory()->create();
-    $this->technician = User::factory()->technician()->for($this->cooperative)->create();
+    $this->exploitation = Exploitation::factory()->create();
+    $this->technician = User::factory()->technician()->for($this->exploitation)->create();
 
-    $farmer = Farmer::factory()->for($this->cooperative)->create();
+    $farmer = Farmer::factory()->for($this->exploitation)->create();
     $plot = Plot::factory()->ofFarmer($farmer)->create();
     $campaign = Campaign::factory()
-        ->for($this->cooperative)
+        ->for($this->exploitation)
         ->between('2026-03-01', '2026-11-30')
         ->create();
 
@@ -39,7 +39,7 @@ test('a technician records a harvest', function () {
 
     $harvest = Harvest::firstWhere('crop_cycle_id', $this->cycle->id);
 
-    expect($harvest->cooperative_id)->toBe($this->cooperative->id)
+    expect($harvest->exploitation_id)->toBe($this->exploitation->id)
         ->and((float) $harvest->quantity_kg)->toBe(675.0)
         ->and($harvest->quality)->toBe(Quality::Good);
 });
@@ -106,10 +106,10 @@ test('the cycle screen shows the itinerary and the harvests', function () {
         );
 });
 
-test('a cooperative administrator sees the itinerary but cannot fill it in', function () {
-    $coopAdmin = User::factory()->coopAdmin()->for($this->cooperative)->create();
+test('an exploitation administrator sees the itinerary but cannot fill it in', function () {
+    $exploitationAdmin = User::factory()->exploitationAdmin()->for($this->exploitation)->create();
 
-    $this->actingAs($coopAdmin)
+    $this->actingAs($exploitationAdmin)
         ->get(route('cycles.show', $this->cycle))
         ->assertInertia(fn (Assert $page) => $page->where('canRecord', false));
 });

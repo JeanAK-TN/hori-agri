@@ -14,7 +14,7 @@ trait ValidatesCycleEntry
 {
     /**
      * The cycle being filled in, resolved from the route binding. One of
-     * another cooperative never reaches this point: the global scope
+     * another exploitation never reaches this point: the global scope
      * already hides it (SPEC section 7.2).
      */
     protected function targetCycle(): CropCycle

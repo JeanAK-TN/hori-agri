@@ -12,7 +12,7 @@ use Illuminate\Support\Collection;
  * Computes the ten indicators of a cycle (SPEC section 9.2).
  *
  * The service knows nothing of the HTTP request: the cycle is handed to
- * it, and the comparison zone is pinned to that cycle's own cooperative
+ * it, and the comparison zone is pinned to that cycle's own exploitation
  * rather than to whoever happens to be logged in. That is what makes it
  * correct when it runs from an import or a command.
  */
@@ -73,10 +73,10 @@ class IndicatorService
 
         $indicator = $cycle->indicator()->firstOrNew();
 
-        // La coopérative vient du cycle, pas de l'utilisateur connecté :
+        // L'exploitation vient du cycle, pas de l'utilisateur connecté :
         // le calcul tourne aussi depuis un import ou une commande, où le
-        // trait BelongsToCooperative n'a personne à interroger.
-        $indicator->cooperative_id = $cycle->cooperative_id;
+        // trait BelongsToExploitation n'a personne à interroger.
+        $indicator->exploitation_id = $cycle->exploitation_id;
 
         $indicator->fill([
             'yield_kg_ha' => round($yieldPerHectare, 2),
@@ -107,12 +107,12 @@ class IndicatorService
     /**
      * The comparison zone, built exactly as SPEC section 9.3 prescribes.
      *
-     *  1. cycles of the same cooperative, crop and campaign, not given
+     *  1. cycles of the same exploitation, crop and campaign, not given
      *     up, carrying at least one harvest, whose producer lives in the
      *     same village as the one being evaluated. The evaluated cycle
      *     belongs to the set.
      *  2. below five cycles, the set is rebuilt without the village
-     *     condition, that is at the scale of the cooperative.
+     *     condition, that is at the scale of the exploitation.
      *
      * The yields and costs of the peers are recomputed from the raw
      * rows rather than read from their own indicators, which may not
@@ -130,7 +130,7 @@ class IndicatorService
             return $inVillage;
         }
 
-        // Repli sur la coopérative entière, qui n'a qu'une région.
+        // Repli sur l'exploitation entière, qui n'a qu'une région.
         return $this->peers($cycle, village: null);
     }
 
@@ -140,9 +140,9 @@ class IndicatorService
     private function peers(CropCycle $cycle, ?string $village): Collection
     {
         return CropCycle::query()
-            // La coopérative du cycle, et non celle de l'utilisateur
+            // L'exploitation du cycle, et non celle de l'utilisateur
             // connecté : le calcul tourne aussi hors contexte HTTP.
-            ->where('crop_cycles.cooperative_id', $cycle->cooperative_id)
+            ->where('crop_cycles.exploitation_id', $cycle->exploitation_id)
             ->where('crop_id', $cycle->crop_id)
             ->where('campaign_id', $cycle->campaign_id)
             ->where('status', '!=', CycleStatus::Abandoned->value)

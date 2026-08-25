@@ -2,9 +2,9 @@
 
 use App\Enums\Severity;
 use App\Models\Campaign;
-use App\Models\Cooperative;
 use App\Models\Crop;
 use App\Models\CropCycle;
+use App\Models\Exploitation;
 use App\Models\Farmer;
 use App\Models\Harvest;
 use App\Models\Plot;
@@ -21,12 +21,12 @@ use App\Services\Rules\RecommendationService;
 beforeEach(function () {
     $this->engine = app(RecommendationService::class);
 
-    $cooperative = Cooperative::factory()->create();
+    $exploitation = Exploitation::factory()->create();
     $crop = Crop::factory()->named('Maïs')->create();
-    $campaign = Campaign::factory()->for($cooperative)
+    $campaign = Campaign::factory()->for($exploitation)
         ->between('2026-03-01', '2026-11-30')->create();
 
-    $farmer = Farmer::factory()->for($cooperative)->create();
+    $farmer = Farmer::factory()->for($exploitation)->create();
     $plot = Plot::factory()->ofFarmer($farmer)->withArea(1.0)->create();
 
     $this->cycle = CropCycle::factory()->on($plot, $campaign, $crop)->create();

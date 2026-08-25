@@ -2,9 +2,9 @@
 
 use App\Enums\OperationType;
 use App\Models\Campaign;
-use App\Models\Cooperative;
 use App\Models\Crop;
 use App\Models\CropCycle;
+use App\Models\Exploitation;
 use App\Models\Farmer;
 use App\Models\Harvest;
 use App\Models\Indicator;
@@ -26,16 +26,16 @@ use Inertia\Testing\AssertableInertia as Assert;
 */
 
 beforeEach(function () {
-    $this->cooperative = Cooperative::factory()->create();
-    $this->technician = User::factory()->technician()->for($this->cooperative)->create();
+    $this->exploitation = Exploitation::factory()->create();
+    $this->technician = User::factory()->technician()->for($this->exploitation)->create();
     $this->crop = Crop::factory()->named('Maïs')->create();
     $this->campaign = Campaign::factory()
-        ->for($this->cooperative)
+        ->for($this->exploitation)
         ->between('2026-03-01', '2026-11-30')
         ->create();
 
     $this->openCycle = function (float $yieldKg = 1000): CropCycle {
-        $farmer = Farmer::factory()->for($this->cooperative)->inVillage('Bassar')->create();
+        $farmer = Farmer::factory()->for($this->exploitation)->inVillage('Bassar')->create();
         $plot = Plot::factory()->ofFarmer($farmer)->withArea(1.0)->create();
 
         $cycle = CropCycle::factory()->on($plot, $this->campaign, $this->crop)->create();
@@ -48,7 +48,7 @@ beforeEach(function () {
 });
 
 test('the indicators are recomputed without any action from the user', function () {
-    $farmer = Farmer::factory()->for($this->cooperative)->create();
+    $farmer = Farmer::factory()->for($this->exploitation)->create();
     $plot = Plot::factory()->ofFarmer($farmer)->withArea(0.75)->create();
     $cycle = CropCycle::factory()->on($plot, $this->campaign, $this->crop)->create();
 
@@ -72,7 +72,7 @@ test('the indicators are recomputed without any action from the user', function 
 
     expect($indicator)->not->toBeNull()
         ->and((float) $indicator->yield_kg_ha)->toBe(900.0)
-        ->and($indicator->cooperative_id)->toBe($this->cooperative->id);
+        ->and($indicator->exploitation_id)->toBe($this->exploitation->id);
 });
 
 test('recording a cost afterwards refreshes the indicators on its own', function () {
@@ -172,7 +172,7 @@ test('the cycle screen shows the ratios once the zone is large enough', function
 });
 
 test('an import refreshes the indicators of every cycle it touched', function () {
-    $farmer = Farmer::factory()->for($this->cooperative)->create([
+    $farmer = Farmer::factory()->for($this->exploitation)->create([
         'phone' => '90112233',
     ]);
     $plot = Plot::factory()->ofFarmer($farmer)->withArea(1.0)->create([

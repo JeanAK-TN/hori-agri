@@ -3,7 +3,7 @@
 namespace Database\Factories;
 
 use App\Enums\Role;
-use App\Models\Cooperative;
+use App\Models\Exploitation;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
@@ -27,7 +27,7 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'cooperative_id' => Cooperative::factory(),
+            'exploitation_id' => Exploitation::factory(),
             'name' => fake()->name(),
             'phone' => fake()->unique()->numerify('9#######'),
             'email' => null,
@@ -50,15 +50,15 @@ class UserFactory extends Factory
     public function superAdmin(): static
     {
         return $this->state(fn (array $attributes) => [
-            'cooperative_id' => null,
+            'exploitation_id' => null,
             'role' => Role::SuperAdmin,
         ]);
     }
 
-    public function coopAdmin(): static
+    public function exploitationAdmin(): static
     {
         return $this->state(fn (array $attributes) => [
-            'role' => Role::CoopAdmin,
+            'role' => Role::ExploitationAdmin,
         ]);
     }
 

@@ -19,8 +19,8 @@ class RecommendationController extends Controller
      * The recommendations, filtered by role (SPEC section 11.2).
      *
      * A farmer sees the ones concerning their own plots. A technician
-     * and a cooperative administrator see those of the producers they
-     * follow — the scope of the cooperative already stops there.
+     * and an exploitation administrator see those of the producers they
+     * follow — the scope of the exploitation already stops there.
      */
     public function index(Request $request): Response
     {

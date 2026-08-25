@@ -33,6 +33,6 @@ class CropCyclePolicy
 
     private function manages(User $user): bool
     {
-        return in_array($user->role, [Role::CoopAdmin, Role::Technician], true);
+        return in_array($user->role, [Role::ExploitationAdmin, Role::Technician], true);
     }
 }

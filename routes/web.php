@@ -1,10 +1,10 @@
 <?php
 
 use App\Http\Controllers\CampaignController;
-use App\Http\Controllers\CooperativeController;
 use App\Http\Controllers\CropController;
 use App\Http\Controllers\CropCycleController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ExploitationController;
 use App\Http\Controllers\FarmerController;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\HarvestController;
@@ -15,25 +15,25 @@ use App\Http\Controllers\RecommendationController;
 use App\Http\Controllers\RuleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VarietyController;
-use App\Http\Middleware\EnsureCooperativeActive;
+use App\Http\Middleware\EnsureExploitationActive;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/dashboard')->name('home');
 
-Route::middleware(['auth', EnsureCooperativeActive::class])->group(function () {
+Route::middleware(['auth', EnsureExploitationActive::class])->group(function () {
     Route::inertia('dashboard', 'dashboard')->name('dashboard');
 
     Route::middleware('role:super_admin')->group(function () {
-        Route::get('cooperatives', [CooperativeController::class, 'index'])
-            ->name('cooperatives.index');
-        Route::post('cooperatives', [CooperativeController::class, 'store'])
-            ->name('cooperatives.store');
-        Route::patch('cooperatives/{cooperative}', [CooperativeController::class, 'update'])
-            ->name('cooperatives.update');
-        Route::put('cooperatives/{cooperative}/suspension', [CooperativeController::class, 'suspend'])
-            ->name('cooperatives.suspend');
-        Route::delete('cooperatives/{cooperative}/suspension', [CooperativeController::class, 'reactivate'])
-            ->name('cooperatives.reactivate');
+        Route::get('exploitations', [ExploitationController::class, 'index'])
+            ->name('exploitations.index');
+        Route::post('exploitations', [ExploitationController::class, 'store'])
+            ->name('exploitations.store');
+        Route::patch('exploitations/{exploitation}', [ExploitationController::class, 'update'])
+            ->name('exploitations.update');
+        Route::put('exploitations/{exploitation}/suspension', [ExploitationController::class, 'suspend'])
+            ->name('exploitations.suspend');
+        Route::delete('exploitations/{exploitation}/suspension', [ExploitationController::class, 'reactivate'])
+            ->name('exploitations.reactivate');
 
         // Référentiel commun des cultures et des variétés.
         Route::get('crops', [CropController::class, 'index'])->name('crops.index');
@@ -44,7 +44,7 @@ Route::middleware(['auth', EnsureCooperativeActive::class])->group(function () {
             ->name('varieties.update');
     });
 
-    Route::middleware('role:super_admin,coop_admin')->group(function () {
+    Route::middleware('role:super_admin,exploitation_admin')->group(function () {
         // Base de règles, avec l'origine de chaque seuil (SPEC section 11).
         Route::get('rules', [RuleController::class, 'index'])->name('rules.index');
         Route::patch('rules/{rule}', [RuleController::class, 'update'])->name('rules.update');
@@ -54,25 +54,25 @@ Route::middleware(['auth', EnsureCooperativeActive::class])->group(function () {
         Route::patch('users/{user}', [UserController::class, 'update'])->name('users.update');
     });
 
-    Route::middleware('role:coop_admin')->group(function () {
-        // Tableau de bord de la coopérative et sa synthèse de campagne
+    Route::middleware('role:exploitation_admin')->group(function () {
+        // Tableau de bord de l'exploitation et sa synthèse de campagne
         // (SPEC section 12).
         Route::get('tableau-de-bord', [DashboardController::class, 'index'])
-            ->name('cooperative-dashboard.index');
+            ->name('exploitation-dashboard.index');
         Route::get('tableau-de-bord/export', [DashboardController::class, 'export'])
-            ->name('cooperative-dashboard.export');
+            ->name('exploitation-dashboard.export');
 
         Route::post('campaigns', [CampaignController::class, 'store'])->name('campaigns.store');
         Route::patch('campaigns/{campaign}', [CampaignController::class, 'update'])
             ->name('campaigns.update');
     });
 
-    Route::middleware('role:coop_admin,technician')->group(function () {
+    Route::middleware('role:exploitation_admin,technician')->group(function () {
         Route::resource('farmers', FarmerController::class)->except(['destroy']);
         Route::resource('plots', PlotController::class)->except(['destroy']);
 
         // Les techniciens lisent les campagnes pour ouvrir un cycle ;
-        // seul l'administrateur de coopérative les crée et les modifie.
+        // seul l'administrateur d'exploitation les crée et les modifie.
         Route::get('campaigns', [CampaignController::class, 'index'])->name('campaigns.index');
 
         Route::get('cycles', [CropCycleController::class, 'index'])->name('cycles.index');
@@ -91,7 +91,7 @@ Route::middleware(['auth', EnsureCooperativeActive::class])->group(function () {
 
     // La restitution : le technicien lit celles des producteurs qu'il
     // suit, seul le producteur concerné répond (SPEC sections 10.2 et
-    // 11.2). L'administrateur de coopérative passe par le tableau de
+    // 11.2). L'administrateur d'exploitation passe par le tableau de
     // bord, pas par cet écran.
     Route::middleware('role:technician,farmer')->group(function () {
         Route::get('recommandations', [RecommendationController::class, 'index'])

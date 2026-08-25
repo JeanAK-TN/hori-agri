@@ -1,7 +1,7 @@
 <?php
 
 use App\Enums\Role;
-use App\Models\Cooperative;
+use App\Models\Exploitation;
 use App\Models\User;
 
 test('each of the four roles can sign in with their phone number', function (string $state) {
@@ -14,36 +14,36 @@ test('each of the four roles can sign in with their phone number', function (str
 
     $this->assertAuthenticatedAs($user);
     $response->assertRedirect(route('dashboard', absolute: false));
-})->with(['superAdmin', 'coopAdmin', 'technician', 'farmer']);
+})->with(['superAdmin', 'exploitationAdmin', 'technician', 'farmer']);
 
-test('a super_admin must not belong to a cooperative', function () {
+test('a super_admin must not belong to an exploitation', function () {
     expect(fn () => User::factory()->create([
         'role' => Role::SuperAdmin,
-        'cooperative_id' => Cooperative::factory(),
+        'exploitation_id' => Exploitation::factory(),
     ]))->toThrow(LogicException::class);
 });
 
-test('any other role must belong to a cooperative', function (string $role) {
+test('any other role must belong to an exploitation', function (string $role) {
     expect(fn () => User::factory()->create([
         'role' => $role,
-        'cooperative_id' => null,
+        'exploitation_id' => null,
     ]))->toThrow(LogicException::class);
-})->with(['coop_admin', 'technician', 'farmer']);
+})->with(['exploitation_admin', 'technician', 'farmer']);
 
-test('the cooperatives screen is reserved for the super_admin', function () {
+test('the exploitations screen is reserved for the super_admin', function () {
     $this->actingAs(User::factory()->superAdmin()->create())
-        ->get(route('cooperatives.index'))
+        ->get(route('exploitations.index'))
         ->assertOk();
 
-    foreach (['coopAdmin', 'technician', 'farmer'] as $state) {
+    foreach (['exploitationAdmin', 'technician', 'farmer'] as $state) {
         $this->actingAs(User::factory()->{$state}()->create())
-            ->get(route('cooperatives.index'))
+            ->get(route('exploitations.index'))
             ->assertForbidden();
     }
 });
 
 test('the accounts screen is reserved for administrators', function () {
-    foreach (['superAdmin', 'coopAdmin'] as $state) {
+    foreach (['superAdmin', 'exploitationAdmin'] as $state) {
         $this->actingAs(User::factory()->{$state}()->create())
             ->get(route('users.index'))
             ->assertOk();
@@ -70,10 +70,10 @@ test('a technician cannot create an account', function () {
         ->assertForbidden();
 });
 
-test('a cooperative administrator cannot create an account outside their cooperative', function () {
-    $mine = Cooperative::factory()->create();
-    $other = Cooperative::factory()->create();
-    $admin = User::factory()->coopAdmin()->for($mine)->create();
+test('an exploitation administrator cannot create an account outside their exploitation', function () {
+    $mine = Exploitation::factory()->create();
+    $other = Exploitation::factory()->create();
+    $admin = User::factory()->exploitationAdmin()->for($mine)->create();
 
     $this->actingAs($admin)
         ->post(route('users.store'), [
@@ -82,16 +82,16 @@ test('a cooperative administrator cannot create an account outside their coopera
             'password' => 'motdepasse-solide',
             'password_confirmation' => 'motdepasse-solide',
             'role' => Role::Technician->value,
-            'cooperative_id' => $other->id,
+            'exploitation_id' => $other->id,
         ])
         ->assertRedirect(route('users.index'));
 
-    expect(User::where('phone', '91000001')->first()->cooperative_id)
+    expect(User::where('phone', '91000001')->first()->exploitation_id)
         ->toBe($mine->id);
 });
 
-test('a cooperative administrator cannot create a super_admin', function () {
-    $admin = User::factory()->coopAdmin()->create();
+test('an exploitation administrator cannot create a super_admin', function () {
+    $admin = User::factory()->exploitationAdmin()->create();
 
     $this->actingAs($admin)
         ->post(route('users.store'), [
@@ -100,13 +100,13 @@ test('a cooperative administrator cannot create a super_admin', function () {
             'password' => 'motdepasse-solide',
             'password_confirmation' => 'motdepasse-solide',
             'role' => Role::SuperAdmin->value,
-            'cooperative_id' => $admin->cooperative_id,
+            'exploitation_id' => $admin->exploitation_id,
         ])
         ->assertSessionHasErrors('role');
 });
 
 test('a phone number typed with separators is stored normalized', function () {
-    $admin = User::factory()->coopAdmin()->create();
+    $admin = User::factory()->exploitationAdmin()->create();
 
     $this->actingAs($admin)
         ->post(route('users.store'), [
@@ -120,9 +120,9 @@ test('a phone number typed with separators is stored normalized', function () {
     expect(User::where('phone', '91000003')->exists())->toBeTrue();
 });
 
-test('a member of a suspended cooperative cannot sign in', function () {
-    $cooperative = Cooperative::factory()->suspended()->create();
-    $technician = User::factory()->technician()->for($cooperative)->create();
+test('a member of a suspended exploitation cannot sign in', function () {
+    $exploitation = Exploitation::factory()->suspended()->create();
+    $technician = User::factory()->technician()->for($exploitation)->create();
 
     $this->post(route('login.store'), [
         'phone' => $technician->phone,
@@ -132,13 +132,13 @@ test('a member of a suspended cooperative cannot sign in', function () {
     $this->assertGuest();
 });
 
-test('a member is signed out when their cooperative is suspended mid-session', function () {
-    $cooperative = Cooperative::factory()->create();
-    $technician = User::factory()->technician()->for($cooperative)->create();
+test('a member is signed out when their exploitation is suspended mid-session', function () {
+    $exploitation = Exploitation::factory()->create();
+    $technician = User::factory()->technician()->for($exploitation)->create();
 
     $this->actingAs($technician)->get(route('dashboard'))->assertOk();
 
-    $cooperative->suspend();
+    $exploitation->suspend();
 
     $this->actingAs($technician->fresh())
         ->get(route('dashboard'))
@@ -146,7 +146,7 @@ test('a member is signed out when their cooperative is suspended mid-session', f
 });
 
 test('the super_admin is never blocked by a suspension', function () {
-    Cooperative::factory()->suspended()->create();
+    Exploitation::factory()->suspended()->create();
     $superAdmin = User::factory()->superAdmin()->create();
 
     $this->actingAs($superAdmin)->get(route('dashboard'))->assertOk();

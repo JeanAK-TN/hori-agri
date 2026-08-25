@@ -2,9 +2,9 @@
 
 use App\Enums\RecoStatus;
 use App\Models\Campaign;
-use App\Models\Cooperative;
 use App\Models\Crop;
 use App\Models\CropCycle;
+use App\Models\Exploitation;
 use App\Models\Farmer;
 use App\Models\Feedback;
 use App\Models\Plot;
@@ -19,14 +19,14 @@ use App\Models\User;
 */
 
 beforeEach(function () {
-    $this->cooperative = Cooperative::factory()->create();
-    $this->account = User::factory()->farmer()->for($this->cooperative)->create();
-    $this->farmer = Farmer::factory()->for($this->cooperative)
+    $this->exploitation = Exploitation::factory()->create();
+    $this->account = User::factory()->farmer()->for($this->exploitation)->create();
+    $this->farmer = Farmer::factory()->for($this->exploitation)
         ->inVillage('Bassar')
         ->create(['user_id' => $this->account->id]);
 
     $crop = Crop::factory()->named('Maïs')->create();
-    $campaign = Campaign::factory()->for($this->cooperative)
+    $campaign = Campaign::factory()->for($this->exploitation)
         ->between('2026-03-01', '2026-11-30')->create();
     $plot = Plot::factory()->ofFarmer($this->farmer)->withArea(1.0)->create();
 
@@ -127,7 +127,7 @@ test('écarter un conseil tient en un geste', function () {
 });
 
 test('le technicien lit mais ne répond pas à la place du producteur', function () {
-    $this->actingAs(User::factory()->technician()->for($this->cooperative)->create());
+    $this->actingAs(User::factory()->technician()->for($this->exploitation)->create());
 
     visit('/recommandations')
         ->assertSee('Dose de NPK observée')

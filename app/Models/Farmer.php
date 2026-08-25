@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Enums\Gender;
-use App\Models\Concerns\BelongsToCooperative;
+use App\Models\Concerns\BelongsToExploitation;
 use Database\Factories\FarmerFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
@@ -15,7 +15,7 @@ use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
- * @property int $cooperative_id
+ * @property int $exploitation_id
  * @property int|null $user_id
  * @property string $first_name
  * @property string $last_name
@@ -40,7 +40,7 @@ use Illuminate\Support\Carbon;
 class Farmer extends Model
 {
     /** @use HasFactory<FarmerFactory> */
-    use BelongsToCooperative, HasFactory;
+    use BelongsToExploitation, HasFactory;
 
     /**
      * @return array<string, string>

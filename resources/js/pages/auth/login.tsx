@@ -99,7 +99,7 @@ export default function Login({ status, canResetPassword }: Props) {
 
                         <div className="text-center text-sm text-muted-foreground">
                             Les comptes sont créés par l'administrateur de votre
-                            coopérative.
+                            exploitation.
                         </div>
                     </>
                 )}

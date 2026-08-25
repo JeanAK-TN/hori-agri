@@ -3,24 +3,24 @@
 use App\Enums\SeasonType;
 use App\Enums\SoilType;
 use App\Models\Campaign;
-use App\Models\Cooperative;
+use App\Models\Exploitation;
 use App\Models\Farmer;
 use App\Models\Plot;
 use App\Models\User;
 use Inertia\Testing\AssertableInertia as Assert;
 
 beforeEach(function () {
-    $this->cooperative = Cooperative::factory()->create();
-    $this->technician = User::factory()->technician()->for($this->cooperative)->create();
-    $this->coopAdmin = User::factory()->coopAdmin()->for($this->cooperative)->create();
-    $this->farmer = Farmer::factory()->for($this->cooperative)->create();
+    $this->exploitation = Exploitation::factory()->create();
+    $this->technician = User::factory()->technician()->for($this->exploitation)->create();
+    $this->exploitationAdmin = User::factory()->exploitationAdmin()->for($this->exploitation)->create();
+    $this->farmer = Farmer::factory()->for($this->exploitation)->create();
 });
 
 /*
 | Parcelles.
 */
 
-test('a technician records a plot without naming the cooperative', function () {
+test('a technician records a plot without naming the exploitation', function () {
     $this->actingAs($this->technician)
         ->post(route('plots.store'), [
             'farmer_id' => $this->farmer->id,
@@ -32,7 +32,7 @@ test('a technician records a plot without naming the cooperative', function () {
 
     $plot = Plot::firstWhere('name', 'Derrière la maison');
 
-    expect($plot->cooperative_id)->toBe($this->cooperative->id)
+    expect($plot->exploitation_id)->toBe($this->exploitation->id)
         ->and((float) $plot->area_ha)->toBe(0.75)
         ->and($plot->soil_type)->toBe(SoilType::Ferrugineux);
 });
@@ -52,7 +52,7 @@ test('the area is required and must be positive', function (mixed $area) {
     'négative' => -1,
 ]);
 
-test('a plot cannot be attached to a producer of another cooperative', function () {
+test('a plot cannot be attached to a producer of another exploitation', function () {
     $foreignFarmer = Farmer::factory()->create();
 
     $this->actingAs($this->technician)
@@ -93,8 +93,8 @@ test('the producer record lists their plots', function () {
 | Campagnes.
 */
 
-test('a cooperative administrator opens a campaign', function () {
-    $this->actingAs($this->coopAdmin)
+test('an exploitation administrator opens a campaign', function () {
+    $this->actingAs($this->exploitationAdmin)
         ->post(route('campaigns.store'), [
             'label' => '2026 grande saison',
             'start_date' => '2026-03-01',
@@ -105,12 +105,12 @@ test('a cooperative administrator opens a campaign', function () {
 
     $campaign = Campaign::firstWhere('label', '2026 grande saison');
 
-    expect($campaign->cooperative_id)->toBe($this->cooperative->id)
+    expect($campaign->exploitation_id)->toBe($this->exploitation->id)
         ->and($campaign->season_type)->toBe(SeasonType::GrandeSaison);
 });
 
 test('the end date cannot precede the start date', function () {
-    $this->actingAs($this->coopAdmin)
+    $this->actingAs($this->exploitationAdmin)
         ->post(route('campaigns.store'), [
             'label' => 'Campagne à l\'envers',
             'start_date' => '2026-11-30',
@@ -120,10 +120,10 @@ test('the end date cannot precede the start date', function () {
         ->assertSessionHasErrors('end_date');
 });
 
-test('two campaigns of one cooperative cannot share a label', function () {
-    Campaign::factory()->for($this->cooperative)->create(['label' => '2026 grande saison']);
+test('two campaigns of one exploitation cannot share a label', function () {
+    Campaign::factory()->for($this->exploitation)->create(['label' => '2026 grande saison']);
 
-    $this->actingAs($this->coopAdmin)
+    $this->actingAs($this->exploitationAdmin)
         ->post(route('campaigns.store'), [
             'label' => '2026 grande saison',
             'start_date' => '2026-03-01',
@@ -133,11 +133,11 @@ test('two campaigns of one cooperative cannot share a label', function () {
         ->assertSessionHasErrors('label');
 });
 
-test('another cooperative may use the same campaign label', function () {
-    $otherCooperative = Cooperative::factory()->create();
-    Campaign::factory()->for($otherCooperative)->create(['label' => '2026 grande saison']);
+test('another exploitation may use the same campaign label', function () {
+    $otherExploitation = Exploitation::factory()->create();
+    Campaign::factory()->for($otherExploitation)->create(['label' => '2026 grande saison']);
 
-    $this->actingAs($this->coopAdmin)
+    $this->actingAs($this->exploitationAdmin)
         ->post(route('campaigns.store'), [
             'label' => '2026 grande saison',
             'start_date' => '2026-03-01',

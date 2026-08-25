@@ -3,8 +3,8 @@
 use App\Enums\RecoStatus;
 use App\Enums\Severity;
 use App\Models\Campaign;
-use App\Models\Cooperative;
 use App\Models\Crop;
+use App\Models\Exploitation;
 use App\Models\Recommendation;
 use App\Models\Rule;
 use App\Models\User;
@@ -18,21 +18,21 @@ use App\Models\User;
 */
 
 beforeEach(function () {
-    $this->cooperative = Cooperative::factory()->create();
-    $this->admin = User::factory()->coopAdmin()->for($this->cooperative)->create();
+    $this->exploitation = Exploitation::factory()->create();
+    $this->admin = User::factory()->exploitationAdmin()->for($this->exploitation)->create();
 
     $this->maize = Crop::factory()->named('Maïs')->create();
     $this->soy = Crop::factory()->named('Soja')->create();
 
-    $this->campaign = Campaign::factory()->for($this->cooperative)
+    $this->campaign = Campaign::factory()->for($this->exploitation)
         ->between('2026-03-01', '2026-11-30')->create(['label' => 'Campagne 2026']);
 
     $this->actingAs($this->admin);
 });
 
 test('les nombres de tête et les graphiques apparaissent', function () {
-    cycleYielding($this->cooperative, $this->maize, $this->campaign, 'Bassar', 1.0, 1000, 50000);
-    cycleYielding($this->cooperative, $this->soy, $this->campaign, 'Kara', 1.0, 400, 30000);
+    cycleYielding($this->exploitation, $this->maize, $this->campaign, 'Bassar', 1.0, 1000, 50000);
+    cycleYielding($this->exploitation, $this->soy, $this->campaign, 'Kara', 1.0, 400, 30000);
 
     $page = visit('/tableau-de-bord')->resize(1280, 900);
 
@@ -55,8 +55,8 @@ test('les nombres de tête et les graphiques apparaissent', function () {
 });
 
 test('les filtres rechargent la synthèse', function () {
-    cycleYielding($this->cooperative, $this->maize, $this->campaign, 'Bassar', 1.0, 1000, 50000);
-    cycleYielding($this->cooperative, $this->soy, $this->campaign, 'Kara', 1.0, 400, 30000);
+    cycleYielding($this->exploitation, $this->maize, $this->campaign, 'Bassar', 1.0, 1000, 50000);
+    cycleYielding($this->exploitation, $this->soy, $this->campaign, 'Kara', 1.0, 400, 30000);
 
     $page = visit('/tableau-de-bord')->resize(1280, 900);
 
@@ -70,7 +70,7 @@ test('les filtres rechargent la synthèse', function () {
 });
 
 test('la part appliquée et les parcelles sous la médiane se lisent en clair', function () {
-    $cycle = cycleYielding($this->cooperative, $this->maize, $this->campaign, 'Bassar', 1.0, 1000, 50000);
+    $cycle = cycleYielding($this->exploitation, $this->maize, $this->campaign, 'Bassar', 1.0, 1000, 50000);
 
     Recommendation::factory()
         ->forCycle($cycle)
@@ -90,7 +90,7 @@ test('la part appliquée et les parcelles sous la médiane se lisent en clair', 
 });
 
 test('le tableau de bord tient sur un téléphone', function () {
-    cycleYielding($this->cooperative, $this->maize, $this->campaign, 'Bassar', 1.0, 1000, 50000);
+    cycleYielding($this->exploitation, $this->maize, $this->campaign, 'Bassar', 1.0, 1000, 50000);
 
     $page = visit('/tableau-de-bord')->resize(360, 800);
 
@@ -101,7 +101,7 @@ test('le tableau de bord tient sur un téléphone', function () {
         );
 });
 
-test('une coopérative sans récolte reçoit un état vide et non une page cassée', function () {
+test('une exploitation sans récolte reçoit un état vide et non une page cassée', function () {
     $page = visit('/tableau-de-bord');
 
     $page->assertSee("Rien à agréger pour l'instant")
@@ -110,7 +110,7 @@ test('une coopérative sans récolte reçoit un état vide et non une page cass�
 });
 
 test('le bouton d export pointe sur la synthèse filtrée', function () {
-    cycleYielding($this->cooperative, $this->maize, $this->campaign, 'Bassar', 1.0, 1000, 50000);
+    cycleYielding($this->exploitation, $this->maize, $this->campaign, 'Bassar', 1.0, 1000, 50000);
 
     $page = visit('/tableau-de-bord?culture='.$this->maize->id);
 

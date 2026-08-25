@@ -23,7 +23,7 @@ class StoreCropCycleRequest extends FormRequest
 
     /**
      * The plot and the campaign are looked up through their scoped
-     * models: one of another cooperative simply does not exist here.
+     * models: one of another exploitation simply does not exist here.
      * Crops and varieties form a registry common to everyone.
      *
      * @return array<string, ValidationRule|array<mixed>|string>
@@ -31,8 +31,8 @@ class StoreCropCycleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'plot_id' => ['required', $this->belongsToCooperativeRule(Plot::class, 'La parcelle choisie est introuvable dans votre coopérative.')],
-            'campaign_id' => ['required', $this->belongsToCooperativeRule(Campaign::class, 'La campagne choisie est introuvable dans votre coopérative.')],
+            'plot_id' => ['required', $this->belongsToExploitationRule(Plot::class, 'La parcelle choisie est introuvable dans votre exploitation.')],
+            'campaign_id' => ['required', $this->belongsToExploitationRule(Campaign::class, 'La campagne choisie est introuvable dans votre exploitation.')],
             'crop_id' => ['required', Rule::exists(Crop::class, 'id')],
             'variety_id' => ['nullable', Rule::exists(Variety::class, 'id')],
             'sowing_date' => ['required', 'date'],
@@ -55,7 +55,7 @@ class StoreCropCycleRequest extends FormRequest
     /**
      * @param  class-string<Plot|Campaign>  $model
      */
-    private function belongsToCooperativeRule(string $model, string $message): Closure
+    private function belongsToExploitationRule(string $model, string $message): Closure
     {
         return function (string $attribute, mixed $value, Closure $fail) use ($model, $message): void {
             if (! $model::whereKey($value)->exists()) {

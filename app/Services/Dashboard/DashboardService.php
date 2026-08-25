@@ -20,9 +20,9 @@ use Illuminate\Support\Facades\DB;
  * complète en mémoire pour la parcourir en PHP : ce qui revient est déjà
  * le résultat, une ligne par regroupement.
  *
- * Le scope global de la coopérative s'applique à `indicators` et à
- * `recommendations` : les jointures se lisent donc sans condition de
- * coopérative écrite à la main.
+ * Le scope global de l'exploitation s'applique à `indicators` et à
+ * `recommendations` : les jointures se lisent donc sans condition
+ * d'exploitation écrite à la main.
  */
 class DashboardService
 {

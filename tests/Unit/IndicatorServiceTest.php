@@ -5,9 +5,9 @@ use App\Enums\InputType;
 use App\Enums\OperationType;
 use App\Enums\QuantityUnit;
 use App\Models\Campaign;
-use App\Models\Cooperative;
 use App\Models\Crop;
 use App\Models\CropCycle;
+use App\Models\Exploitation;
 use App\Models\Farmer;
 use App\Models\Harvest;
 use App\Models\Operation;
@@ -24,10 +24,10 @@ uses(RefreshDatabase::class);
 
 beforeEach(function () {
     $this->service = new IndicatorService;
-    $this->cooperative = Cooperative::factory()->create();
+    $this->exploitation = Exploitation::factory()->create();
     $this->crop = Crop::factory()->named('Maïs')->create();
     $this->campaign = Campaign::factory()
-        ->for($this->cooperative)
+        ->for($this->exploitation)
         ->between('2026-03-01', '2026-11-30')
         ->create();
 });
@@ -36,21 +36,21 @@ beforeEach(function () {
  * Ouvre un cycle sur une parcelle d'une surface donnée, dans un village.
  */
 function cycleOf(
-    Cooperative $cooperative,
+    Exploitation $exploitation,
     Crop $crop,
     Campaign $campaign,
     float $areaHa,
     string $village = 'Bassar',
     CycleStatus $status = CycleStatus::InProgress,
 ): CropCycle {
-    $farmer = Farmer::factory()->for($cooperative)->inVillage($village)->create();
+    $farmer = Farmer::factory()->for($exploitation)->inVillage($village)->create();
     $plot = Plot::factory()->ofFarmer($farmer)->withArea($areaHa)->create();
 
     return CropCycle::factory()->on($plot, $campaign, $crop)->status($status)->create();
 }
 
 test('the ten indicators are computed on a cycle with a single harvest', function () {
-    $cycle = cycleOf($this->cooperative, $this->crop, $this->campaign, 0.75);
+    $cycle = cycleOf($this->exploitation, $this->crop, $this->campaign, 0.75);
 
     // 675 kg sur 0,75 ha = 900 kg/ha, vendus 200 FCFA le kilogramme.
     Harvest::factory()->forCycle($cycle)->of(675, 200)->create();
@@ -76,11 +76,11 @@ test('the ten indicators are computed on a cycle with a single harvest', functio
         ->and($indicator->yield_vs_zone_median)->toBeNull()
         ->and($indicator->cost_vs_zone_median)->toBeNull()
         ->and($indicator->computed_at)->not->toBeNull()
-        ->and($indicator->cooperative_id)->toBe($this->cooperative->id);
+        ->and($indicator->exploitation_id)->toBe($this->exploitation->id);
 });
 
 test('several harvests of one cycle are summed', function () {
-    $cycle = cycleOf($this->cooperative, $this->crop, $this->campaign, 1.20);
+    $cycle = cycleOf($this->exploitation, $this->crop, $this->campaign, 1.20);
 
     // Deux récoltes échelonnées : 6 000 puis 4 800 kg sur 1,20 ha.
     Harvest::factory()->forCycle($cycle)->of(6000, 100)->on('2026-07-01')->create();
@@ -97,7 +97,7 @@ test('several harvests of one cycle are summed', function () {
 });
 
 test('an operation with no cost counts as zero', function () {
-    $cycle = cycleOf($this->cooperative, $this->crop, $this->campaign, 1.0);
+    $cycle = cycleOf($this->exploitation, $this->crop, $this->campaign, 1.0);
 
     Harvest::factory()->forCycle($cycle)->of(1000, 100)->create();
     Operation::factory()->forCycle($cycle)->costing(50000)->create();
@@ -109,7 +109,7 @@ test('an operation with no cost counts as zero', function () {
 });
 
 test('a missing unit price leaves the margin and the input share null', function () {
-    $cycle = cycleOf($this->cooperative, $this->crop, $this->campaign, 1.0);
+    $cycle = cycleOf($this->exploitation, $this->crop, $this->campaign, 1.0);
 
     Harvest::factory()->forCycle($cycle)->of(1000, 100)->create();
     // Une seule récolte sans prix suffit à rendre la valeur incalculable.
@@ -126,7 +126,7 @@ test('a missing unit price leaves the margin and the input share null', function
 });
 
 test('a cycle without any harvest carries no indicators', function () {
-    $cycle = cycleOf($this->cooperative, $this->crop, $this->campaign, 1.0);
+    $cycle = cycleOf($this->exploitation, $this->crop, $this->campaign, 1.0);
 
     Operation::factory()->forCycle($cycle)->costing(50000)->create();
 
@@ -135,7 +135,7 @@ test('a cycle without any harvest carries no indicators', function () {
 });
 
 test('losing the last harvest removes indicators that no longer mean anything', function () {
-    $cycle = cycleOf($this->cooperative, $this->crop, $this->campaign, 1.0);
+    $cycle = cycleOf($this->exploitation, $this->crop, $this->campaign, 1.0);
     $harvest = Harvest::factory()->forCycle($cycle)->of(1000, 100)->create();
 
     $this->service->computeFor($cycle);
@@ -153,11 +153,11 @@ test('losing the last harvest removes indicators that no longer mean anything', 
 */
 
 test('below five comparable cycles the count is filled but both ratios stay null', function (int $peers) {
-    $cycle = cycleOf($this->cooperative, $this->crop, $this->campaign, 1.0);
+    $cycle = cycleOf($this->exploitation, $this->crop, $this->campaign, 1.0);
     Harvest::factory()->forCycle($cycle)->of(1000, 100)->create();
 
     for ($i = 0; $i < $peers; $i++) {
-        $peer = cycleOf($this->cooperative, $this->crop, $this->campaign, 1.0);
+        $peer = cycleOf($this->exploitation, $this->crop, $this->campaign, 1.0);
         Harvest::factory()->forCycle($peer)->of(500 + $i * 100, 100)->create();
     }
 
@@ -175,13 +175,13 @@ test('below five comparable cycles the count is filled but both ratios stay null
 ]);
 
 test('from five comparable cycles the ratios are computed', function () {
-    $cycle = cycleOf($this->cooperative, $this->crop, $this->campaign, 1.0);
+    $cycle = cycleOf($this->exploitation, $this->crop, $this->campaign, 1.0);
     Harvest::factory()->forCycle($cycle)->of(1200, 100)->create();
     Operation::factory()->forCycle($cycle)->costing(60000)->create();
 
     // Quatre pairs de 800, 900, 1 000 et 1 100 kg/ha, coûts de 100 000.
     foreach ([800, 900, 1000, 1100] as $yield) {
-        $peer = cycleOf($this->cooperative, $this->crop, $this->campaign, 1.0);
+        $peer = cycleOf($this->exploitation, $this->crop, $this->campaign, 1.0);
         Harvest::factory()->forCycle($peer)->of($yield, 100)->create();
         Operation::factory()->forCycle($peer)->costing(100000)->create();
     }
@@ -197,12 +197,12 @@ test('from five comparable cycles the ratios are computed', function () {
 });
 
 test('the median of an even number of values is the mean of the two middle ones', function () {
-    $cycle = cycleOf($this->cooperative, $this->crop, $this->campaign, 1.0);
+    $cycle = cycleOf($this->exploitation, $this->crop, $this->campaign, 1.0);
     Harvest::factory()->forCycle($cycle)->of(1000, 100)->create();
 
     // Avec le cycle évalué : 700, 800, 900, 1 000, 1 100, 1 200.
     foreach ([700, 800, 900, 1100, 1200] as $yield) {
-        $peer = cycleOf($this->cooperative, $this->crop, $this->campaign, 1.0);
+        $peer = cycleOf($this->exploitation, $this->crop, $this->campaign, 1.0);
         Harvest::factory()->forCycle($peer)->of($yield, 100)->create();
     }
 
@@ -213,40 +213,40 @@ test('the median of an even number of values is the mean of the two middle ones'
         ->and((float) $indicator->zone_median_yield_kg_ha)->toBe(950.0);
 });
 
-test('the fallback from the village to the cooperative fires below five', function () {
-    // Trois cycles à Bassar, trois autres ailleurs dans la coopérative.
-    $cycle = cycleOf($this->cooperative, $this->crop, $this->campaign, 1.0, 'Bassar');
+test('the fallback from the village to the exploitation fires below five', function () {
+    // Trois cycles à Bassar, trois autres ailleurs dans l'exploitation.
+    $cycle = cycleOf($this->exploitation, $this->crop, $this->campaign, 1.0, 'Bassar');
     Harvest::factory()->forCycle($cycle)->of(1000, 100)->create();
 
     foreach ([900, 1100] as $yield) {
-        $peer = cycleOf($this->cooperative, $this->crop, $this->campaign, 1.0, 'Bassar');
+        $peer = cycleOf($this->exploitation, $this->crop, $this->campaign, 1.0, 'Bassar');
         Harvest::factory()->forCycle($peer)->of($yield, 100)->create();
     }
 
     foreach ([700, 800, 1200] as $yield) {
-        $peer = cycleOf($this->cooperative, $this->crop, $this->campaign, 1.0, 'Kandé');
+        $peer = cycleOf($this->exploitation, $this->crop, $this->campaign, 1.0, 'Kandé');
         Harvest::factory()->forCycle($peer)->of($yield, 100)->create();
     }
 
     $indicator = $this->service->computeFor($cycle);
 
     // Trois cycles à Bassar, c'est moins de cinq : l'ensemble est
-    // reconstitué à l'échelle de la coopérative, soit six cycles.
+    // reconstitué à l'échelle de l'exploitation, soit six cycles.
     expect($indicator->zone_plot_count)->toBe(6);
 });
 
 test('the village zone is kept as soon as it reaches five', function () {
-    $cycle = cycleOf($this->cooperative, $this->crop, $this->campaign, 1.0, 'Bassar');
+    $cycle = cycleOf($this->exploitation, $this->crop, $this->campaign, 1.0, 'Bassar');
     Harvest::factory()->forCycle($cycle)->of(1000, 100)->create();
 
     foreach ([800, 900, 1100, 1200] as $yield) {
-        $peer = cycleOf($this->cooperative, $this->crop, $this->campaign, 1.0, 'Bassar');
+        $peer = cycleOf($this->exploitation, $this->crop, $this->campaign, 1.0, 'Bassar');
         Harvest::factory()->forCycle($peer)->of($yield, 100)->create();
     }
 
     // Ces cycles d'un autre village ne doivent pas entrer dans la zone.
     foreach ([100, 200] as $yield) {
-        $peer = cycleOf($this->cooperative, $this->crop, $this->campaign, 1.0, 'Kandé');
+        $peer = cycleOf($this->exploitation, $this->crop, $this->campaign, 1.0, 'Kandé');
         Harvest::factory()->forCycle($peer)->of($yield, 100)->create();
     }
 
@@ -257,16 +257,16 @@ test('the village zone is kept as soon as it reaches five', function () {
 });
 
 test('a given-up cycle never enters the medians', function () {
-    $cycle = cycleOf($this->cooperative, $this->crop, $this->campaign, 1.0);
+    $cycle = cycleOf($this->exploitation, $this->crop, $this->campaign, 1.0);
     Harvest::factory()->forCycle($cycle)->of(1000, 100)->create();
 
     foreach ([800, 900, 1100, 1200] as $yield) {
-        $peer = cycleOf($this->cooperative, $this->crop, $this->campaign, 1.0);
+        $peer = cycleOf($this->exploitation, $this->crop, $this->campaign, 1.0);
         Harvest::factory()->forCycle($peer)->of($yield, 100)->create();
     }
 
     $abandoned = cycleOf(
-        $this->cooperative,
+        $this->exploitation,
         $this->crop,
         $this->campaign,
         1.0,
@@ -281,21 +281,21 @@ test('a given-up cycle never enters the medians', function () {
 });
 
 test('a cycle without harvest never enters the zone', function () {
-    $cycle = cycleOf($this->cooperative, $this->crop, $this->campaign, 1.0);
+    $cycle = cycleOf($this->exploitation, $this->crop, $this->campaign, 1.0);
     Harvest::factory()->forCycle($cycle)->of(1000, 100)->create();
 
-    cycleOf($this->cooperative, $this->crop, $this->campaign, 1.0);
+    cycleOf($this->exploitation, $this->crop, $this->campaign, 1.0);
 
     expect($this->service->computeFor($cycle)->zone_plot_count)->toBe(1);
 });
 
-test('the zone is restricted to the same crop, campaign and cooperative', function () {
-    $cycle = cycleOf($this->cooperative, $this->crop, $this->campaign, 1.0);
+test('the zone is restricted to the same crop, campaign and exploitation', function () {
+    $cycle = cycleOf($this->exploitation, $this->crop, $this->campaign, 1.0);
     Harvest::factory()->forCycle($cycle)->of(1000, 100)->create();
 
     // Une autre culture.
     $otherCrop = cycleOf(
-        $this->cooperative,
+        $this->exploitation,
         Crop::factory()->named('Soja')->create(),
         $this->campaign,
         1.0,
@@ -304,19 +304,19 @@ test('the zone is restricted to the same crop, campaign and cooperative', functi
 
     // Une autre campagne.
     $otherCampaign = cycleOf(
-        $this->cooperative,
+        $this->exploitation,
         $this->crop,
-        Campaign::factory()->for($this->cooperative)->create(),
+        Campaign::factory()->for($this->exploitation)->create(),
         1.0,
     );
     Harvest::factory()->forCycle($otherCampaign)->of(500, 100)->create();
 
-    // Une autre coopérative.
-    $foreignCooperative = Cooperative::factory()->create();
+    // Une autre exploitation.
+    $foreignExploitation = Exploitation::factory()->create();
     $foreign = cycleOf(
-        $foreignCooperative,
+        $foreignExploitation,
         $this->crop,
-        Campaign::factory()->for($foreignCooperative)->create(),
+        Campaign::factory()->for($foreignExploitation)->create(),
         1.0,
     );
     Harvest::factory()->forCycle($foreign)->of(500, 100)->create();
@@ -325,7 +325,7 @@ test('the zone is restricted to the same crop, campaign and cooperative', functi
 });
 
 test('recomputing replaces the previous set rather than adding one', function () {
-    $cycle = cycleOf($this->cooperative, $this->crop, $this->campaign, 1.0);
+    $cycle = cycleOf($this->exploitation, $this->crop, $this->campaign, 1.0);
     Harvest::factory()->forCycle($cycle)->of(1000, 100)->create();
 
     $first = $this->service->computeFor($cycle);

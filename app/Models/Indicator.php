@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\Concerns\BelongsToCooperative;
+use App\Models\Concerns\BelongsToExploitation;
 use App\Services\Indicators\IndicatorService;
 use Database\Factories\IndicatorFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -16,7 +16,7 @@ use Illuminate\Support\Carbon;
  * ever entered by hand: IndicatorService is the only writer.
  *
  * @property int $id
- * @property int $cooperative_id
+ * @property int $exploitation_id
  * @property int $crop_cycle_id
  * @property string|null $yield_kg_ha
  * @property string|null $production_cost_ha
@@ -46,7 +46,7 @@ use Illuminate\Support\Carbon;
 class Indicator extends Model
 {
     /** @use HasFactory<IndicatorFactory> */
-    use BelongsToCooperative, HasFactory;
+    use BelongsToExploitation, HasFactory;
 
     /**
      * @return array<string, string>

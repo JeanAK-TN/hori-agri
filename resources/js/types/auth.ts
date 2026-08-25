@@ -1,6 +1,7 @@
-export type Role = 'super_admin' | 'coop_admin' | 'technician' | 'farmer';
+export type Role =
+    'super_admin' | 'exploitation_admin' | 'technician' | 'farmer';
 
-export type UserCooperative = {
+export type UserExploitation = {
     id: number;
     name: string;
 };
@@ -12,7 +13,7 @@ export type User = {
     email: string | null;
     role: Role;
     role_label: string;
-    cooperative: UserCooperative | null;
+    exploitation: UserExploitation | null;
     avatar?: string;
 };
 

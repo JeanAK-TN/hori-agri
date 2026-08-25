@@ -1,9 +1,9 @@
 <?php
 
 use App\Models\Campaign;
-use App\Models\Cooperative;
 use App\Models\Crop;
 use App\Models\CropCycle;
+use App\Models\Exploitation;
 use App\Models\Farmer;
 use App\Models\Harvest;
 use App\Models\Indicator;
@@ -18,11 +18,11 @@ use App\Services\Indicators\IndicatorService;
 */
 
 beforeEach(function () {
-    $this->cooperative = Cooperative::factory()->create();
-    $this->technician = User::factory()->technician()->for($this->cooperative)->create();
+    $this->exploitation = Exploitation::factory()->create();
+    $this->technician = User::factory()->technician()->for($this->exploitation)->create();
     $this->crop = Crop::factory()->named('Maïs')->create();
     $this->campaign = Campaign::factory()
-        ->for($this->cooperative)
+        ->for($this->exploitation)
         ->between('2026-03-01', '2026-11-30')
         ->create();
 
@@ -30,19 +30,19 @@ beforeEach(function () {
 });
 
 function openCycleWithArea(
-    Cooperative $cooperative,
+    Exploitation $exploitation,
     Crop $crop,
     Campaign $campaign,
     float $area,
 ): CropCycle {
-    $farmer = Farmer::factory()->for($cooperative)->inVillage('Bassar')->create();
+    $farmer = Farmer::factory()->for($exploitation)->inVillage('Bassar')->create();
     $plot = Plot::factory()->ofFarmer($farmer)->withArea($area)->create();
 
     return CropCycle::factory()->on($plot, $campaign, $crop)->create();
 }
 
 test('les indicateurs apparaissent dès la première récolte, sans action', function () {
-    $cycle = openCycleWithArea($this->cooperative, $this->crop, $this->campaign, 0.75);
+    $cycle = openCycleWithArea($this->exploitation, $this->crop, $this->campaign, 0.75);
 
     $page = visit("/cycles/{$cycle->id}")->resize(360, 800);
 
@@ -73,7 +73,7 @@ test('les indicateurs apparaissent dès la première récolte, sans action', fun
 });
 
 test('la comparaison suspendue est expliquée en clair', function () {
-    $cycle = openCycleWithArea($this->cooperative, $this->crop, $this->campaign, 1.0);
+    $cycle = openCycleWithArea($this->exploitation, $this->crop, $this->campaign, 1.0);
     Harvest::factory()->forCycle($cycle)->of(1000, 100)->create();
 
     app(IndicatorService::class)->computeFor($cycle);
@@ -85,11 +85,11 @@ test('la comparaison suspendue est expliquée en clair', function () {
 });
 
 test('les rapports s affichent dès cinq cycles comparables', function () {
-    $cycle = openCycleWithArea($this->cooperative, $this->crop, $this->campaign, 1.0);
+    $cycle = openCycleWithArea($this->exploitation, $this->crop, $this->campaign, 1.0);
     Harvest::factory()->forCycle($cycle)->of(1200, 100)->create();
 
     foreach ([800, 900, 1000, 1100] as $yield) {
-        $peer = openCycleWithArea($this->cooperative, $this->crop, $this->campaign, 1.0);
+        $peer = openCycleWithArea($this->exploitation, $this->crop, $this->campaign, 1.0);
         Harvest::factory()->forCycle($peer)->of($yield, 100)->create();
     }
 
@@ -104,7 +104,7 @@ test('les rapports s affichent dès cinq cycles comparables', function () {
 });
 
 test('une marge incalculable est dite plutôt que masquée', function () {
-    $cycle = openCycleWithArea($this->cooperative, $this->crop, $this->campaign, 1.0);
+    $cycle = openCycleWithArea($this->exploitation, $this->crop, $this->campaign, 1.0);
     Harvest::factory()->forCycle($cycle)->of(1000, null)->create();
 
     app(IndicatorService::class)->computeFor($cycle);

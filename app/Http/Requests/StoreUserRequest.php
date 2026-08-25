@@ -6,7 +6,7 @@ use App\Concerns\NormalizesPhoneNumbers;
 use App\Concerns\PasswordValidationRules;
 use App\Concerns\ProfileValidationRules;
 use App\Enums\Role;
-use App\Models\Cooperative;
+use App\Models\Exploitation;
 use App\Models\User;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -25,8 +25,8 @@ class StoreUserRequest extends FormRequest
     }
 
     /**
-     * A cooperative administrator can only ever create accounts inside
-     * their own cooperative: the value is forced here rather than trusted
+     * An exploitation administrator can only ever create accounts inside
+     * their own exploitation: the value is forced here rather than trusted
      * from the payload (SPEC section 7.3).
      */
     protected function prepareForValidation(): void
@@ -35,9 +35,9 @@ class StoreUserRequest extends FormRequest
 
         $this->merge([
             'phone' => self::normalizePhone((string) $this->input('phone')),
-            'cooperative_id' => $actor->isSuperAdmin()
-                ? $this->input('cooperative_id')
-                : $actor->cooperative_id,
+            'exploitation_id' => $actor->isSuperAdmin()
+                ? $this->input('exploitation_id')
+                : $actor->exploitation_id,
         ]);
     }
 
@@ -56,7 +56,7 @@ class StoreUserRequest extends FormRequest
             'email' => $this->emailRules(),
             'password' => $this->passwordRules(),
             'role' => ['required', Rule::in($assignable)],
-            'cooperative_id' => ['required', Rule::exists(Cooperative::class, 'id')],
+            'exploitation_id' => ['required', Rule::exists(Exploitation::class, 'id')],
         ];
     }
 }

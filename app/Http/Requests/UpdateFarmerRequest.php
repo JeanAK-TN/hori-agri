@@ -22,7 +22,7 @@ class UpdateFarmerRequest extends FormRequest
 
     /**
      * The producer being updated, resolved from the route binding. A
-     * producer of another cooperative never reaches this point: the
+     * producer of another exploitation never reaches this point: the
      * global scope already hides them from the binding.
      */
     private function targetFarmer(): Farmer

@@ -5,13 +5,13 @@ namespace Database\Factories;
 use App\Enums\InputType;
 use App\Enums\OperationType;
 use App\Enums\QuantityUnit;
-use App\Models\Cooperative;
 use App\Models\CropCycle;
+use App\Models\Exploitation;
 use App\Models\Operation;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * Test fixture only — no real Hori cooperative data (SPEC rule 2).
+ * Test fixture only — no real Hori exploitation data (SPEC rule 2).
  *
  * @extends Factory<Operation>
  */
@@ -25,7 +25,7 @@ class OperationFactory extends Factory
     public function definition(): array
     {
         return [
-            'cooperative_id' => Cooperative::factory(),
+            'exploitation_id' => Exploitation::factory(),
             'crop_cycle_id' => CropCycle::factory(),
             'type' => OperationType::Tillage,
             'input_type' => null,
@@ -40,12 +40,12 @@ class OperationFactory extends Factory
 
     /**
      * Attach the operation to a cycle, keeping both inside one
-     * cooperative.
+     * exploitation.
      */
     public function forCycle(CropCycle $cycle): static
     {
         return $this->state(fn (array $attributes) => [
-            'cooperative_id' => $cycle->cooperative_id,
+            'exploitation_id' => $cycle->exploitation_id,
             'crop_cycle_id' => $cycle->id,
             'date' => $cycle->sowing_date->toDateString(),
         ]);
