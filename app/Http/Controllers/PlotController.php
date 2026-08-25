@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\SoilPreparation;
 use App\Enums\SoilType;
 use App\Http\Requests\StorePlotRequest;
 use App\Http\Requests\UpdatePlotRequest;
@@ -96,6 +97,7 @@ class PlotController extends Controller
 
         return Inertia::render('plots/create', [
             'soilTypes' => SoilType::options(),
+            'soilPreparations' => SoilPreparation::options(),
             'farmers' => $this->farmerOptions(),
             'selectedFarmerId' => $request->integer('producteur') ?: null,
         ]);
@@ -123,6 +125,7 @@ class PlotController extends Controller
         return Inertia::render('plots/edit', [
             'plot' => $this->present($plot),
             'soilTypes' => SoilType::options(),
+            'soilPreparations' => SoilPreparation::options(),
             'farmers' => $this->farmerOptions(),
         ]);
     }
@@ -150,6 +153,8 @@ class PlotController extends Controller
             'area_ha' => $plot->area_ha,
             'soil_type' => $plot->soil_type->value,
             'soil_type_label' => $plot->soil_type->label(),
+            'soil_preparation' => $plot->soil_preparation?->value,
+            'soil_preparation_label' => $plot->soil_preparation?->label(),
             'latitude' => $plot->latitude,
             'longitude' => $plot->longitude,
             'previous_crop' => $plot->previous_crop,

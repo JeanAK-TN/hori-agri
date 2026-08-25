@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\SeasonType;
+use App\Enums\SoilPreparation;
 use App\Enums\SoilType;
 use App\Models\Campaign;
 use App\Models\Exploitation;
@@ -35,6 +36,51 @@ test('a technician records a plot without naming the exploitation', function () 
     expect($plot->exploitation_id)->toBe($this->exploitation->id)
         ->and((float) $plot->area_ha)->toBe(0.75)
         ->and($plot->soil_type)->toBe(SoilType::Ferrugineux);
+});
+
+test('the soil preparation is recorded, and the site soil type exists', function () {
+    // Chez INSECTGO, le maraîchage se fait sur planches surélevées et
+    // sur billons, sur un sol sablo-argilo-limoneux (SPEC-CORRECTION
+    // sections 5.4 et 5.6).
+    $this->actingAs($this->technician)
+        ->post(route('plots.store'), [
+            'farmer_id' => $this->farmer->id,
+            'name' => 'Planche du puits',
+            'area_ha' => 0.20,
+            'soil_type' => SoilType::SabloArgiloLimoneux->value,
+            'soil_preparation' => SoilPreparation::Planches->value,
+        ])
+        ->assertSessionHasNoErrors();
+
+    $plot = Plot::firstWhere('name', 'Planche du puits');
+
+    expect($plot->soil_type)->toBe(SoilType::SabloArgiloLimoneux)
+        ->and($plot->soil_type->label())->toBe('Sablo-argilo-limoneux')
+        ->and($plot->soil_preparation)->toBe(SoilPreparation::Planches);
+});
+
+test('the soil preparation stays optional and refuses unknown values', function () {
+    $this->actingAs($this->technician)
+        ->post(route('plots.store'), [
+            'farmer_id' => $this->farmer->id,
+            'name' => 'Sans préparation dite',
+            'area_ha' => 0.30,
+            'soil_type' => SoilType::Sableux->value,
+            'soil_preparation' => null,
+        ])
+        ->assertSessionHasNoErrors();
+
+    expect(Plot::firstWhere('name', 'Sans préparation dite')->soil_preparation)->toBeNull();
+
+    $this->actingAs($this->technician)
+        ->post(route('plots.store'), [
+            'farmer_id' => $this->farmer->id,
+            'name' => 'Préparation inconnue',
+            'area_ha' => 0.30,
+            'soil_type' => SoilType::Sableux->value,
+            'soil_preparation' => 'terrasses',
+        ])
+        ->assertSessionHasErrors('soil_preparation');
 });
 
 test('the area is required and must be positive', function (mixed $area) {

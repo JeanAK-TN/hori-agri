@@ -30,7 +30,9 @@ type Cycle = {
     campaign_start_label: string;
     campaign_end_label: string;
     sowing_date_label: string;
+    transplanting_date_label: string | null;
     density: number | null;
+    staked_label: string | null;
     status: CycleStatusValue;
     status_label: string;
     is_open: boolean;
@@ -53,6 +55,7 @@ type OperationRow = {
     quantity: string | null;
     unit_label: string | null;
     cost: string | null;
+    observed_rate: string | null;
     notes: string | null;
 };
 
@@ -136,12 +139,23 @@ export default function CycleShow({
                             value={cycle.sowing_date_label}
                         />
                         <Detail
+                            label="Date de repiquage"
+                            value={
+                                cycle.transplanting_date_label ??
+                                'Non renseignée'
+                            }
+                        />
+                        <Detail
                             label="Densité"
                             value={
                                 cycle.density === null
                                     ? 'Non renseignée'
                                     : `${cycle.density} plants/ha`
                             }
+                        />
+                        <Detail
+                            label="Conduite"
+                            value={cycle.staked_label ?? 'Non renseignée'}
                         />
                         <Detail
                             label="Campagne"
@@ -227,6 +241,13 @@ export default function CycleShow({
                                                 ' · '}
                                             {operation.cost &&
                                                 `${operation.cost} FCFA`}
+                                        </p>
+                                    )}
+
+                                    {operation.observed_rate && (
+                                        <p className="text-sm text-muted-foreground tabular-nums">
+                                            Taux observé :{' '}
+                                            {operation.observed_rate}
                                         </p>
                                     )}
 

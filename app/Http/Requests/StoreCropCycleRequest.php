@@ -36,7 +36,12 @@ class StoreCropCycleRequest extends FormRequest
             'crop_id' => ['required', Rule::exists(Crop::class, 'id')],
             'variety_id' => ['nullable', Rule::exists(Variety::class, 'id')],
             'sowing_date' => ['required', 'date'],
+            // Le repiquage suit le semis en pépinière : la fiche togolaise
+            // compte le calendrier de fertilisation à partir de cette date
+            // (SPEC-CORRECTION section 5.2).
+            'transplanting_date' => ['nullable', 'date', 'after_or_equal:sowing_date'],
             'density' => ['nullable', 'integer', 'min:1', 'max:2000000'],
+            'staked' => ['nullable', 'boolean'],
         ];
     }
 
@@ -97,7 +102,7 @@ class StoreCropCycleRequest extends FormRequest
      */
     private function validateSowingDateWithinCampaign(Validator $validator): void
     {
-        if ($validator->errors()->hasAny(['campaign_id', 'sowing_date'])) {
+        if ($validator->errors()->hasAny(['campaign_id', 'sowing_date', 'transplanting_date'])) {
             return;
         }
 
@@ -112,6 +117,23 @@ class StoreCropCycleRequest extends FormRequest
         if (! $campaign->covers($sowingDate)) {
             $validator->errors()->add('sowing_date', sprintf(
                 'La date de semis doit tomber entre le %s et le %s, bornes de la campagne « %s ».',
+                $campaign->start_date->format('d/m/Y'),
+                $campaign->end_date->format('d/m/Y'),
+                $campaign->label,
+            ));
+        }
+
+        $transplanting = $this->input('transplanting_date');
+
+        if (blank($transplanting)) {
+            return;
+        }
+
+        $transplantingDate = Carbon::parse((string) $transplanting)->startOfDay();
+
+        if (! $campaign->covers($transplantingDate)) {
+            $validator->errors()->add('transplanting_date', sprintf(
+                'La date de repiquage doit tomber entre le %s et le %s, bornes de la campagne « %s ».',
                 $campaign->start_date->format('d/m/Y'),
                 $campaign->end_date->format('d/m/Y'),
                 $campaign->label,

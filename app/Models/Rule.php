@@ -34,6 +34,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $estimated_gain
  * @property string $source
  * @property ThresholdStatus $threshold_status
+ * @property string|null $threshold_note
  * @property bool $enabled
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -49,6 +50,7 @@ use Illuminate\Support\Carbon;
     'estimated_gain',
     'source',
     'threshold_status',
+    'threshold_note',
     'enabled',
 ])]
 class Rule extends Model

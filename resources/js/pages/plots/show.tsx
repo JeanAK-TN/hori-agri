@@ -14,6 +14,7 @@ type Plot = {
     name: string;
     area_ha: string;
     soil_type_label: string;
+    soil_preparation_label: string | null;
     latitude: string | null;
     longitude: string | null;
     previous_crop: string | null;
@@ -87,6 +88,12 @@ export default function PlotShow({ plot, cycles }: Props) {
                         <Detail
                             label="Type de sol"
                             value={plot.soil_type_label}
+                        />
+                        <Detail
+                            label="Préparation du sol"
+                            value={
+                                plot.soil_preparation_label ?? 'Non renseignée'
+                            }
                         />
                         <Detail
                             label="Culture précédente"

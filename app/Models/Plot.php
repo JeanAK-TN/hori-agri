@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\SoilPreparation;
 use App\Enums\SoilType;
 use App\Models\Concerns\BelongsToExploitation;
 use Database\Factories\PlotFactory;
@@ -19,6 +20,7 @@ use Illuminate\Support\Carbon;
  * @property string $name
  * @property string $area_ha
  * @property SoilType $soil_type
+ * @property SoilPreparation|null $soil_preparation
  * @property string|null $latitude
  * @property string|null $longitude
  * @property string|null $previous_crop
@@ -30,6 +32,7 @@ use Illuminate\Support\Carbon;
     'name',
     'area_ha',
     'soil_type',
+    'soil_preparation',
     'latitude',
     'longitude',
     'previous_crop',
@@ -46,6 +49,7 @@ class Plot extends Model
     {
         return [
             'soil_type' => SoilType::class,
+            'soil_preparation' => SoilPreparation::class,
             'area_ha' => 'decimal:3',
             'latitude' => 'decimal:7',
             'longitude' => 'decimal:7',

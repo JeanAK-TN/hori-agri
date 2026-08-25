@@ -1,3 +1,4 @@
+import type { FormDataConvertible } from '@inertiajs/core';
 import InputError from '@/components/input-error';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -14,10 +15,29 @@ export type PlotFormValues = {
     name: string;
     area_ha: string;
     soil_type: string;
+    soil_preparation: string | null;
     latitude: string | null;
     longitude: string | null;
     previous_crop: string | null;
 };
+
+export const NO_SOIL_PREPARATION = 'non_renseignee';
+
+/**
+ * La préparation du sol est facultative : la valeur sentinelle du
+ * sélecteur redevient null avant l'envoi.
+ */
+export function normalisePlotData(
+    data: Record<string, FormDataConvertible>,
+): Record<string, FormDataConvertible> {
+    return {
+        ...data,
+        soil_preparation:
+            data.soil_preparation === NO_SOIL_PREPARATION
+                ? null
+                : data.soil_preparation,
+    };
+}
 
 export type Option = { value: string; label: string };
 
@@ -26,6 +46,7 @@ export type FarmerOption = { id: number; label: string };
 type Props = {
     errors: Record<string, string>;
     soilTypes: Option[];
+    soilPreparations: Option[];
     farmers: FarmerOption[];
     plot?: PlotFormValues;
     defaultFarmerId?: number | null;
@@ -34,6 +55,7 @@ type Props = {
 export default function PlotFormFields({
     errors,
     soilTypes,
+    soilPreparations,
     farmers,
     plot,
     defaultFarmerId,
@@ -123,6 +145,37 @@ export default function PlotFormFields({
                     </Select>
                     <InputError message={errors.soil_type} />
                 </div>
+            </div>
+
+            <div className="grid gap-2">
+                <Label htmlFor="soil_preparation">
+                    Préparation du sol (facultative)
+                </Label>
+                <Select
+                    name="soil_preparation"
+                    defaultValue={plot?.soil_preparation ?? NO_SOIL_PREPARATION}
+                >
+                    <SelectTrigger id="soil_preparation" className="w-full">
+                        <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value={NO_SOIL_PREPARATION}>
+                            Non renseignée
+                        </SelectItem>
+                        {soilPreparations.map((preparation) => (
+                            <SelectItem
+                                key={preparation.value}
+                                value={preparation.value}
+                            >
+                                {preparation.label}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+                <p className="text-sm text-muted-foreground">
+                    Planches surélevées, billons ou culture à plat.
+                </p>
+                <InputError message={errors.soil_preparation} />
             </div>
 
             <div className="grid gap-2">

@@ -24,6 +24,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $quantity
  * @property QuantityUnit|null $unit
  * @property string|null $cost
+ * @property string|null $observed_rate
  * @property string|null $notes
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -37,6 +38,7 @@ use Illuminate\Support\Carbon;
     'quantity',
     'unit',
     'cost',
+    'observed_rate',
     'notes',
 ])]
 class Operation extends Model
@@ -56,6 +58,10 @@ class Operation extends Model
             'quantity' => 'decimal:2',
             'unit' => QuantityUnit::class,
             'cost' => 'decimal:2',
+            // Le taux relevé lors d'une observation sanitaire, par
+            // exemple un taux d'attaque. Aucune règle active ne le lit
+            // (SPEC-CORRECTION section 5.5).
+            'observed_rate' => 'decimal:2',
         ];
     }
 

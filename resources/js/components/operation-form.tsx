@@ -38,6 +38,7 @@ const EMPTY = {
     quantity: '',
     unit: '',
     cost: '',
+    observed_rate: '',
     notes: '',
 };
 
@@ -267,6 +268,28 @@ export default function OperationForm({
                     </div>
                 </div>
             )}
+
+            <div className="grid gap-2">
+                <Label htmlFor="observed_rate">Taux observé (facultatif)</Label>
+                <Input
+                    id="observed_rate"
+                    name="observed_rate"
+                    type="number"
+                    inputMode="decimal"
+                    step="0.01"
+                    min="0"
+                    className="h-12"
+                    value={data.observed_rate}
+                    onChange={(event) =>
+                        setData('observed_rate', event.target.value)
+                    }
+                />
+                <p className="text-sm text-muted-foreground">
+                    Le taux relevé lors d'une observation sanitaire, par exemple
+                    un taux d'attaque.
+                </p>
+                <InputError message={errors.observed_rate} />
+            </div>
 
             <div className="grid gap-2">
                 <Label htmlFor="notes">Remarques (facultatives)</Label>

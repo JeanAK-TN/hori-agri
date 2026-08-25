@@ -41,6 +41,9 @@ trait OperationValidationRules
             'quantity' => ['nullable', 'numeric', 'min:0', 'max:999999.99'],
             'unit' => ['nullable', 'required_with:quantity', Rule::enum(QuantityUnit::class)],
             'cost' => ['nullable', 'numeric', 'min:0', 'max:99999999.99'],
+            // Le taux relevé lors d'une observation sanitaire, par
+            // exemple un taux d'attaque (SPEC-CORRECTION section 5.5).
+            'observed_rate' => ['nullable', 'numeric', 'min:0', 'max:999999.99'],
             'notes' => ['nullable', 'string', 'max:2000'],
         ];
     }

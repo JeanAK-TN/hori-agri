@@ -2,6 +2,7 @@
 
 namespace App\Concerns;
 
+use App\Enums\SoilPreparation;
 use App\Enums\SoilType;
 use App\Models\Farmer;
 use Closure;
@@ -23,6 +24,9 @@ trait PlotValidationRules
             // decimal(6,3) : sans surface, aucun indicateur à l'hectare.
             'area_ha' => ['required', 'numeric', 'min:0.001', 'max:999.999'],
             'soil_type' => ['required', Rule::enum(SoilType::class)],
+            // Planches surélevées, billons ou culture à plat : la conduite
+            // du sol chez INSECTGO (SPEC-CORRECTION section 5.4).
+            'soil_preparation' => ['nullable', Rule::enum(SoilPreparation::class)],
             'latitude' => ['nullable', 'numeric', 'between:-90,90'],
             'longitude' => ['nullable', 'numeric', 'between:-180,180'],
             'previous_crop' => ['nullable', 'string', 'max:60'],

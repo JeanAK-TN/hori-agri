@@ -60,6 +60,26 @@ test('a technician records a complete operation and it is saved', function () {
         ->and((float) $operation->cost)->toBe(24000.0);
 });
 
+test('the observed rate of a sanitary observation is recorded', function () {
+    // Le taux releve lors d'une observation sanitaire, par exemple un
+    // taux d'attaque. Aucune règle active ne le lit (SPEC-CORRECTION
+    // section 5.5).
+    $this->post(route('operations.store', $this->cycle), [
+        'type' => OperationType::Treatment->value,
+        'input_type' => InputType::Insecticide->value,
+        'date' => '2026-05-10',
+        'observed_rate' => 12.5,
+    ])->assertSessionHasNoErrors();
+
+    expect((float) Operation::sole()->observed_rate)->toBe(12.5);
+
+    $this->post(route('operations.store', $this->cycle), [
+        'type' => OperationType::Weeding->value,
+        'date' => '2026-05-20',
+        'observed_rate' => -3,
+    ])->assertSessionHasErrors('observed_rate');
+});
+
 test('the quantity is recorded as counted in the field, never as a dose per hectare', function () {
     $this->post(route('operations.store', $this->cycle), [
         'type' => OperationType::Fertilization->value,

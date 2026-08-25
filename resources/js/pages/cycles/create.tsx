@@ -29,6 +29,9 @@ type Props = {
 };
 
 const NO_VARIETY = 'aucune';
+const CONDUCT_UNKNOWN = 'non_renseignee';
+const CONDUCT_STAKED = 'tuteuree';
+const CONDUCT_CREEPING = 'rampante';
 
 export default function CycleCreate({
     plots,
@@ -70,6 +73,12 @@ export default function CycleCreate({
                             data.variety_id === NO_VARIETY
                                 ? null
                                 : data.variety_id,
+                        staked:
+                            data.staked === CONDUCT_STAKED
+                                ? true
+                                : data.staked === CONDUCT_CREEPING
+                                  ? false
+                                  : null,
                     })}
                     className="max-w-2xl space-y-6 rounded-xl border bg-card p-4 md:p-6"
                 >
@@ -213,6 +222,26 @@ export default function CycleCreate({
                                 </div>
 
                                 <div className="grid gap-2">
+                                    <Label htmlFor="transplanting_date">
+                                        Date de repiquage (facultative)
+                                    </Label>
+                                    <Input
+                                        id="transplanting_date"
+                                        name="transplanting_date"
+                                        type="date"
+                                        className="h-12"
+                                    />
+                                    <p className="text-sm text-muted-foreground">
+                                        Le passage de la pépinière au champ : le
+                                        calendrier de fertilisation se compte à
+                                        partir de cette date.
+                                    </p>
+                                    <InputError
+                                        message={errors.transplanting_date}
+                                    />
+                                </div>
+
+                                <div className="grid gap-2">
                                     <Label htmlFor="density">
                                         Densité (facultative)
                                     </Label>
@@ -235,6 +264,41 @@ export default function CycleCreate({
                                         connaît pas.
                                     </p>
                                     <InputError message={errors.density} />
+                                </div>
+
+                                <div className="grid gap-2">
+                                    <Label htmlFor="staked">
+                                        Conduite (facultative)
+                                    </Label>
+                                    <Select
+                                        name="staked"
+                                        defaultValue={CONDUCT_UNKNOWN}
+                                    >
+                                        <SelectTrigger
+                                            id="staked"
+                                            className="w-full"
+                                        >
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value={CONDUCT_UNKNOWN}>
+                                                Non renseignée
+                                            </SelectItem>
+                                            <SelectItem value={CONDUCT_STAKED}>
+                                                Tuteurée
+                                            </SelectItem>
+                                            <SelectItem
+                                                value={CONDUCT_CREEPING}
+                                            >
+                                                Rampante
+                                            </SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    <p className="text-sm text-muted-foreground">
+                                        Tuteurée ou rampante : la conduite
+                                        change la densité attendue.
+                                    </p>
+                                    <InputError message={errors.staked} />
                                 </div>
                             </div>
 

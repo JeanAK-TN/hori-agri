@@ -2,7 +2,9 @@ import { Form, Head, Link } from '@inertiajs/react';
 import { ArrowLeft } from 'lucide-react';
 import PlotController from '@/actions/App/Http/Controllers/PlotController';
 import PageHeader from '@/components/page-header';
-import PlotFormFields from '@/components/plot-form-fields';
+import PlotFormFields, {
+    normalisePlotData,
+} from '@/components/plot-form-fields';
 import type {
     FarmerOption,
     Option,
@@ -17,10 +19,16 @@ type Plot = PlotFormValues & { id: number };
 type Props = {
     plot: Plot;
     soilTypes: Option[];
+    soilPreparations: Option[];
     farmers: FarmerOption[];
 };
 
-export default function PlotEdit({ plot, soilTypes, farmers }: Props) {
+export default function PlotEdit({
+    plot,
+    soilTypes,
+    soilPreparations,
+    farmers,
+}: Props) {
     return (
         <>
             <Head title={`Modifier ${plot.name}`} />
@@ -40,6 +48,7 @@ export default function PlotEdit({ plot, soilTypes, farmers }: Props) {
 
                 <Form
                     {...PlotController.update.form(plot.id)}
+                    transform={normalisePlotData}
                     className="max-w-2xl space-y-6 rounded-xl border bg-card p-4 md:p-6"
                 >
                     {({ processing, errors }) => (
@@ -47,6 +56,7 @@ export default function PlotEdit({ plot, soilTypes, farmers }: Props) {
                             <PlotFormFields
                                 errors={errors}
                                 soilTypes={soilTypes}
+                                soilPreparations={soilPreparations}
                                 farmers={farmers}
                                 plot={plot}
                             />

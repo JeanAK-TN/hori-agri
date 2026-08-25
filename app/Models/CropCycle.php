@@ -25,7 +25,9 @@ use LogicException;
  * @property int|null $variety_id
  * @property int $campaign_id
  * @property Carbon $sowing_date
+ * @property Carbon|null $transplanting_date
  * @property int|null $density
+ * @property bool|null $staked
  * @property CycleStatus $status
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -36,7 +38,9 @@ use LogicException;
     'variety_id',
     'campaign_id',
     'sowing_date',
+    'transplanting_date',
     'density',
+    'staked',
 ])]
 class CropCycle extends Model
 {
@@ -60,7 +64,12 @@ class CropCycle extends Model
     {
         return [
             'sowing_date' => 'date',
+            // Le maraîchage se conduit en deux temps : semis en pépinière
+            // puis repiquage au champ. Le calendrier de fertilisation se
+            // compte depuis le repiquage (SPEC-CORRECTION section 5.2).
+            'transplanting_date' => 'date',
             'density' => 'integer',
+            'staked' => 'boolean',
             'status' => CycleStatus::class,
         ];
     }

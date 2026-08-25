@@ -46,6 +46,63 @@ test('a cycle opens on a plot for a crop and a campaign', function () {
         ->and($cycle->sowing_date->toDateString())->toBe('2026-04-15');
 });
 
+test('the transplanting date and the conduct are recorded with the cycle', function () {
+    // Le maraîchage se conduit en deux temps : semis en pépinière puis
+    // repiquage au champ (SPEC-CORRECTION section 5.2). La conduite,
+    // tuteurée ou rampante, change la densité attendue (section 5.3).
+    $this->post(route('cycles.store'), [
+        'plot_id' => $this->plot->id,
+        'campaign_id' => $this->campaign->id,
+        'crop_id' => $this->crop->id,
+        'sowing_date' => '2026-03-20',
+        'transplanting_date' => '2026-04-12',
+        'staked' => true,
+    ])->assertSessionHasNoErrors();
+
+    $cycle = CropCycle::sole();
+
+    expect($cycle->transplanting_date->toDateString())->toBe('2026-04-12')
+        ->and($cycle->staked)->toBeTrue();
+});
+
+test('both dates and the conduct stay null when nothing is known', function () {
+    $this->post(route('cycles.store'), [
+        'plot_id' => $this->plot->id,
+        'campaign_id' => $this->campaign->id,
+        'crop_id' => $this->crop->id,
+        'sowing_date' => '2026-03-20',
+        'transplanting_date' => null,
+        'staked' => null,
+    ])->assertSessionHasNoErrors();
+
+    $cycle = CropCycle::sole();
+
+    expect($cycle->transplanting_date)->toBeNull()
+        ->and($cycle->staked)->toBeNull();
+});
+
+test('a transplanting before the sowing is refused', function () {
+    $this->post(route('cycles.store'), [
+        'plot_id' => $this->plot->id,
+        'campaign_id' => $this->campaign->id,
+        'crop_id' => $this->crop->id,
+        'sowing_date' => '2026-04-15',
+        'transplanting_date' => '2026-04-01',
+    ])->assertSessionHasErrors('transplanting_date');
+
+    expect(CropCycle::count())->toBe(0);
+});
+
+test('a transplanting outside the campaign is refused', function () {
+    $this->post(route('cycles.store'), [
+        'plot_id' => $this->plot->id,
+        'campaign_id' => $this->campaign->id,
+        'crop_id' => $this->crop->id,
+        'sowing_date' => '2026-11-20',
+        'transplanting_date' => '2026-12-05',
+    ])->assertSessionHasErrors('transplanting_date');
+});
+
 test('a second cycle on the same plot, crop and campaign is refused', function () {
     $payload = [
         'plot_id' => $this->plot->id,

@@ -102,6 +102,7 @@ class CropCycleController extends Controller
                     'quantity' => $operation->quantity,
                     'unit_label' => $operation->unit?->label(),
                     'cost' => $operation->cost,
+                    'observed_rate' => $operation->observed_rate,
                     'notes' => $operation->notes,
                 ])
                 ->all(),
@@ -147,7 +148,13 @@ class CropCycleController extends Controller
                 'campaign_start_label' => $cycle->campaign->start_date->format('d/m/Y'),
                 'campaign_end_label' => $cycle->campaign->end_date->format('d/m/Y'),
                 'sowing_date_label' => $cycle->sowing_date->format('d/m/Y'),
+                'transplanting_date_label' => $cycle->transplanting_date?->format('d/m/Y'),
                 'density' => $cycle->density,
+                // Tuteurée, rampante, ou non renseignée : la conduite
+                // change la densité attendue (SPEC-CORRECTION section 5.3).
+                'staked_label' => $cycle->staked === null
+                    ? null
+                    : ($cycle->staked ? 'Tuteurée' : 'Rampante'),
                 'status' => $cycle->status->value,
                 'status_label' => $cycle->status->label(),
                 'is_open' => $cycle->status->isOpen(),

@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\CycleStatus;
+use App\Enums\SoilPreparation;
 use App\Enums\SoilType;
 use App\Models\Campaign;
 use App\Models\Crop;
@@ -46,17 +47,21 @@ test('un technicien enregistre une parcelle depuis un téléphone', function () 
         ->fill('name', 'Derrière la maison')
         ->fill('area_ha', '0.75')
         ->click('#soil_type')
-        ->click('[role=option]:has-text("Ferrugineux")')
+        ->click('[role=option]:has-text("Sablo-argilo-limoneux")')
+        ->click('#soil_preparation')
+        ->click('[role=option]:has-text("Planches surélevées")')
         ->click('Enregistrer la parcelle');
 
     $page->assertSee('Caractéristiques')
         ->assertSee('Derrière la maison')
+        ->assertSee('Planches surélevées')
         ->assertNoJavaScriptErrors();
 
     $plot = Plot::firstWhere('name', 'Derrière la maison');
 
     expect($plot)->not->toBeNull()
-        ->and($plot->soil_type)->toBe(SoilType::Ferrugineux)
+        ->and($plot->soil_type)->toBe(SoilType::SabloArgiloLimoneux)
+        ->and($plot->soil_preparation)->toBe(SoilPreparation::Planches)
         ->and((float) $plot->area_ha)->toBe(0.75)
         ->and($plot->exploitation_id)->toBe($this->exploitation->id);
 });
@@ -74,13 +79,21 @@ test('un technicien ouvre un cycle cultural et le doublon est refusé', function
         ->click('#crop_id')
         ->click('[role=option]:has-text("Maïs")')
         ->fill('sowing_date', '2026-04-15')
+        ->fill('transplanting_date', '2026-05-02')
+        ->click('#staked')
+        ->click('[role=option]:has-text("Tuteurée")')
         ->click('Ouvrir le cycle');
 
     $page->assertSee('Le cycle')
         ->assertSee('Planifié')
+        // Le repiquage et la conduite se relisent sur la fiche.
+        ->assertSee('02/05/2026')
+        ->assertSee('Tuteurée')
         ->assertNoJavaScriptErrors();
 
-    expect(CropCycle::count())->toBe(1);
+    expect(CropCycle::count())->toBe(1)
+        ->and(CropCycle::sole()->transplanting_date->toDateString())->toBe('2026-05-02')
+        ->and(CropCycle::sole()->staked)->toBeTrue();
 
     // Le même trio parcelle, culture, campagne est refusé.
     $second = visit('/cycles/create');

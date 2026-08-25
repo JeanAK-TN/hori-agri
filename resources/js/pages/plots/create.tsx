@@ -2,7 +2,9 @@ import { Form, Head, Link } from '@inertiajs/react';
 import { ArrowLeft } from 'lucide-react';
 import PlotController from '@/actions/App/Http/Controllers/PlotController';
 import PageHeader from '@/components/page-header';
-import PlotFormFields from '@/components/plot-form-fields';
+import PlotFormFields, {
+    normalisePlotData,
+} from '@/components/plot-form-fields';
 import type { FarmerOption, Option } from '@/components/plot-form-fields';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
@@ -10,12 +12,14 @@ import { index } from '@/routes/plots';
 
 type Props = {
     soilTypes: Option[];
+    soilPreparations: Option[];
     farmers: FarmerOption[];
     selectedFarmerId: number | null;
 };
 
 export default function PlotCreate({
     soilTypes,
+    soilPreparations,
     farmers,
     selectedFarmerId,
 }: Props) {
@@ -38,6 +42,7 @@ export default function PlotCreate({
 
                 <Form
                     {...PlotController.store.form()}
+                    transform={normalisePlotData}
                     className="max-w-2xl space-y-6 rounded-xl border bg-card p-4 md:p-6"
                 >
                     {({ processing, errors }) => (
@@ -45,6 +50,7 @@ export default function PlotCreate({
                             <PlotFormFields
                                 errors={errors}
                                 soilTypes={soilTypes}
+                                soilPreparations={soilPreparations}
                                 farmers={farmers}
                                 defaultFarmerId={selectedFarmerId}
                             />
