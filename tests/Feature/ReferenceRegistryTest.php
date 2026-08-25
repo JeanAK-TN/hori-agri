@@ -13,26 +13,32 @@ use Inertia\Testing\AssertableInertia as Assert;
 | fichiers de référence et refusent de créer des données de remplacement.
 */
 
-test('the crop registry is loaded from the reference file', function () {
+test('the crop registry holds the tomato alone, with the published values', function () {
     $this->seed(CropSeeder::class);
 
-    expect(Crop::pluck('name')->all())
-        ->toContain('Maïs', 'Soja', 'Manioc');
+    // La tomate est la seule culture maraîchère de la ferme couverte par
+    // une fiche technique nationale togolaise (SPEC-CORRECTION section 2).
+    expect(Crop::pluck('name')->all())->toBe(['Tomate']);
 
-    $maize = Crop::firstWhere('name', 'Maïs');
+    $tomato = Crop::firstWhere('name', 'Tomate');
 
-    expect($maize->cycle_days)->toBeGreaterThan(0)
-        ->and($maize->reference_density)->toBeGreaterThan(0)
-        ->and($maize->npk_needs)->toHaveKeys(['n', 'p', 'k']);
+    // 0,60 m sur 0,50 m, soit 33 000 plants par hectare, et le haut de
+    // la fourchette togolaise de 10 à 12 tonnes par hectare.
+    expect($tomato->cycle_days)->toBe(120)
+        ->and($tomato->reference_density)->toBe(33000)
+        ->and((float) $tomato->reference_yield_kg_ha)->toBe(12000.0)
+        // La fiche donne une dose de couverture cumulée, pas un besoin
+        // décomposé : rien n'est inventé ici.
+        ->and($tomato->npk_needs)->toBeNull();
 });
 
-test('the variety registry references the crops by name', function () {
+test('the variety registry loads empty rather than inventing varieties', function () {
     $this->seed(CropSeeder::class);
     $this->seed(VarietySeeder::class);
 
-    $maize = Crop::firstWhere('name', 'Maïs');
-
-    expect(Variety::where('crop_id', $maize->id)->count())->toBeGreaterThan(0);
+    // Aucune variété de tomate n'est documentée : le fichier reste vide
+    // (SPEC-CORRECTION section 2).
+    expect(Variety::count())->toBe(0);
 });
 
 test('loading twice does not duplicate the registry', function () {
@@ -129,7 +135,7 @@ test('the registry screen is reserved for the super_admin', function () {
         ->get(route('crops.index'))
         ->assertInertia(fn (Assert $page) => $page
             ->component('crops/index')
-            ->has('crops', 3),
+            ->has('crops', 1),
         );
 
     foreach (['exploitationAdmin', 'technician', 'farmer'] as $state) {
@@ -156,25 +162,25 @@ test('the super_admin adds a crop to the registry', function () {
 
 test('a variety name is unique inside its crop but not across crops', function () {
     $superAdmin = User::factory()->superAdmin()->create();
-    $maize = Crop::factory()->named('Maïs')->create();
-    $soja = Crop::factory()->named('Soja')->create();
+    $tomato = Crop::factory()->named('Tomate')->create();
+    $okra = Crop::factory()->named('Gombo')->create();
 
     $this->actingAs($superAdmin);
 
     $this->post(route('varieties.store'), [
-        'crop_id' => $maize->id,
+        'crop_id' => $tomato->id,
         'name' => 'Variété locale',
     ])->assertSessionHasNoErrors();
 
     // Le même nom sous une autre culture est accepté.
     $this->post(route('varieties.store'), [
-        'crop_id' => $soja->id,
+        'crop_id' => $okra->id,
         'name' => 'Variété locale',
     ])->assertSessionHasNoErrors();
 
     // Le même nom sous la même culture est refusé.
     $this->post(route('varieties.store'), [
-        'crop_id' => $maize->id,
+        'crop_id' => $tomato->id,
         'name' => 'Variété locale',
     ])->assertSessionHasErrors('name');
 

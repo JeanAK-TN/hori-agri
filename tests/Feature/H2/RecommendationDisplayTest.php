@@ -28,7 +28,7 @@ beforeEach(function () {
     $this->farmer = Farmer::factory()->for($this->exploitation)
         ->create(['user_id' => $this->farmerAccount->id]);
 
-    $crop = Crop::factory()->named('Maïs')->create();
+    $crop = Crop::factory()->named('Tomate')->create();
     $campaign = Campaign::factory()->for($this->exploitation)
         ->between('2026-03-01', '2026-11-30')->create();
     $plot = Plot::factory()->ofFarmer($this->farmer)->withArea(1.0)->create();
@@ -40,7 +40,7 @@ function recommendationFor(CropCycle $cycle, array $ruleAttributes = []): Recomm
 {
     $rule = Rule::factory()->create([
         'action' => 'Apporter 150 kg de NPK par hectare au semis.',
-        'source' => 'ITRA, fiche technique maïs 2021, page 12',
+        'source' => 'ITRA, fiche technique tomate 2021, page 12',
         'estimated_gain' => '+400 kg/ha',
         ...$ruleAttributes,
     ]);
@@ -70,7 +70,7 @@ test('the finding, the action and the source all reach the screen', function () 
             )
             ->where(
                 'recommendations.data.0.source',
-                'ITRA, fiche technique maïs 2021, page 12',
+                'ITRA, fiche technique tomate 2021, page 12',
             )
             ->where('recommendations.data.0.estimated_gain', '+400 kg/ha'),
         );
@@ -97,7 +97,7 @@ test('the cycle concerned is named, so the advice is situated', function () {
     $this->actingAs($this->farmerAccount)
         ->get(route('recommendations.index'))
         ->assertInertia(fn (Assert $page) => $page
-            ->where('recommendations.data.0.cycle.crop', 'Maïs')
+            ->where('recommendations.data.0.cycle.crop', 'Tomate')
             ->where('recommendations.data.0.cycle.farmer', $this->farmer->fullName())
             ->where('recommendations.data.0.cycle.village', $this->farmer->village),
         );
@@ -142,7 +142,7 @@ test('a producer answers, and their answer is kept with the recommendation', fun
         ->post(route('feedbacks.store', $recommendation), [
             'applied' => true,
             'comment' => 'Deux sacs de NPK épandus le 12 juin.',
-            'observed_result' => 'Le maïs a mieux tenu la sécheresse.',
+            'observed_result' => 'La tomate a mieux tenu la sécheresse.',
         ])
         ->assertRedirect();
 
@@ -153,7 +153,7 @@ test('a producer answers, and their answer is kept with the recommendation', fun
     expect($feedback)->not->toBeNull()
         ->and($feedback->applied)->toBeTrue()
         ->and($feedback->comment)->toBe('Deux sacs de NPK épandus le 12 juin.')
-        ->and($feedback->observed_result)->toBe('Le maïs a mieux tenu la sécheresse.')
+        ->and($feedback->observed_result)->toBe('La tomate a mieux tenu la sécheresse.')
         // Jamais lu du formulaire : déduit du compte connecté.
         ->and($feedback->farmer_id)->toBe($this->farmer->id)
         ->and($feedback->exploitation_id)->toBe($this->exploitation->id);

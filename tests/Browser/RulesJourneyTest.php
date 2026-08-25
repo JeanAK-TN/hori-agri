@@ -23,7 +23,7 @@ beforeEach(function () {
 
 test('l origine de chaque seuil est lisible sans rien déplier', function () {
     Rule::factory()->code('FERT-MAIS-01')->create([
-        'source' => 'ITRA, fiche technique maïs 2021, page 12',
+        'source' => 'ITRA, fiche technique tomate 2021, page 12',
         'threshold_status' => ThresholdStatus::Sourced,
     ]);
     Rule::factory()->code('COUT-PAIR-01')->convention()->create([
@@ -35,7 +35,7 @@ test('l origine de chaque seuil est lisible sans rien déplier', function () {
     $page = visit('/rules')->resize(360, 800);
 
     $page->assertSee('Source togolaise publiée')
-        ->assertSee('ITRA, fiche technique maïs 2021, page 12')
+        ->assertSee('ITRA, fiche technique tomate 2021, page 12')
         ->assertSee('Convention à confirmer')
         ->assertSee('SEUIL SIMULÉ')
         // Une convention arrive inactive tant que l'exploitation ne l'a

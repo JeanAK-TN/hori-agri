@@ -36,7 +36,7 @@ beforeEach(function () {
         ->for($this->exploitation)
         ->between('2026-03-01', '2026-11-30')
         ->create(['label' => '2026 grande saison']);
-    $this->crop = Crop::factory()->named('Maïs')->create();
+    $this->crop = Crop::factory()->named('Tomate')->create();
 
     $this->cycle = CropCycle::factory()
         ->on($this->plot, $this->campaign, $this->crop)
@@ -74,7 +74,7 @@ function operationRow(
     string $cost = '24000',
     string $phone = '90112233',
     string $plot = 'Le bas-fond',
-    string $crop = 'Maïs',
+    string $crop = 'Tomate',
     string $campaign = '2026 grande saison',
 ): array {
     return [
@@ -90,7 +90,7 @@ function operationRow(
 function harvestRow(string $date = '15/08/2026', string $quantity = '675'): array
 {
     return [
-        'recolte', '90112233', 'Le bas-fond', 'Maïs', '2026 grande saison',
+        'recolte', '90112233', 'Le bas-fond', 'Tomate', '2026 grande saison',
         '', '', $date, '', '', '', '',
         $quantity, '200', 'good', '', '',
     ];
@@ -229,18 +229,18 @@ test('a file of several hundred lines produces a line-by-line report', function 
 });
 
 test('the import never creates a cycle that is not already open', function () {
-    $otherCrop = Crop::factory()->named('Soja')->create();
+    $otherCrop = Crop::factory()->named('Gombo')->create();
 
     expect($otherCrop)->not->toBeNull();
 
     $this->post(route('imports.store'), [
-        'fichier' => csvFile([operationRow(crop: 'Soja')]),
+        'fichier' => csvFile([operationRow(crop: 'Gombo')]),
     ]);
 
     $this->get(route('imports.index'))
         ->assertInertia(fn (Assert $page) => $page
             ->where('rapport.rejected', 1)
-            ->where('rapport.lines.0.reason', 'Aucun cycle ouvert sur « Le bas-fond » pour Soja en 2026 grande saison : ouvrez-le avant d\'importer.'),
+            ->where('rapport.lines.0.reason', 'Aucun cycle ouvert sur « Le bas-fond » pour Gombo en 2026 grande saison : ouvrez-le avant d\'importer.'),
         );
 
     expect(CropCycle::count())->toBe(1);

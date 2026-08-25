@@ -119,7 +119,7 @@ function AppliedDialog({
                                     id={`comment-${recommendation.id}`}
                                     name="comment"
                                     rows={3}
-                                    placeholder="Par exemple : deux sacs d'urée épandus le 12 juin."
+                                    placeholder="Par exemple : deux sacs de NPK épandus le 12 juin."
                                 />
                                 <InputError message={errors.comment} />
                             </div>
@@ -132,7 +132,7 @@ function AppliedDialog({
                                     id={`result-${recommendation.id}`}
                                     name="observed_result"
                                     rows={3}
-                                    placeholder="Par exemple : le maïs a mieux tenu la sécheresse."
+                                    placeholder="Par exemple : la tomate a mieux tenu la sécheresse."
                                 />
                                 <InputError message={errors.observed_result} />
                             </div>

@@ -21,8 +21,8 @@ beforeEach(function () {
     $this->exploitation = Exploitation::factory()->create();
     $this->admin = User::factory()->exploitationAdmin()->for($this->exploitation)->create();
 
-    $this->maize = Crop::factory()->named('Maïs')->create();
-    $this->soy = Crop::factory()->named('Soja')->create();
+    $this->maize = Crop::factory()->named('Tomate')->create();
+    $this->soy = Crop::factory()->named('Gombo')->create();
 
     $this->campaign = Campaign::factory()->for($this->exploitation)
         ->between('2026-03-01', '2026-11-30')->create(['label' => 'Campagne 2026']);
@@ -48,9 +48,9 @@ test('les nombres de tête et les graphiques apparaissent', function () {
     $page->assertScript("document.querySelectorAll('canvas').length >= 3", true);
 
     // Les mêmes chiffres se lisent en table, sans dépendre de la couleur.
-    $page->assertSee('Maïs')
+    $page->assertSee('Tomate')
         ->assertSee('1 000 kg/ha')
-        ->assertSee('Soja')
+        ->assertSee('Gombo')
         ->assertSee('400 kg/ha');
 });
 
@@ -60,12 +60,12 @@ test('les filtres rechargent la synthèse', function () {
 
     $page = visit('/tableau-de-bord')->resize(1280, 900);
 
-    $page->assertSee('Soja')
+    $page->assertSee('Gombo')
         ->click('#culture')
-        ->click('[role=option]:has-text("Maïs")');
+        ->click('[role=option]:has-text("Tomate")');
 
-    $page->assertSee('Maïs')
-        ->assertDontSee('Soja')
+    $page->assertSee('Tomate')
+        ->assertDontSee('Gombo')
         ->assertNoJavaScriptErrors();
 });
 

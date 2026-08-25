@@ -30,7 +30,7 @@ beforeEach(function () {
     $this->engine = app(RecommendationService::class);
 
     $this->exploitation = Exploitation::factory()->create();
-    $this->crop = Crop::factory()->named('Maïs')->create();
+    $this->crop = Crop::factory()->named('Tomate')->create();
     $this->campaign = Campaign::factory()
         ->for($this->exploitation)
         ->between('2026-03-01', '2026-11-30')
@@ -183,7 +183,7 @@ test('a rule of another crop does not apply', function () {
     $cycle = ($this->openCycle)();
 
     Rule::factory()->alwaysFiring()
-        ->forCrop(Crop::factory()->named('Soja')->create())
+        ->forCrop(Crop::factory()->named('Gombo')->create())
         ->create();
 
     $this->engine->runFor($cycle);

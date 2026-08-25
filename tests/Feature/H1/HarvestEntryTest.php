@@ -23,7 +23,7 @@ beforeEach(function () {
         ->create();
 
     $this->cycle = CropCycle::factory()
-        ->on($plot, $campaign, Crop::factory()->named('Maïs')->create())
+        ->on($plot, $campaign, Crop::factory()->named('Tomate')->create())
         ->create();
 
     $this->actingAs($this->technician);

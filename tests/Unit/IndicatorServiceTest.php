@@ -25,7 +25,7 @@ uses(RefreshDatabase::class);
 beforeEach(function () {
     $this->service = new IndicatorService;
     $this->exploitation = Exploitation::factory()->create();
-    $this->crop = Crop::factory()->named('Maïs')->create();
+    $this->crop = Crop::factory()->named('Tomate')->create();
     $this->campaign = Campaign::factory()
         ->for($this->exploitation)
         ->between('2026-03-01', '2026-11-30')
@@ -296,7 +296,7 @@ test('the zone is restricted to the same crop, campaign and exploitation', funct
     // Une autre culture.
     $otherCrop = cycleOf(
         $this->exploitation,
-        Crop::factory()->named('Soja')->create(),
+        Crop::factory()->named('Gombo')->create(),
         $this->campaign,
         1.0,
     );

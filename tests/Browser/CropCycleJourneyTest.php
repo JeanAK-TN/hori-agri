@@ -32,7 +32,7 @@ beforeEach(function () {
         ->for($this->exploitation)
         ->between('2026-03-01', '2026-11-30')
         ->create(['label' => '2026 grande saison']);
-    $this->crop = Crop::factory()->named('Maïs')->create();
+    $this->crop = Crop::factory()->named('Tomate')->create();
 
     $this->actingAs($this->technician);
 });
@@ -77,7 +77,7 @@ test('un technicien ouvre un cycle cultural et le doublon est refusé', function
         ->click('#campaign_id')
         ->click('[role=option]:has-text("2026 grande saison")')
         ->click('#crop_id')
-        ->click('[role=option]:has-text("Maïs")')
+        ->click('[role=option]:has-text("Tomate")')
         ->fill('sowing_date', '2026-04-15')
         ->fill('transplanting_date', '2026-05-02')
         ->click('#staked')
@@ -103,7 +103,7 @@ test('un technicien ouvre un cycle cultural et le doublon est refusé', function
         ->click('#campaign_id')
         ->click('[role=option]:has-text("2026 grande saison")')
         ->click('#crop_id')
-        ->click('[role=option]:has-text("Maïs")')
+        ->click('[role=option]:has-text("Tomate")')
         ->fill('sowing_date', '2026-05-20')
         ->click('Ouvrir le cycle')
         ->assertSee('Cette parcelle porte déjà un cycle pour cette culture et cette campagne.')
@@ -122,7 +122,7 @@ test('une date de semis hors des bornes de la campagne est refusée', function (
         ->click('#campaign_id')
         ->click('[role=option]:has-text("2026 grande saison")')
         ->click('#crop_id')
-        ->click('[role=option]:has-text("Maïs")')
+        ->click('[role=option]:has-text("Tomate")')
         ->fill('sowing_date', '2026-12-25')
         ->click('Ouvrir le cycle')
         ->assertSee('La date de semis doit tomber entre le 01/03/2026 et le 30/11/2026')
@@ -151,23 +151,23 @@ test('un technicien clôture un cycle depuis son écran', function () {
 
 test('la liste des cycles se filtre par campagne', function () {
     $plot = Plot::factory()->ofFarmer($this->farmer)->create();
-    $soja = Crop::factory()->named('Soja')->create();
+    $gombo = Crop::factory()->named('Gombo')->create();
     $otherCampaign = Campaign::factory()
         ->for($this->exploitation)
         ->between('2025-03-01', '2025-11-30')
         ->create(['label' => '2025 grande saison']);
 
     CropCycle::factory()->on($plot, $this->campaign, $this->crop)->create();
-    CropCycle::factory()->on($plot, $otherCampaign, $soja)->create();
+    CropCycle::factory()->on($plot, $otherCampaign, $gombo)->create();
 
     $page = visit('/cycles');
 
-    $page->assertSee('Maïs')
-        ->assertSee('Soja')
+    $page->assertSee('Tomate')
+        ->assertSee('Gombo')
         ->click('#filtre-campagne')
         ->click('[role=option]:has-text("2026 grande saison")')
         ->assertQueryStringHas('campagne', (string) $this->campaign->id)
-        ->assertSee('Maïs')
-        ->assertDontSee('Soja')
+        ->assertSee('Tomate')
+        ->assertDontSee('Gombo')
         ->assertNoJavaScriptErrors();
 });

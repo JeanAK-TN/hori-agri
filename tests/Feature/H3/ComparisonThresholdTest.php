@@ -28,7 +28,7 @@ use Inertia\Testing\AssertableInertia as Assert;
 beforeEach(function () {
     $this->exploitation = Exploitation::factory()->create();
     $this->technician = User::factory()->technician()->for($this->exploitation)->create();
-    $this->crop = Crop::factory()->named('Maïs')->create();
+    $this->crop = Crop::factory()->named('Tomate')->create();
     $this->campaign = Campaign::factory()
         ->for($this->exploitation)
         ->between('2026-03-01', '2026-11-30')
@@ -181,7 +181,7 @@ test('an import refreshes the indicators of every cycle it touched', function ()
     $cycle = CropCycle::factory()->on($plot, $this->campaign, $this->crop)->create();
 
     $columns = implode(';', ImportService::COLUMNS);
-    $row = 'recolte;90112233;Le bas-fond;Maïs;'.$this->campaign->label
+    $row = 'recolte;90112233;Le bas-fond;Tomate;'.$this->campaign->label
         .';;;15/08/2026;;;;;1500;100;;;';
 
     $path = tempnam(sys_get_temp_dir(), 'import').'.csv';

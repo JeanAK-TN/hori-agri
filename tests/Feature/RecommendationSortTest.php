@@ -22,7 +22,7 @@ beforeEach(function () {
     $this->engine = app(RecommendationService::class);
 
     $exploitation = Exploitation::factory()->create();
-    $crop = Crop::factory()->named('Maïs')->create();
+    $crop = Crop::factory()->named('Tomate')->create();
     $campaign = Campaign::factory()->for($exploitation)
         ->between('2026-03-01', '2026-11-30')->create();
 

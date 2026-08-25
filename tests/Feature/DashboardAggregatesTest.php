@@ -24,8 +24,8 @@ beforeEach(function () {
     $this->exploitation = Exploitation::factory()->create();
     $this->admin = User::factory()->exploitationAdmin()->for($this->exploitation)->create();
 
-    $this->maize = Crop::factory()->named('Maïs')->create();
-    $this->soy = Crop::factory()->named('Soja')->create();
+    $this->maize = Crop::factory()->named('Tomate')->create();
+    $this->soy = Crop::factory()->named('Gombo')->create();
 
     $this->campaign = Campaign::factory()->for($this->exploitation)
         ->between('2026-03-01', '2026-11-30')->create(['label' => 'Campagne 2026']);
@@ -37,20 +37,20 @@ beforeEach(function () {
 });
 
 test('the averages by crop are computed by the database, one row per crop', function () {
-    // Maïs : 1 000 et 2 000 kg/ha → moyenne 1 500.
+    // Tomate : 1 000 et 2 000 kg/ha → moyenne 1 500.
     cycleYielding($this->exploitation, $this->maize, $this->campaign, 'Bassar', 1.0, 1000, 50000);
     cycleYielding($this->exploitation, $this->maize, $this->campaign, 'Bassar', 1.0, 2000, 70000);
-    // Soja : 800 kg/ha.
+    // Gombo : 800 kg/ha.
     cycleYielding($this->exploitation, $this->soy, $this->campaign, 'Bassar', 1.0, 800, 40000);
 
     $rows = $this->dashboard->averagesByCrop(new DashboardFilters);
 
     expect($rows)->toHaveCount(2)
-        ->and($rows[0]['label'])->toBe('Maïs')
+        ->and($rows[0]['label'])->toBe('Tomate')
         ->and($rows[0]['cycles'])->toBe(2)
         ->and($rows[0]['yield_kg_ha'])->toBe(1500.0)
         ->and($rows[0]['production_cost_ha'])->toBe(60000.0)
-        ->and($rows[1]['label'])->toBe('Soja')
+        ->and($rows[1]['label'])->toBe('Gombo')
         ->and($rows[1]['yield_kg_ha'])->toBe(800.0);
 });
 

@@ -23,7 +23,7 @@ uses(RefreshDatabase::class);
 
 beforeEach(function () {
     $this->exploitation = Exploitation::factory()->create(['region' => 'Kara']);
-    $this->crop = Crop::factory()->named('Maïs')->create();
+    $this->crop = Crop::factory()->named('Tomate')->create();
     $this->campaign = Campaign::factory()
         ->for($this->exploitation)
         ->between('2026-03-01', '2026-11-30')
@@ -58,7 +58,7 @@ test('the fifteen fields derive from a complete cycle', function () {
 
     $context = EvaluationContext::fromCycle($this->cycle->fresh());
 
-    expect($context->crop_name)->toBe('Maïs')
+    expect($context->crop_name)->toBe('Tomate')
         ->and($context->region)->toBe('Kara')
         ->and($context->sowing_month)->toBe(4)
         ->and($context->sowing_density_plants_ha)->toBe(50000)
@@ -197,9 +197,9 @@ test('the count stops at the first campaign carrying another crop', function () 
     $earliest = Campaign::factory()->for($this->exploitation)
         ->between('2024-03-01', '2024-11-30')->create(['label' => '2024']);
 
-    // La campagne intermédiaire a porté du soja : la suite s'arrête là,
+    // La campagne intermédiaire a porté du gombo : la suite s'arrête là,
     // même si la même culture revient plus tôt.
-    CropCycle::factory()->on($this->plot, $earlier, Crop::factory()->named('Soja')->create())->create();
+    CropCycle::factory()->on($this->plot, $earlier, Crop::factory()->named('Gombo')->create())->create();
     CropCycle::factory()->on($this->plot, $earliest, $this->crop)->create();
 
     expect(EvaluationContext::fromCycle($this->cycle)->consecutive_seasons_same_crop)->toBe(1);

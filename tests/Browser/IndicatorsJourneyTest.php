@@ -20,7 +20,7 @@ use App\Services\Indicators\IndicatorService;
 beforeEach(function () {
     $this->exploitation = Exploitation::factory()->create();
     $this->technician = User::factory()->technician()->for($this->exploitation)->create();
-    $this->crop = Crop::factory()->named('Maïs')->create();
+    $this->crop = Crop::factory()->named('Tomate')->create();
     $this->campaign = Campaign::factory()
         ->for($this->exploitation)
         ->between('2026-03-01', '2026-11-30')

@@ -22,7 +22,7 @@ beforeEach(function () {
         ->for($this->exploitation)
         ->between('2026-03-01', '2026-11-30')
         ->create(['label' => '2026 grande saison']);
-    $this->crop = Crop::factory()->named('Maïs')->create();
+    $this->crop = Crop::factory()->named('Tomate')->create();
 
     $this->actingAs($this->technician);
 });
@@ -131,9 +131,9 @@ test('the database also refuses the duplicate triple', function () {
 });
 
 test('the same plot can carry two cycles of different crops', function () {
-    $soja = Crop::factory()->named('Soja')->create();
+    $gombo = Crop::factory()->named('Gombo')->create();
 
-    foreach ([$this->crop, $soja] as $crop) {
+    foreach ([$this->crop, $gombo] as $crop) {
         $this->post(route('cycles.store'), [
             'plot_id' => $this->plot->id,
             'campaign_id' => $this->campaign->id,
@@ -172,7 +172,7 @@ test('the bounds of the campaign are included', function (string $date) {
 ]);
 
 test('a variety of another crop is refused', function () {
-    $otherCrop = Crop::factory()->named('Soja')->create();
+    $otherCrop = Crop::factory()->named('Gombo')->create();
     $variety = Variety::factory()->for($otherCrop, 'crop')->create();
 
     $this->post(route('cycles.store'), [
@@ -196,20 +196,20 @@ test('a plot of another exploitation cannot carry a cycle', function () {
 });
 
 test('the list can be filtered by campaign and by crop', function () {
-    $soja = Crop::factory()->named('Soja')->create();
+    $gombo = Crop::factory()->named('Gombo')->create();
     $otherCampaign = Campaign::factory()
         ->for($this->exploitation)
         ->between('2025-03-01', '2025-11-30')
         ->create(['label' => '2025 grande saison']);
 
     CropCycle::factory()->on($this->plot, $this->campaign, $this->crop)->create();
-    CropCycle::factory()->on($this->plot, $this->campaign, $soja)->create();
+    CropCycle::factory()->on($this->plot, $this->campaign, $gombo)->create();
     CropCycle::factory()->on($this->plot, $otherCampaign, $this->crop)->create();
 
     $this->get(route('cycles.index', ['campagne' => $this->campaign->id]))
         ->assertInertia(fn (Assert $page) => $page->has('cycles.data', 2));
 
-    $this->get(route('cycles.index', ['culture' => $soja->id]))
+    $this->get(route('cycles.index', ['culture' => $gombo->id]))
         ->assertInertia(fn (Assert $page) => $page->has('cycles.data', 1));
 
     $this->get(route('cycles.index', [

@@ -25,7 +25,7 @@ beforeEach(function () {
         ->inVillage('Bassar')
         ->create(['user_id' => $this->account->id]);
 
-    $crop = Crop::factory()->named('Maïs')->create();
+    $crop = Crop::factory()->named('Tomate')->create();
     $campaign = Campaign::factory()->for($this->exploitation)
         ->between('2026-03-01', '2026-11-30')->create();
     $plot = Plot::factory()->ofFarmer($this->farmer)->withArea(1.0)->create();
@@ -34,7 +34,7 @@ beforeEach(function () {
 
     $rule = Rule::factory()->create([
         'action' => 'Apporter 150 kg de NPK par hectare au semis.',
-        'source' => 'ITRA, fiche technique maïs 2021, page 12',
+        'source' => 'ITRA, fiche technique tomate 2021, page 12',
         'estimated_gain' => '+400 kg/ha',
     ]);
 
@@ -55,7 +55,7 @@ test('les quatre blocs se lisent dans l ordre, source comprise', function () {
         ->assertSee('À faire')
         ->assertSee('Apporter 150 kg de NPK par hectare au semis.')
         ->assertSee('Source')
-        ->assertSee('ITRA, fiche technique maïs 2021, page 12')
+        ->assertSee('ITRA, fiche technique tomate 2021, page 12')
         ->assertSee('Gain estimé')
         ->assertSee('+400 kg/ha')
         ->assertNoJavaScriptErrors()
@@ -102,7 +102,7 @@ test('le producteur enregistre ce qu il a fait et ce qu il a observé', function
     $page->click("[data-test=apply-{$id}]")
         ->assertSee('Ce que vous avez fait')
         ->fill('#comment-'.$id, 'Deux sacs de NPK épandus le 12 juin.')
-        ->fill('#result-'.$id, 'Le maïs a mieux tenu la sécheresse.')
+        ->fill('#result-'.$id, 'La tomate a mieux tenu la sécheresse.')
         ->click('[data-test=save-feedback]');
 
     $page->assertSee('Retour enregistré : recommandation appliquée')
@@ -131,7 +131,7 @@ test('le technicien lit mais ne répond pas à la place du producteur', function
 
     visit('/recommandations')
         ->assertSee('Dose de NPK observée')
-        ->assertSee('ITRA, fiche technique maïs 2021, page 12')
+        ->assertSee('ITRA, fiche technique tomate 2021, page 12')
         ->assertDontSee("J'ai appliqué")
         ->assertDontSee('Écarter')
         ->assertNoJavaScriptErrors();

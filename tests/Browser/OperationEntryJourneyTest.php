@@ -31,7 +31,7 @@ beforeEach(function () {
         ->create(['label' => '2026 grande saison']);
 
     $this->cycle = CropCycle::factory()
-        ->on($plot, $campaign, Crop::factory()->named('Maïs')->create())
+        ->on($plot, $campaign, Crop::factory()->named('Tomate')->create())
         ->create();
 
     $this->actingAs($this->technician);

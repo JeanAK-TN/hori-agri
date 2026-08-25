@@ -18,7 +18,7 @@ beforeEach(function () {
     $this->evaluator = new RuleEvaluator;
 
     $this->context = new EvaluationContext(
-        crop_name: 'Maïs',
+        crop_name: 'Tomate',
         region: 'Kara',
         sowing_month: 4,
         sowing_density_plants_ha: 50000,
@@ -72,7 +72,7 @@ test('the nine operators answer false when they should', function (array $condit
 
 test('the bounds of between are included', function (int $month, bool $expected) {
     $context = new EvaluationContext(
-        crop_name: 'Maïs', region: 'Kara', sowing_month: $month,
+        crop_name: 'Tomate', region: 'Kara', sowing_month: $month,
         sowing_density_plants_ha: null, seed_rate_kg_ha: null, npk_dose_kg_ha: null,
         urea_dose_kg_ha: null, potassium_dose_kg_ha: null, inoculant_used: false,
         first_weeding_days_after_sowing: null, urea_days_after_sowing: null,
@@ -136,31 +136,31 @@ test('a null field is not zero', function () {
 
 test('an and branch is true only when every child is', function () {
     expect(($this->evaluate)(['and' => [
-        ['field' => 'crop_name', 'op' => '=', 'value' => 'Maïs'],
+        ['field' => 'crop_name', 'op' => '=', 'value' => 'Tomate'],
         ['field' => 'sowing_month', 'op' => '=', 'value' => 4],
     ]]))->toBeTrue();
 
     expect(($this->evaluate)(['and' => [
-        ['field' => 'crop_name', 'op' => '=', 'value' => 'Maïs'],
+        ['field' => 'crop_name', 'op' => '=', 'value' => 'Tomate'],
         ['field' => 'sowing_month', 'op' => '=', 'value' => 5],
     ]]))->toBeFalse();
 });
 
 test('an or branch is true as soon as one child is', function () {
     expect(($this->evaluate)(['or' => [
-        ['field' => 'crop_name', 'op' => '=', 'value' => 'Soja'],
+        ['field' => 'crop_name', 'op' => '=', 'value' => 'Gombo'],
         ['field' => 'sowing_month', 'op' => '=', 'value' => 4],
     ]]))->toBeTrue();
 
     expect(($this->evaluate)(['or' => [
-        ['field' => 'crop_name', 'op' => '=', 'value' => 'Soja'],
+        ['field' => 'crop_name', 'op' => '=', 'value' => 'Gombo'],
         ['field' => 'sowing_month', 'op' => '=', 'value' => 5],
     ]]))->toBeFalse();
 });
 
 test('branches nest', function () {
     $condition = ['and' => [
-        ['field' => 'crop_name', 'op' => '=', 'value' => 'Maïs'],
+        ['field' => 'crop_name', 'op' => '=', 'value' => 'Tomate'],
         ['or' => [
             ['field' => 'sowing_month', 'op' => '=', 'value' => 11],
             ['and' => [
@@ -204,7 +204,7 @@ test('a malformed tree raises an exception', function (array $condition) {
     'enfant qui n\'est pas une condition' => [['and' => ['texte']]],
     'between sans deux bornes' => [['field' => 'sowing_month', 'op' => 'between', 'value' => [3]]],
     'in sans tableau' => [['field' => 'sowing_month', 'op' => 'in', 'value' => 4]],
-    'comparaison d\'ordre sur du texte' => [['field' => 'crop_name', 'op' => '<', 'value' => 'Soja']],
+    'comparaison d\'ordre sur du texte' => [['field' => 'crop_name', 'op' => '<', 'value' => 'Gombo']],
 ]);
 
 /*
@@ -218,7 +218,7 @@ test('evaluating emits no database query at all', function () {
     });
 
     $condition = ['and' => [
-        ['field' => 'crop_name', 'op' => '=', 'value' => 'Maïs'],
+        ['field' => 'crop_name', 'op' => '=', 'value' => 'Tomate'],
         ['or' => [
             ['field' => 'npk_dose_kg_ha', 'op' => '<', 'value' => 150],
             ['field' => 'potassium_dose_kg_ha', 'op' => 'not_in', 'value' => [30]],
@@ -237,10 +237,10 @@ test('evaluating emits no database query at all', function () {
 
 test('the fields a condition reads are listed in order, without repetition', function () {
     $condition = ['and' => [
-        ['field' => 'crop_name', 'op' => '=', 'value' => 'Maïs'],
+        ['field' => 'crop_name', 'op' => '=', 'value' => 'Tomate'],
         ['or' => [
             ['field' => 'npk_dose_kg_ha', 'op' => '<', 'value' => 100],
-            ['field' => 'crop_name', 'op' => '!=', 'value' => 'Soja'],
+            ['field' => 'crop_name', 'op' => '!=', 'value' => 'Gombo'],
         ]],
     ]];
 

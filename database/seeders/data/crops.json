@@ -1,29 +1,11 @@
 [
     {
-        "_source": "VALEUR SIMULÉE — à remplacer par la donnée publiée (Ministère de l'Agriculture du Togo / ITRA) avant toute exploitation",
-        "name": "Maïs",
-        "family": "Poaceae",
-        "cycle_days": 100,
-        "reference_density": 50000,
-        "reference_yield_kg_ha": 2500,
-        "npk_needs": { "n": 90, "p": 45, "k": 45 }
-    },
-    {
-        "_source": "VALEUR SIMULÉE — à remplacer par la donnée publiée (Ministère de l'Agriculture du Togo / ITRA) avant toute exploitation",
-        "name": "Soja",
-        "family": "Fabaceae",
-        "cycle_days": 105,
-        "reference_density": 300000,
-        "reference_yield_kg_ha": 1500,
-        "npk_needs": { "n": 20, "p": 60, "k": 40 }
-    },
-    {
-        "_source": "VALEUR SIMULÉE — à remplacer par la donnée publiée (Ministère de l'Agriculture du Togo / ITRA) avant toute exploitation",
-        "name": "Manioc",
-        "family": "Euphorbiaceae",
-        "cycle_days": 300,
-        "reference_density": 10000,
-        "reference_yield_kg_ha": 15000,
-        "npk_needs": { "n": 60, "p": 30, "k": 120 }
+        "_source": "Ministère de l'Agriculture, de l'Élevage et du Développement Rural du Togo (s.d.), Techniques culturales de la tomate",
+        "name": "Tomate",
+        "family": "Solanaceae",
+        "cycle_days": 120,
+        "reference_density": 33000,
+        "reference_yield_kg_ha": 12000,
+        "npk_needs": null
     }
 ]

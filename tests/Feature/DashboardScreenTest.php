@@ -20,8 +20,8 @@ beforeEach(function () {
     $this->exploitation = Exploitation::factory()->create();
     $this->admin = User::factory()->exploitationAdmin()->for($this->exploitation)->create();
 
-    $this->maize = Crop::factory()->named('Maïs')->create();
-    $this->soy = Crop::factory()->named('Soja')->create();
+    $this->maize = Crop::factory()->named('Tomate')->create();
+    $this->soy = Crop::factory()->named('Gombo')->create();
 
     $this->campaign = Campaign::factory()->for($this->exploitation)
         ->between('2026-03-01', '2026-11-30')->create(['label' => 'Campagne 2026']);
@@ -65,7 +65,7 @@ test('the filters narrow the screen the way they narrow the service', function (
             // JSON ne distingue pas 1000 de 1000.0 : on compare la valeur.
             ->where('headline.yield_kg_ha', fn (int|float $yield) => (float) $yield === 1000.0)
             ->has('byCrop', 1)
-            ->where('byCrop.0.label', 'Maïs')
+            ->where('byCrop.0.label', 'Tomate')
             ->where('filters.culture', $this->maize->id),
         );
 });
@@ -128,7 +128,7 @@ test('the export carries the byte order mark a French spreadsheet expects', func
 
     expect(str_starts_with($content, "\xEF\xBB\xBF"))->toBeTrue()
         // Les accents survivent au passage.
-        ->and($content)->toContain('Maïs');
+        ->and($content)->toContain('Tomate');
 });
 
 test('the export obeys the same filters as the screen', function () {
@@ -139,8 +139,8 @@ test('the export obeys the same filters as the screen', function () {
         'culture' => $this->maize->id,
     ]))->streamedContent();
 
-    expect($content)->toContain('Maïs')
-        ->and($content)->not->toContain('Soja')
+    expect($content)->toContain('Tomate')
+        ->and($content)->not->toContain('Gombo')
         ->and($content)->not->toContain('Kara');
 });
 
