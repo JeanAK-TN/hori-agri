@@ -11,26 +11,22 @@ use Database\Seeders\RuleSeeder;
 use Inertia\Testing\AssertableInertia as Assert;
 
 /*
-| SPEC section 10.4 : le fichier des règles passe quatre contrôles avant
-| qu'une seule ligne ne soit écrite, et la commande rules:validate les
-| expose sans rien écrire.
+| SPEC-CORRECTION sections 3 et 7 : la base de règles compte cinq règles
+| sur la tomate, toutes issues du même document togolais publié. Le
+| fichier passe tous les contrôles avant qu'une seule ligne ne soit
+| écrite, et la commande rules:validate les expose sans rien écrire.
 */
 
-test('the seventeen rules load and pass every control', function () {
+test('the five tomato rules load and pass every control', function () {
     $this->seed(CropSeeder::class);
     $this->seed(RuleSeeder::class);
 
     $rules = Rule::withoutGlobalScopes()->get();
 
-    expect($rules)->toHaveCount(RulesFileValidator::EXPECTED_TOTAL);
-
-    // Les codes fixés par la spécification, tous présents.
-    expect($rules->pluck('code')->sort()->values()->all())->toBe([
-        'CAL-MAIS-01', 'CAL-MAIS-02', 'CAL-MAIS-03', 'CAL-MANI-01', 'CAL-SOJA-01',
-        'COUT-PAIR-01', 'DENS-MAIS-01', 'DENS-SOJA-01', 'ECO-INTR-01',
-        'FERT-MAIS-01', 'FERT-MAIS-02', 'FERT-MAIS-03', 'FERT-MANI-01',
-        'INOC-SOJA-01', 'PERF-PAIR-01', 'ROT-MAIS-01', 'ROT-MANI-01',
-    ]);
+    expect($rules)->toHaveCount(RulesFileValidator::EXPECTED_TOTAL)
+        ->and($rules->pluck('code')->sort()->values()->all())->toBe([
+            'TOM-A01', 'TOM-A02', 'TOM-A03', 'TOM-B01', 'TOM-C01',
+        ]);
 });
 
 test('the expected distributions are respected', function () {
@@ -44,40 +40,61 @@ test('the expected distributions are respected', function () {
             ->toBe($count, "famille {$family}");
     }
 
-    foreach (RulesFileValidator::EXPECTED_BY_THRESHOLD as $status => $count) {
-        expect($rules->where('threshold_status', ThresholdStatus::from($status))->count())
-            ->toBe($count, "origine {$status}");
-    }
-
     foreach (RulesFileValidator::EXPECTED_BY_SEVERITY as $severity => $count) {
         expect($rules->where('severity', Severity::from($severity))->count())
             ->toBe($count, "sévérité {$severity}");
     }
 
-    expect($rules->whereNull('crop_id')->count())->toBe(3);
+    // Toutes portent sur la tomate : aucune règle « toute culture ».
+    expect($rules->every(fn (Rule $rule): bool => $rule->crop?->name === 'Tomate'))->toBeTrue();
 });
 
-test('every convention threshold is loaded disabled', function () {
+test('every rule carries the same single published source', function () {
     $this->seed(CropSeeder::class);
     $this->seed(RuleSeeder::class);
 
-    $conventions = Rule::withoutGlobalScopes()
-        ->where('threshold_status', ThresholdStatus::Convention->value)
-        ->get();
+    $sources = Rule::withoutGlobalScopes()->pluck('source')->unique();
 
-    expect($conventions)->toHaveCount(5)
-        ->and($conventions->every(fn (Rule $rule): bool => $rule->enabled === false))->toBeTrue();
+    expect($sources)->toHaveCount(1)
+        ->and($sources->first())->toBe('Ministère de l\'Agriculture du Togo, s.d.');
 });
 
-test('every rule carries a message, an action and a source', function () {
+test('no rule is simulated, imported or a working convention', function () {
     $this->seed(CropSeeder::class);
     $this->seed(RuleSeeder::class);
 
-    foreach (Rule::withoutGlobalScopes()->get() as $rule) {
-        expect($rule->message)->not->toBeEmpty()
-            ->and($rule->action)->not->toBeEmpty()
-            ->and($rule->source)->not->toBeEmpty();
-    }
+    $rules = Rule::withoutGlobalScopes()->get();
+
+    expect($rules->every(
+        fn (Rule $rule): bool => $rule->threshold_status === ThresholdStatus::Sourced,
+    ))->toBeTrue()
+        ->and($rules->every(fn (Rule $rule): bool => $rule->enabled))->toBeTrue()
+        ->and($rules->every(
+            fn (Rule $rule): bool => ! str_contains($rule->source, 'SIMULÉ'),
+        ))->toBeTrue();
+});
+
+test('the threshold note carries the nuance of the origin', function () {
+    $this->seed(CropSeeder::class);
+    $this->seed(RuleSeeder::class);
+
+    $notes = Rule::withoutGlobalScopes()->pluck('threshold_note', 'code');
+
+    // « Togolais publié, formule à confirmer » pour TOM-A02, « tolérance
+    // de conception » pour TOM-B01, rien pour les trois autres
+    // (SPEC-CORRECTION section 3.3).
+    expect($notes['TOM-A02'])->toBe('formule à confirmer')
+        ->and($notes['TOM-B01'])->toBe('tolérance de conception')
+        ->and($notes['TOM-A01'])->toBeNull()
+        ->and($notes['TOM-A03'])->toBeNull()
+        ->and($notes['TOM-C01'])->toBeNull();
+});
+
+test('no rule carries an estimated gain, because none is published', function () {
+    $this->seed(CropSeeder::class);
+    $this->seed(RuleSeeder::class);
+
+    expect(Rule::withoutGlobalScopes()->whereNotNull('estimated_gain')->count())->toBe(0);
 });
 
 test('loading twice does not duplicate the knowledge base', function () {
@@ -85,7 +102,7 @@ test('loading twice does not duplicate the knowledge base', function () {
     $this->seed(RuleSeeder::class);
     $this->seed(RuleSeeder::class);
 
-    expect(Rule::withoutGlobalScopes()->count())->toBe(17);
+    expect(Rule::withoutGlobalScopes()->count())->toBe(5);
 });
 
 test('a missing rules file stops the seeder with a clear message', function () {
@@ -111,12 +128,13 @@ test('a file failing a control writes nothing at all', function () {
         'crop' => null,
         'family' => 'A',
         'severity' => 'high',
-        'condition' => ['field' => 'sowing_month', 'op' => '=', 'value' => 4],
+        'condition' => ['field' => 'crop_name', 'op' => '=', 'value' => 'Tomate'],
         'message' => 'Message',
         'action' => 'Action',
         'estimated_gain' => null,
         'source' => 'Source',
         'threshold_status' => 'sourced',
+        'threshold_note' => null,
         'enabled' => true,
     ]]));
 
@@ -142,12 +160,13 @@ test('the validator refuses a convention left enabled', function () {
         'crop' => null,
         'family' => 'D',
         'severity' => 'medium',
-        'condition' => ['field' => 'sowing_month', 'op' => '=', 'value' => 4],
+        'condition' => ['field' => 'crop_name', 'op' => '=', 'value' => 'Tomate'],
         'message' => 'Message',
         'action' => 'Action',
         'estimated_gain' => null,
         'source' => 'Source',
         'threshold_status' => 'convention',
+        'threshold_note' => null,
         'enabled' => true,
     ]]);
 
@@ -170,10 +189,32 @@ test('the validator refuses a condition the evaluator cannot run', function () {
         'estimated_gain' => null,
         'source' => 'Source',
         'threshold_status' => 'sourced',
+        'threshold_note' => null,
         'enabled' => true,
     ]]);
 
     expect(implode(' ', $problems))->toContain('champ_inconnu');
+});
+
+test('the validator refuses a threshold note longer than sixty characters', function () {
+    $validator = app(RulesFileValidator::class);
+
+    $problems = $validator->problems([[
+        'code' => 'NOTE-01',
+        'crop' => null,
+        'family' => 'A',
+        'severity' => 'high',
+        'condition' => ['field' => 'crop_name', 'op' => '=', 'value' => 'Tomate'],
+        'message' => 'Message',
+        'action' => 'Action',
+        'estimated_gain' => null,
+        'source' => 'Source',
+        'threshold_status' => 'sourced',
+        'threshold_note' => str_repeat('n', 61),
+        'enabled' => true,
+    ]]);
+
+    expect(implode(' ', $problems))->toContain('threshold_note');
 });
 
 /*
@@ -182,7 +223,7 @@ test('the validator refuses a condition the evaluator cannot run', function () {
 
 test('the command validates the real file without writing anything', function () {
     $this->artisan('rules:validate')
-        ->expectsOutputToContain('17 règles contrôlées')
+        ->expectsOutputToContain('5 règles contrôlées')
         ->assertSuccessful();
 
     expect(Rule::withoutGlobalScopes()->count())->toBe(0);
@@ -223,8 +264,8 @@ test('the rules screen shows the origin of every threshold', function () {
         ->get(route('rules.index'))
         ->assertInertia(fn (Assert $page) => $page
             ->component('rules/index')
-            ->has('rules', 17)
-            ->has('fields', 15)
+            ->has('rules', 5)
+            ->has('fields', 7)
             ->where('canOverride', false)
             ->where('rules.0.threshold_status_label', fn (string $label) => $label !== ''),
         );

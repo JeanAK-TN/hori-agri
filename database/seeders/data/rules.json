@@ -1,310 +1,103 @@
 [
     {
-        "_source": "SEUIL SIMULÉ — à remplacer par la référence publiée avant toute exploitation",
-        "code": "FERT-MAIS-01",
-        "crop": "Maïs",
-        "family": "A",
-        "severity": "high",
-        "condition": {
-            "and": [
-                { "field": "crop_name", "op": "=", "value": "Maïs" },
-                { "field": "npk_dose_kg_ha", "op": "<", "value": 100 }
-            ]
-        },
-        "message": "Fertilisation de fond insuffisante par rapport au référentiel national",
-        "action": "Apporter le complément de NPK au plus tard trois semaines après le semis, en localisant l'engrais près du poquet.",
-        "estimated_gain": "+400 kg/ha",
-        "source": "À renseigner : recommandation de fertilisation du maïs, Ministère de l'Agriculture du Togo",
-        "threshold_status": "sourced",
-        "enabled": true
-    },
-    {
-        "_source": "SEUIL SIMULÉ — à remplacer par la référence publiée avant toute exploitation",
-        "code": "FERT-MAIS-02",
-        "crop": "Maïs",
+        "_source": "Ministère de l'Agriculture, de l'Élevage et du Développement Rural du Togo (s.d.), Techniques culturales de la tomate",
+        "code": "TOM-A01",
+        "crop": "Tomate",
         "family": "A",
         "severity": "medium",
         "condition": {
             "and": [
-                { "field": "crop_name", "op": "=", "value": "Maïs" },
-                { "field": "urea_dose_kg_ha", "op": "<", "value": 50 }
+                { "field": "crop_name", "op": "=", "value": "Tomate" },
+                { "field": "planting_density_plants_ha", "op": "<", "value": 33000 }
             ]
         },
-        "message": "Apport d'urée en couverture inférieur au référentiel",
-        "action": "Compléter l'apport d'urée au stade de la montaison, sur sol humide.",
-        "estimated_gain": "+250 kg/ha",
-        "source": "À renseigner : recommandation de fertilisation du maïs, Ministère de l'Agriculture du Togo",
+        "message": "La densité est inférieure à l'écartement recommandé de 0,60 m sur 0,50 m",
+        "action": "Resserrer l'écartement au prochain cycle et vérifier le taux de reprise après repiquage",
+        "estimated_gain": null,
+        "source": "Ministère de l'Agriculture du Togo, s.d.",
         "threshold_status": "sourced",
+        "threshold_note": null,
         "enabled": true
     },
     {
-        "_source": "SEUIL SIMULÉ — à remplacer par la référence publiée avant toute exploitation",
-        "code": "FERT-MAIS-03",
-        "crop": "Maïs",
+        "_source": "Ministère de l'Agriculture, de l'Élevage et du Développement Rural du Togo (s.d.), Techniques culturales de la tomate",
+        "code": "TOM-A02",
+        "crop": "Tomate",
+        "family": "A",
+        "severity": "high",
+        "condition": {
+            "and": [
+                { "field": "crop_name", "op": "=", "value": "Tomate" },
+                { "field": "topdressing_npk_kg_ha", "op": "<", "value": 350 }
+            ]
+        },
+        "message": "L'apport de couverture est inférieur aux 350 kg par hectare répartis en trois fractions",
+        "action": "Compléter la fraction manquante avant 65 jours après repiquage, sinon planifier la dose complète au cycle suivant",
+        "estimated_gain": null,
+        "source": "Ministère de l'Agriculture du Togo, s.d.",
+        "threshold_status": "sourced",
+        "threshold_note": "formule à confirmer",
+        "enabled": true
+    },
+    {
+        "_source": "Ministère de l'Agriculture, de l'Élevage et du Développement Rural du Togo (s.d.), Techniques culturales de la tomate",
+        "code": "TOM-A03",
+        "crop": "Tomate",
         "family": "A",
         "severity": "medium",
         "condition": {
             "and": [
-                { "field": "crop_name", "op": "=", "value": "Maïs" },
-                { "field": "potassium_dose_kg_ha", "op": "<", "value": 30 }
+                { "field": "crop_name", "op": "=", "value": "Tomate" },
+                { "field": "organic_matter_t_ha", "op": "<", "value": 1 }
             ]
         },
-        "message": "Apport de potassium absent ou faible",
-        "action": "Prévoir un apport de potassium au semis sur les sols les plus sableux de la parcelle.",
-        "estimated_gain": "+150 kg/ha",
-        "source": "À confirmer avec l'exploitation",
-        "threshold_status": "convention",
-        "enabled": false
-    },
-    {
-        "_source": "SEUIL SIMULÉ — à remplacer par la référence publiée avant toute exploitation",
-        "code": "DENS-MAIS-01",
-        "crop": "Maïs",
-        "family": "A",
-        "severity": "high",
-        "condition": {
-            "and": [
-                { "field": "crop_name", "op": "=", "value": "Maïs" },
-                { "field": "sowing_density_plants_ha", "op": "<", "value": 45000 }
-            ]
-        },
-        "message": "Densité de semis inférieure au référentiel",
-        "action": "Resserrer l'écartement entre poquets à la prochaine campagne pour approcher la densité de référence.",
-        "estimated_gain": "+500 kg/ha",
-        "source": "À renseigner : itinéraire technique du maïs, ITRA",
+        "message": "L'apport de matière organique est en dessous du minimum de 1 à 2 tonnes par hectare et par an",
+        "action": "Programmer un apport de fumier ou de compost avant le prochain labour",
+        "estimated_gain": null,
+        "source": "Ministère de l'Agriculture du Togo, s.d.",
         "threshold_status": "sourced",
+        "threshold_note": null,
         "enabled": true
     },
     {
-        "_source": "SEUIL SIMULÉ — à remplacer par la référence publiée avant toute exploitation",
-        "code": "CAL-MAIS-01",
-        "crop": "Maïs",
-        "family": "B",
-        "severity": "high",
-        "condition": {
-            "and": [
-                { "field": "crop_name", "op": "=", "value": "Maïs" },
-                { "field": "sowing_month", "op": "not_in", "value": [3, 4, 5] }
-            ]
-        },
-        "message": "Semis réalisé hors de la fenêtre conseillée pour la grande saison",
-        "action": "Caler le semis sur l'installation des pluies, entre mars et mai.",
-        "estimated_gain": "+600 kg/ha",
-        "source": "À renseigner : calendrier cultural du maïs, ITRA",
-        "threshold_status": "sourced",
-        "enabled": true
-    },
-    {
-        "_source": "SEUIL SIMULÉ — à remplacer par la référence publiée avant toute exploitation",
-        "code": "CAL-MAIS-02",
-        "crop": "Maïs",
+        "_source": "Ministère de l'Agriculture, de l'Élevage et du Développement Rural du Togo (s.d.), Techniques culturales de la tomate",
+        "code": "TOM-B01",
+        "crop": "Tomate",
         "family": "B",
         "severity": "medium",
         "condition": {
             "and": [
-                { "field": "crop_name", "op": "=", "value": "Maïs" },
-                { "field": "first_weeding_days_after_sowing", "op": ">", "value": 21 }
+                { "field": "crop_name", "op": "=", "value": "Tomate" },
+                { "field": "first_topdressing_days_after_transplanting", "op": ">", "value": 20 }
             ]
         },
-        "message": "Premier sarclage tardif : la concurrence des adventices a duré",
-        "action": "Sarcler dans les trois semaines qui suivent le semis, avant la fermeture du couvert.",
-        "estimated_gain": "+300 kg/ha",
-        "source": "À renseigner : itinéraire technique du maïs, ITRA",
+        "message": "Le premier apport d'engrais est arrivé après la fenêtre de quinze jours après repiquage",
+        "action": "Réaliser l'apport sans attendre et resserrer les deux fractions suivantes vers 45 et 65 jours",
+        "estimated_gain": null,
+        "source": "Ministère de l'Agriculture du Togo, s.d.",
         "threshold_status": "sourced",
+        "threshold_note": "tolérance de conception",
         "enabled": true
     },
     {
-        "_source": "SEUIL SIMULÉ — à remplacer par la référence publiée avant toute exploitation",
-        "code": "CAL-MAIS-03",
-        "crop": "Maïs",
-        "family": "B",
-        "severity": "medium",
-        "condition": {
-            "and": [
-                { "field": "crop_name", "op": "=", "value": "Maïs" },
-                { "field": "urea_days_after_sowing", "op": ">", "value": 45 }
-            ]
-        },
-        "message": "Apport d'urée trop tardif pour être pleinement valorisé",
-        "action": "Avancer l'apport d'urée autour de la sixième semaine après le semis.",
-        "estimated_gain": "+200 kg/ha",
-        "source": "À confirmer avec l'exploitation",
-        "threshold_status": "convention",
-        "enabled": false
-    },
-    {
-        "_source": "SEUIL SIMULÉ — à remplacer par la référence publiée avant toute exploitation",
-        "code": "ROT-MAIS-01",
-        "crop": "Maïs",
-        "family": "D",
-        "severity": "high",
-        "condition": {
-            "and": [
-                { "field": "crop_name", "op": "=", "value": "Maïs" },
-                { "field": "consecutive_seasons_same_crop", "op": ">=", "value": 3 }
-            ]
-        },
-        "message": "Maïs répété sur la même parcelle depuis plusieurs campagnes",
-        "action": "Insérer une légumineuse dans la rotation à la prochaine campagne pour rompre le cycle des bioagresseurs.",
-        "estimated_gain": "+450 kg/ha",
-        "source": "À confirmer avec l'exploitation",
-        "threshold_status": "convention",
-        "enabled": false
-    },
-    {
-        "_source": "SEUIL SIMULÉ — à remplacer par la référence publiée avant toute exploitation",
-        "code": "DENS-SOJA-01",
-        "crop": "Soja",
-        "family": "A",
-        "severity": "medium",
-        "condition": {
-            "and": [
-                { "field": "crop_name", "op": "=", "value": "Soja" },
-                { "field": "sowing_density_plants_ha", "op": "<", "value": 250000 }
-            ]
-        },
-        "message": "Densité de semis du soja inférieure au référentiel",
-        "action": "Augmenter la dose de semence à la prochaine campagne pour approcher la densité de référence.",
-        "estimated_gain": "+200 kg/ha",
-        "source": "À renseigner : itinéraire technique du soja, ITRA",
-        "threshold_status": "sourced",
-        "enabled": true
-    },
-    {
-        "_source": "SEUIL SIMULÉ — à remplacer par la référence publiée avant toute exploitation",
-        "code": "INOC-SOJA-01",
-        "crop": "Soja",
-        "family": "A",
-        "severity": "high",
-        "condition": {
-            "and": [
-                { "field": "crop_name", "op": "=", "value": "Soja" },
-                { "field": "inoculant_used", "op": "=", "value": false }
-            ]
-        },
-        "message": "Semence de soja non inoculée",
-        "action": "Inoculer la semence juste avant le semis, à l'ombre, et semer dans la foulée.",
-        "estimated_gain": "+350 kg/ha",
-        "source": "À renseigner : itinéraire technique du soja, ITRA",
-        "threshold_status": "sourced",
-        "enabled": true
-    },
-    {
-        "_source": "SEUIL SIMULÉ — à remplacer par la référence publiée avant toute exploitation",
-        "code": "CAL-SOJA-01",
-        "crop": "Soja",
-        "family": "B",
-        "severity": "medium",
-        "condition": {
-            "and": [
-                { "field": "crop_name", "op": "=", "value": "Soja" },
-                { "field": "sowing_month", "op": "not_in", "value": [6, 7] }
-            ]
-        },
-        "message": "Semis du soja hors de la fenêtre conseillée",
-        "action": "Caler le semis du soja sur juin ou juillet selon l'installation des pluies.",
-        "estimated_gain": "+250 kg/ha",
-        "source": "À renseigner : calendrier cultural du soja, ITRA",
-        "threshold_status": "sourced",
-        "enabled": true
-    },
-    {
-        "_source": "SEUIL SIMULÉ — à remplacer par la référence publiée avant toute exploitation",
-        "code": "FERT-MANI-01",
-        "crop": "Manioc",
-        "family": "A",
-        "severity": "high",
-        "condition": {
-            "and": [
-                { "field": "crop_name", "op": "=", "value": "Manioc" },
-                { "field": "potassium_dose_kg_ha", "op": "<", "value": 60 }
-            ]
-        },
-        "message": "Apport de potassium insuffisant pour le manioc",
-        "action": "Apporter le potassium en début de cycle : le manioc en est fortement exportateur.",
-        "estimated_gain": "+3000 kg/ha",
-        "source": "À renseigner : recommandation de fertilisation du manioc, ITRA",
-        "threshold_status": "sourced",
-        "enabled": true
-    },
-    {
-        "_source": "SEUIL SIMULÉ — à remplacer par la référence publiée avant toute exploitation",
-        "code": "CAL-MANI-01",
-        "crop": "Manioc",
-        "family": "B",
-        "severity": "medium",
-        "condition": {
-            "and": [
-                { "field": "crop_name", "op": "=", "value": "Manioc" },
-                { "field": "sowing_month", "op": "not_in", "value": [3, 4, 5, 6] }
-            ]
-        },
-        "message": "Plantation du manioc hors de la fenêtre conseillée",
-        "action": "Planter les boutures au début des pluies pour assurer la reprise.",
-        "estimated_gain": "+2000 kg/ha",
-        "source": "À renseigner : source régionale reprise faute de référence togolaise publiée",
-        "threshold_status": "imported",
-        "enabled": true
-    },
-    {
-        "_source": "SEUIL SIMULÉ — à remplacer par la référence publiée avant toute exploitation",
-        "code": "ROT-MANI-01",
-        "crop": "Manioc",
-        "family": "D",
-        "severity": "medium",
-        "condition": {
-            "and": [
-                { "field": "crop_name", "op": "=", "value": "Manioc" },
-                { "field": "consecutive_seasons_same_crop", "op": ">=", "value": 2 }
-            ]
-        },
-        "message": "Manioc répété sur la même parcelle",
-        "action": "Alterner avec une autre culture pour préserver la fertilité du sol.",
-        "estimated_gain": "+1500 kg/ha",
-        "source": "À confirmer avec l'exploitation",
-        "threshold_status": "convention",
-        "enabled": false
-    },
-    {
-        "_source": "SEUIL SIMULÉ — à remplacer par la référence publiée avant toute exploitation",
-        "code": "PERF-PAIR-01",
-        "crop": null,
+        "_source": "Ministère de l'Agriculture, de l'Élevage et du Développement Rural du Togo (s.d.), Techniques culturales de la tomate",
+        "code": "TOM-C01",
+        "crop": "Tomate",
         "family": "C",
         "severity": "high",
-        "condition": { "field": "yield_vs_zone_median_ratio", "op": "<", "value": 0.8 },
-        "message": "Rendement nettement inférieur à la médiane des parcelles semblables du village",
-        "action": "Comparer l'itinéraire technique avec celui des parcelles voisines de même culture et de même campagne.",
-        "estimated_gain": "+20 % de rendement",
-        "source": "Comparaison interne aux parcelles de l'exploitation",
+        "condition": {
+            "and": [
+                { "field": "crop_name", "op": "=", "value": "Tomate" },
+                { "field": "yield_kg_ha", "op": "<", "value": 10000 },
+                { "field": "zone_median_yield_kg_ha", "op": ">", "value": 12000 }
+            ]
+        },
+        "message": "Cette parcelle produit sous le rendement réaliste retenu au Togo et sous vos autres parcelles",
+        "action": "Comparer la densité, le fractionnement de l'engrais et la pression de Tuta absoluta entre les deux parcelles",
+        "estimated_gain": null,
+        "source": "Ministère de l'Agriculture du Togo, s.d.",
         "threshold_status": "sourced",
+        "threshold_note": null,
         "enabled": true
-    },
-    {
-        "_source": "SEUIL SIMULÉ — à remplacer par la référence publiée avant toute exploitation",
-        "code": "COUT-PAIR-01",
-        "crop": null,
-        "family": "C",
-        "severity": "medium",
-        "condition": { "field": "cost_vs_zone_median_ratio", "op": ">", "value": 1.2 },
-        "message": "Coût de production supérieur à la médiane des parcelles semblables",
-        "action": "Passer en revue les postes de dépense les plus lourds du cycle avec le technicien.",
-        "estimated_gain": "20000 FCFA/ha",
-        "source": "Comparaison interne aux parcelles de l'exploitation",
-        "threshold_status": "sourced",
-        "enabled": true
-    },
-    {
-        "_source": "SEUIL SIMULÉ — à remplacer par la référence publiée avant toute exploitation",
-        "code": "ECO-INTR-01",
-        "crop": null,
-        "family": "D",
-        "severity": "medium",
-        "condition": { "field": "input_cost_share_of_harvest_value", "op": ">", "value": 0.4 },
-        "message": "Les intrants absorbent une part élevée de la valeur de la récolte",
-        "action": "Revoir les doses et la date des apports pour améliorer leur valorisation.",
-        "estimated_gain": "15000 FCFA/ha",
-        "source": "À confirmer avec l'exploitation",
-        "threshold_status": "convention",
-        "enabled": false
     }
 ]

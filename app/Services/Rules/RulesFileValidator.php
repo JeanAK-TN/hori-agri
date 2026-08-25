@@ -20,17 +20,20 @@ use Throwable;
 class RulesFileValidator
 {
     /**
-     * Expected counts (SPEC section 10.3).
+     * Expected counts : cinq règles sur la tomate, toutes issues de la
+     * fiche togolaise publiée (SPEC-CORRECTION section 7). La famille D,
+     * décrite dans le mémoire, n'a plus aucune règle : elle reste dans
+     * l'énumération mais pas dans les comptages.
      */
-    public const EXPECTED_TOTAL = 17;
+    public const EXPECTED_TOTAL = 5;
 
-    public const EXPECTED_BY_FAMILY = ['A' => 7, 'B' => 5, 'C' => 2, 'D' => 3];
+    public const EXPECTED_BY_FAMILY = ['A' => 3, 'B' => 1, 'C' => 1];
 
-    public const EXPECTED_BY_CROP = ['Maïs' => 8, 'Soja' => 3, 'Manioc' => 3, 'toute culture' => 3];
+    public const EXPECTED_BY_CROP = ['Tomate' => 5];
 
-    public const EXPECTED_BY_THRESHOLD = ['sourced' => 11, 'imported' => 1, 'convention' => 5];
+    public const EXPECTED_BY_THRESHOLD = ['sourced' => 5];
 
-    public const EXPECTED_BY_SEVERITY = ['high' => 7, 'medium' => 10];
+    public const EXPECTED_BY_SEVERITY = ['high' => 2, 'medium' => 3];
 
     private const REQUIRED_KEYS = [
         'code',
@@ -43,6 +46,7 @@ class RulesFileValidator
         'estimated_gain',
         'source',
         'threshold_status',
+        'threshold_note',
         'enabled',
     ];
 
@@ -101,6 +105,18 @@ class RulesFileValidator
 
         if (! is_bool($entry['enabled'])) {
             $problems[] = sprintf('%s : « enabled » doit être vrai ou faux.', $code);
+        }
+
+        // La note précise l'origine du seuil (« formule à confirmer »,
+        // « tolérance de conception ») ; nulle quand le seuil est repris
+        // tel quel de la fiche (SPEC-CORRECTION section 3.3).
+        $note = $entry['threshold_note'];
+
+        if ($note !== null && (! is_string($note) || mb_strlen($note) > 60)) {
+            $problems[] = sprintf(
+                '%s : « threshold_note » doit être nulle ou une chaîne de 60 caractères au plus.',
+                $code,
+            );
         }
 
         // Une convention de travail reste à confirmer par l'exploitation :

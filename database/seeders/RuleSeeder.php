@@ -65,6 +65,7 @@ class RuleSeeder extends Seeder
                     'estimated_gain' => $entry['estimated_gain'],
                     'source' => $entry['source'],
                     'threshold_status' => $entry['threshold_status'],
+                    'threshold_note' => $entry['threshold_note'],
                     'enabled' => $entry['enabled'],
                 ],
             );
