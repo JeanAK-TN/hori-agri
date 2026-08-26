@@ -71,14 +71,5 @@ class RuleSeeder extends Seeder
             );
         }
 
-        $simulated = $this->countSimulatedEntries($entries);
-
-        if ($simulated > 0 && $this->command !== null) {
-            $this->command->warn(sprintf(
-                '%d règle(s) chargée(s) avec des SEUILS SIMULÉS : à remplacer par les '
-                .'références publiées avant toute exploitation (SPEC règle 1).',
-                $simulated,
-            ));
-        }
     }
 }

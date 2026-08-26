@@ -67,7 +67,11 @@
             "npm run lint:check",
             "npm run format:check",
             "npm run types:check",
+            "@rules:validate",
             "@test"
+        ],
+        "rules:validate": [
+            "@php artisan rules:validate"
         ],
         "types:check": [
             "phpstan analyse"

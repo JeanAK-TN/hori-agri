@@ -48,7 +48,8 @@ class RulesValidate extends Command
         }
 
         $this->components->info(sprintf(
-            '%d règles contrôlées : schéma, conditions évaluables, répartitions et conventions désactivées.',
+            '%d règles contrôlées : schéma, conditions évaluables, champs connus, '
+            .'répartitions, source unique et absence de seuil simulé.',
             count($entries),
         ));
 
@@ -62,18 +63,8 @@ class RulesValidate extends Command
             ],
         );
 
-        $simulated = count(array_filter(
-            $entries,
-            static fn (array $entry): bool => str_contains((string) ($entry['_source'] ?? ''), 'SIMULÉ'),
-        ));
-
-        if ($simulated > 0) {
-            $this->components->warn(sprintf(
-                '%d règle(s) portent encore des SEUILS SIMULÉS, à remplacer par les références publiées.',
-                $simulated,
-            ));
-        }
-
+        // Un seuil simulé ne passe plus par un avertissement : le
+        // validateur l'a déjà refusé plus haut (SPEC-CORRECTION 7).
         return self::SUCCESS;
     }
 

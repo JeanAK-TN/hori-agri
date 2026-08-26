@@ -196,6 +196,87 @@ test('the validator refuses a condition the evaluator cannot run', function () {
     expect(implode(' ', $problems))->toContain('champ_inconnu');
 });
 
+/*
+| Les trois contrôles que le mémoire rend nécessaires
+| (SPEC-CORRECTION section 7).
+*/
+
+test('the validator refuses a file carrying two different sources', function () {
+    $validator = app(RulesFileValidator::class);
+
+    $entry = fn (string $code, string $source): array => [
+        'code' => $code,
+        'crop' => 'Tomate',
+        'family' => 'A',
+        'severity' => 'high',
+        'condition' => ['field' => 'crop_name', 'op' => '=', 'value' => 'Tomate'],
+        'message' => 'Message',
+        'action' => 'Action',
+        'estimated_gain' => null,
+        'source' => $source,
+        'threshold_status' => 'sourced',
+        'threshold_note' => null,
+        'enabled' => true,
+    ];
+
+    $problems = $validator->problems([
+        $entry('UNE-01', 'Ministère de l\'Agriculture du Togo, s.d.'),
+        $entry('DEUX-01', 'Une autre source'),
+    ]);
+
+    expect(implode(' ', $problems))->toContain('une seule et même source');
+});
+
+test('the validator fails on a simulated threshold instead of warning', function () {
+    $validator = app(RulesFileValidator::class);
+
+    $problems = $validator->problems([[
+        '_source' => 'VALEUR SIMULÉE, à remplacer avant toute exploitation',
+        'code' => 'SIM-01',
+        'crop' => 'Tomate',
+        'family' => 'A',
+        'severity' => 'high',
+        'condition' => ['field' => 'crop_name', 'op' => '=', 'value' => 'Tomate'],
+        'message' => 'Message',
+        'action' => 'Action',
+        'estimated_gain' => null,
+        'source' => 'Source',
+        'threshold_status' => 'sourced',
+        'threshold_note' => null,
+        'enabled' => true,
+    ]]);
+
+    expect(implode(' ', $problems))->toContain('SIM-01 : seuil encore marqué SIMULÉ');
+});
+
+test('the validator refuses an unknown field hidden in a branch never reached', function () {
+    $validator = app(RulesFileValidator::class);
+
+    // L'évaluateur court-circuite une branche « and » dès le premier
+    // enfant faux : sur le contexte factice la culture n'est pas du
+    // gombo, et le champ inconnu ne serait jamais lu. Le contrôle
+    // parcourt pourtant l'arbre entier.
+    $problems = $validator->problems([[
+        'code' => 'CACHE-01',
+        'crop' => 'Tomate',
+        'family' => 'A',
+        'severity' => 'high',
+        'condition' => ['and' => [
+            ['field' => 'crop_name', 'op' => '=', 'value' => 'Gombo'],
+            ['field' => 'npk_dose_kg_ha', 'op' => '<', 'value' => 100],
+        ]],
+        'message' => 'Message',
+        'action' => 'Action',
+        'estimated_gain' => null,
+        'source' => 'Source',
+        'threshold_status' => 'sourced',
+        'threshold_note' => null,
+        'enabled' => true,
+    ]]);
+
+    expect(implode(' ', $problems))->toContain('npk_dose_kg_ha');
+});
+
 test('the validator refuses a threshold note longer than sixty characters', function () {
     $validator = app(RulesFileValidator::class);
 
@@ -227,6 +308,31 @@ test('the command validates the real file without writing anything', function ()
         ->assertSuccessful();
 
     expect(Rule::withoutGlobalScopes()->count())->toBe(0);
+});
+
+test('the command fails on a file still carrying a simulated threshold', function () {
+    $directory = base_path('tests/tmp-rules-data');
+
+    if (! is_dir($directory)) {
+        mkdir($directory, recursive: true);
+    }
+
+    $path = $directory.'/rules.json';
+
+    // Le fichier réel, dont une entrée est remarquée comme simulée.
+    $entries = json_decode(
+        (string) file_get_contents(database_path('seeders/data/rules.json')),
+        true,
+    );
+    $entries[0]['_source'] = 'VALEUR SIMULÉE, à remplacer avant toute exploitation';
+    file_put_contents($path, json_encode($entries));
+
+    try {
+        $this->artisan('rules:validate', ['--fichier' => $path])->assertFailed();
+    } finally {
+        unlink($path);
+        rmdir($directory);
+    }
 });
 
 test('the command fails on a file that does not hold up', function () {

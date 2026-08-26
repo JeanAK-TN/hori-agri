@@ -67,7 +67,11 @@ class RulesFileValidator
             $problems = [...$problems, ...$this->problemsOfEntry($entry, $index + 1)];
         }
 
-        return [...$problems, ...$this->problemsOfCounts($entries)];
+        return [
+            ...$problems,
+            ...$this->problemsOfCounts($entries),
+            ...$this->problemsOfSources($entries),
+        ];
     }
 
     /**
@@ -143,6 +147,85 @@ class RulesFileValidator
             $this->evaluator->evaluate($condition, self::fakeContext());
         } catch (Throwable $exception) {
             $problems[] = sprintf('%s : %s', $code, $exception->getMessage());
+
+            return $problems;
+        }
+
+        return [...$problems, ...$this->problemsOfFields($entry, $code)];
+    }
+
+    /**
+     * Chaque champ interrogé appartient aux sept du contexte
+     * (SPEC-CORRECTION section 7, contrôle 3).
+     *
+     * L'essai précédent ne suffit pas : l'évaluateur court-circuite une
+     * branche « and » dès le premier enfant faux, et un champ inconnu
+     * placé plus loin ne serait jamais lu. leafFields parcourt l'arbre
+     * entier, sans évaluer.
+     *
+     * @param  array<string, mixed>  $entry
+     * @return array<int, string>
+     */
+    private function problemsOfFields(array $entry, string $code): array
+    {
+        /** @var array<string, mixed> $condition */
+        $condition = $entry['condition'];
+
+        try {
+            $fields = $this->evaluator->leafFields($condition);
+        } catch (Throwable $exception) {
+            return [sprintf('%s : %s', $code, $exception->getMessage())];
+        }
+
+        $unknown = array_diff($fields, array_keys(EvaluationContext::FIELD_LABELS));
+
+        if ($unknown === []) {
+            return [];
+        }
+
+        return [sprintf(
+            '%s : champ(s) inconnu(s) du contexte d\'évaluation : %s.',
+            $code,
+            implode(', ', $unknown),
+        )];
+    }
+
+    /**
+     * Deux contrôles que le mémoire rend nécessaires : les cinq règles
+     * viennent d'un seul document publié, et plus aucun seuil n'est
+     * simulé (SPEC-CORRECTION section 7, contrôles 1 et 2).
+     *
+     * @param  array<int, array<string, mixed>>  $entries
+     * @return array<int, string>
+     */
+    private function problemsOfSources(array $entries): array
+    {
+        $problems = [];
+
+        $sources = array_unique(array_map(
+            static fn (array $entry): string => (string) ($entry['source'] ?? ''),
+            $entries,
+        ));
+
+        if (count($sources) > 1) {
+            $problems[] = sprintf(
+                'Les règles doivent porter une seule et même source ; %d apparaissent : %s.',
+                count($sources),
+                implode(' | ', $sources),
+            );
+        }
+
+        // Un seuil simulé ne se signale plus par un avertissement : il
+        // fait échouer le contrôle.
+        foreach ($entries as $entry) {
+            if (! str_contains((string) ($entry['_source'] ?? ''), 'SIMULÉ')) {
+                continue;
+            }
+
+            $problems[] = sprintf(
+                '%s : seuil encore marqué SIMULÉ, à remplacer par la référence publiée.',
+                (string) ($entry['code'] ?? 'entrée sans code'),
+            );
         }
 
         return $problems;
