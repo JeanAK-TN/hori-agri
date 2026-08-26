@@ -9,9 +9,12 @@ use App\Models\Farmer;
 use App\Models\Harvest;
 use App\Models\Indicator;
 use App\Models\Plot;
+use App\Models\Recommendation;
 use App\Models\User;
 use App\Services\Import\ImportService;
 use App\Services\Indicators\IndicatorService;
+use App\Services\Rules\RecommendationService;
+use Database\Seeders\RuleSeeder;
 use Illuminate\Http\UploadedFile;
 use Inertia\Testing\AssertableInertia as Assert;
 
@@ -169,6 +172,61 @@ test('the cycle screen shows the ratios once the zone is large enough', function
             ->where('indicators.has_comparable_zone', true)
             ->where('indicators.yield_vs_zone_median', '1.200'),
         );
+});
+
+/*
+| La règle de comparaison du fichier réel, TOM-C01, éprouvée sur le seuil
+| (SPEC-CORRECTION section 10). C'est la seule règle de la famille C
+| depuis la réduction à cinq.
+*/
+
+test('TOM-C01 stays suspended below five comparable plots', function () {
+    $this->seed(RuleSeeder::class);
+
+    // Une parcelle bien en dessous du réaliste togolais, dans une zone
+    // qui ne compte que quatre cycles comparables.
+    $cycle = ($this->openCycle)(7500);
+
+    foreach ([13000, 13500, 14000] as $yield) {
+        ($this->openCycle)($yield);
+    }
+
+    app(RecommendationService::class)->runFor($cycle->fresh());
+
+    $indicator = Indicator::where('crop_cycle_id', $cycle->id)->sole();
+
+    expect($indicator->zone_plot_count)->toBe(4)
+        ->and($indicator->zone_median_yield_kg_ha)->not->toBeNull()
+        // Sous le seuil, le rapport n'est pas calculé.
+        ->and($indicator->yield_vs_zone_median)->toBeNull()
+        ->and(
+            Recommendation::whereHas('rule', fn ($query) => $query->where('code', 'TOM-C01'))
+                ->count(),
+        )->toBe(0);
+});
+
+test('TOM-C01 fires from five comparable plots', function () {
+    $this->seed(RuleSeeder::class);
+
+    $cycle = ($this->openCycle)(7500);
+
+    // Quatre voisines bien au dessus : la médiane de la zone dépasse les
+    // 12 000 kg/ha de la condition.
+    foreach ([13000, 13500, 14000, 14500] as $yield) {
+        ($this->openCycle)($yield);
+    }
+
+    app(RecommendationService::class)->runFor($cycle->fresh());
+
+    $indicator = Indicator::where('crop_cycle_id', $cycle->id)->sole();
+
+    expect($indicator->zone_plot_count)->toBe(5)
+        ->and($indicator->yield_vs_zone_median)->not->toBeNull()
+        ->and(
+            Recommendation::where('crop_cycle_id', $cycle->id)
+                ->whereHas('rule', fn ($query) => $query->where('code', 'TOM-C01'))
+                ->count(),
+        )->toBe(1);
 });
 
 test('an import refreshes the indicators of every cycle it touched', function () {
