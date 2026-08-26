@@ -12,7 +12,7 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { navigationFor } from '@/lib/navigation';
-import { dashboard } from '@/routes';
+import { home } from '@/routes';
 
 export function AppSidebar() {
     const { auth } = usePage().props;
@@ -24,7 +24,7 @@ export function AppSidebar() {
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
-                            <Link href={dashboard()} prefetch>
+                            <Link href={home()} prefetch>
                                 <AppLogo />
                             </Link>
                         </SidebarMenuButton>

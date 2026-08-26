@@ -13,7 +13,7 @@ test('each of the four roles can sign in with their phone number', function (str
     ]);
 
     $this->assertAuthenticatedAs($user);
-    $response->assertRedirect(route('dashboard', absolute: false));
+    $response->assertRedirect(route('home', absolute: false));
 })->with(['superAdmin', 'exploitationAdmin', 'technician', 'farmer']);
 
 test('a super_admin must not belong to an exploitation', function () {
@@ -136,12 +136,13 @@ test('a member is signed out when their exploitation is suspended mid-session', 
     $exploitation = Exploitation::factory()->create();
     $technician = User::factory()->technician()->for($exploitation)->create();
 
-    $this->actingAs($technician)->get(route('dashboard'))->assertOk();
+    // Un écran réel plutôt que la racine, qui redirige toujours.
+    $this->actingAs($technician)->get(route('cycles.index'))->assertOk();
 
     $exploitation->suspend();
 
     $this->actingAs($technician->fresh())
-        ->get(route('dashboard'))
+        ->get(route('cycles.index'))
         ->assertRedirect(route('login'));
 });
 
@@ -149,5 +150,5 @@ test('the super_admin is never blocked by a suspension', function () {
     Exploitation::factory()->suspended()->create();
     $superAdmin = User::factory()->superAdmin()->create();
 
-    $this->actingAs($superAdmin)->get(route('dashboard'))->assertOk();
+    $this->actingAs($superAdmin)->get(route('exploitations.index'))->assertOk();
 });

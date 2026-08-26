@@ -29,7 +29,7 @@ test('les écrans du technicien se chargent sans erreur JavaScript', function ()
     $this->actingAs($technician);
 
     $pages = visit([
-        '/dashboard',
+        '/',
         '/farmers',
         '/farmers/create',
         "/farmers/{$farmer->id}",
@@ -55,7 +55,7 @@ test('les écrans de l administrateur d exploitation se chargent sans erreur Jav
     $this->actingAs(User::factory()->exploitationAdmin()->create());
 
     visit([
-        '/dashboard',
+        '/',
         '/tableau-de-bord',
         '/users',
         '/farmers',
@@ -75,7 +75,7 @@ test('les écrans de l agriculteur se chargent sans erreur JavaScript', function
 
     $this->actingAs($account);
 
-    visit(['/dashboard', '/recommandations', '/settings/profile'])
+    visit(['/', '/recommandations', '/settings/profile'])
         ->assertNoJavaScriptErrors()
         ->assertNoConsoleLogs();
 });
@@ -87,7 +87,7 @@ test('les écrans du super administrateur se chargent sans erreur JavaScript', f
 
     $this->actingAs(User::factory()->superAdmin()->create());
 
-    visit(['/dashboard', '/exploitations', '/users', '/crops', '/regles'])
+    visit(['/', '/exploitations', '/users', '/crops', '/regles'])
         ->assertNoJavaScriptErrors()
         ->assertNoConsoleLogs();
 });

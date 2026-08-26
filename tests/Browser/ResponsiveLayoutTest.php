@@ -54,7 +54,7 @@ test('aucun débordement horizontal sur un écran de 360 pixels', function (stri
     'fiche producteur' => '/farmers/{id}',
     'création producteur' => '/farmers/create',
     'modification producteur' => '/farmers/{id}/edit',
-    'accueil' => '/dashboard',
+    'racine, qui redirige selon le role' => '/',
 ]);
 
 test('les cibles tactiles atteignent 48 pixels sur un téléphone', function (string $path) {

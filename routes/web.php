@@ -8,6 +8,7 @@ use App\Http\Controllers\ExploitationController;
 use App\Http\Controllers\FarmerController;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\HarvestController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ImportController;
 use App\Http\Controllers\OperationController;
 use App\Http\Controllers\PlotController;
@@ -18,10 +19,9 @@ use App\Http\Controllers\VarietyController;
 use App\Http\Middleware\EnsureExploitationActive;
 use Illuminate\Support\Facades\Route;
 
-Route::redirect('/', '/dashboard')->name('home');
-
 Route::middleware(['auth', EnsureExploitationActive::class])->group(function () {
-    Route::inertia('dashboard', 'dashboard')->name('dashboard');
+    // La racine mène chacun à son premier écran (SPEC-CORRECTION 9).
+    Route::get('/', HomeController::class)->name('home');
 
     Route::middleware('role:super_admin')->group(function () {
         Route::get('exploitations', [ExploitationController::class, 'index'])

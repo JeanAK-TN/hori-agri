@@ -22,7 +22,9 @@ test('un technicien se connecte et enregistre un producteur depuis un téléphon
         ->fill('phone', '90112233')
         ->fill('password', 'password')
         ->click('Se connecter')
-        ->assertPathIs('/dashboard');
+        // La racine mène le technicien à ses cycles culturaux
+        // (SPEC-CORRECTION section 9).
+        ->assertPathIs('/cycles');
 
     $page->navigate('/farmers/create')
         ->assertSee('Nouveau producteur')

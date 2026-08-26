@@ -4,14 +4,12 @@ import {
     CalendarRange,
     ChartColumn,
     FileUp,
-    House,
     LandPlot,
     Lightbulb,
     Sprout,
     Users,
     Wheat,
 } from 'lucide-react';
-import { dashboard } from '@/routes';
 import { index as campaigns } from '@/routes/campaigns';
 import { index as crops } from '@/routes/crops';
 import { index as cycles } from '@/routes/cycles';
@@ -32,20 +30,11 @@ type RoleNavItem = NavItem & {
     shortTitle?: string;
 };
 
-const ALL_ROLES: Role[] = [
-    'super_admin',
-    'exploitation_admin',
-    'technician',
-    'farmer',
-];
-
+/*
+ * Aucune entrée « Accueil » : la page du kit de départ a disparu, et la
+ * racine mène chacun à son premier écran (SPEC-CORRECTION section 9).
+ */
 const navigation: RoleNavItem[] = [
-    {
-        title: 'Accueil',
-        href: dashboard(),
-        icon: House,
-        roles: ALL_ROLES,
-    },
     {
         title: 'Exploitations',
         href: exploitations(),

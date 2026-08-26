@@ -18,7 +18,7 @@ test('users can authenticate using their phone number', function () {
     ]);
 
     $this->assertAuthenticated();
-    $response->assertRedirect(route('dashboard', absolute: false));
+    $response->assertRedirect(route('home', absolute: false));
 });
 
 test('phone numbers typed with spaces or dashes are normalized', function () {
@@ -30,7 +30,7 @@ test('phone numbers typed with spaces or dashes are normalized', function () {
     ]);
 
     $this->assertAuthenticated();
-    $response->assertRedirect(route('dashboard', absolute: false));
+    $response->assertRedirect(route('home', absolute: false));
 });
 
 test('users can not authenticate with invalid password', function () {
