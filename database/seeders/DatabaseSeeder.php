@@ -12,7 +12,7 @@ class DatabaseSeeder extends Seeder
      * Seed the application's database with development accounts.
      *
      * Everything below is a test fixture (SPEC rule 2) : no data about
-     * the real Hori exploitation is ever seeded.
+     * the real INSECTGO farm is ever seeded.
      */
     public function run(): void
     {

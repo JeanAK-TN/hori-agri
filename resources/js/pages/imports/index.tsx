@@ -251,7 +251,7 @@ export default function ImportsIndex({ colonnes, separateur, rapport }: Props) {
                                                 </span>
                                             </TableCell>
                                             <TableCell className="px-4 text-muted-foreground">
-                                                {line.reason ?? '—'}
+                                                {line.reason ?? 'Aucun'}
                                             </TableCell>
                                         </TableRow>
                                     ))}

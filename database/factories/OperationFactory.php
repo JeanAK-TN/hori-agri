@@ -11,7 +11,7 @@ use App\Models\Operation;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * Test fixture only — no real Hori exploitation data (SPEC rule 2).
+ * Test fixture only: no real INSECTGO data (SPEC rule 2).
  *
  * @extends Factory<Operation>
  */

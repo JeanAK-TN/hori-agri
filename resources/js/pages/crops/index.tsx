@@ -422,9 +422,10 @@ export default function CropsIndex({ crops }: Props) {
                                 {crop.npk_needs && (
                                     <p className="text-sm text-muted-foreground tabular-nums">
                                         Besoins NPK : N{' '}
-                                        {crop.npk_needs.n ?? '—'} · P{' '}
-                                        {crop.npk_needs.p ?? '—'} · K{' '}
-                                        {crop.npk_needs.k ?? '—'} kg/ha
+                                        {crop.npk_needs.n ?? 'non chiffré'} · P{' '}
+                                        {crop.npk_needs.p ?? 'non chiffré'} · K{' '}
+                                        {crop.npk_needs.k ?? 'non chiffré'}{' '}
+                                        kg/ha
                                     </p>
                                 )}
 
@@ -457,10 +458,10 @@ export default function CropsIndex({ crops }: Props) {
                                                         </p>
                                                         <p className="text-sm text-muted-foreground tabular-nums">
                                                             {variety.cycle_days ??
-                                                                '—'}{' '}
+                                                                '?'}{' '}
                                                             jours ·{' '}
                                                             {variety.potential_yield_kg_ha ??
-                                                                '—'}{' '}
+                                                                '?'}{' '}
                                                             kg/ha
                                                         </p>
                                                     </div>

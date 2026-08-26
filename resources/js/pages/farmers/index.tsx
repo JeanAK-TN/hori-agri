@@ -175,12 +175,13 @@ export default function FarmersIndex({ farmers, filters }: Props) {
                                                 {farmer.village}
                                             </TableCell>
                                             <TableCell className="text-muted-foreground tabular-nums">
-                                                {farmer.phone ?? '—'}
+                                                {farmer.phone ??
+                                                    'Non renseigné'}
                                             </TableCell>
                                             <TableCell className="text-right tabular-nums">
                                                 {farmer.experience_years ===
                                                 null
-                                                    ? '—'
+                                                    ? 'Non renseignée'
                                                     : `${farmer.experience_years} ans`}
                                             </TableCell>
                                             <TableCell>
@@ -190,7 +191,7 @@ export default function FarmersIndex({ farmers, filters }: Props) {
                                                     </Badge>
                                                 ) : (
                                                     <span className="text-muted-foreground">
-                                                        —
+                                                        Non
                                                     </span>
                                                 )}
                                             </TableCell>

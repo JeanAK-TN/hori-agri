@@ -27,7 +27,7 @@ test('l origine de chaque seuil est lisible sans rien déplier', function () {
         'threshold_status' => ThresholdStatus::Sourced,
     ]);
     Rule::factory()->code('COUT-PAIR-01')->convention()->create([
-        'source' => 'SEUIL SIMULÉ — à remplacer par la référence publiée',
+        'source' => 'SEUIL SIMULÉ, à remplacer par la référence publiée',
     ]);
 
     $this->actingAs($this->exploitationAdmin);

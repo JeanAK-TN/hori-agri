@@ -405,7 +405,8 @@ export default function UsersIndex({
                                                 {account.phone}
                                             </TableCell>
                                             <TableCell className="text-muted-foreground">
-                                                {account.email ?? '—'}
+                                                {account.email ??
+                                                    'Non renseigné'}
                                             </TableCell>
                                             <TableCell>
                                                 <Badge variant="secondary">
@@ -415,7 +416,7 @@ export default function UsersIndex({
                                             {showExploitation && (
                                                 <TableCell className="text-muted-foreground">
                                                     {account.exploitation
-                                                        ?.name ?? '—'}
+                                                        ?.name ?? 'Aucune'}
                                                 </TableCell>
                                             )}
                                             <TableCell className="px-4">
