@@ -41,6 +41,8 @@ type RuleRow = {
     severity: string;
     severity_label: string;
     condition: Record<string, unknown>;
+    condition_sentence: string;
+    common_condition_sentence: string | null;
     message: string;
     action: string;
     estimated_gain: string | null;
@@ -54,8 +56,16 @@ type RuleRow = {
 
 type Option = { value: string; label: string };
 
+type Summary = {
+    rules: number;
+    sources: number;
+    foreign_thresholds: number;
+    convention_thresholds: number;
+};
+
 type Props = {
     rules: RuleRow[];
+    summary: Summary;
     severities: Option[];
     fields: { value: string; label: string; unit: string }[];
     canOverride: boolean;
@@ -210,6 +220,7 @@ function OverrideDialog({
 
 export default function RulesIndex({
     rules,
+    summary,
     severities,
     fields,
     canOverride,
@@ -223,6 +234,23 @@ export default function RulesIndex({
                     title="Base de règles"
                     description="Chaque règle est une ligne de la base, jamais une ligne de code. L'origine de son seuil est toujours affichée."
                 />
+
+                {/* Les quatre nombres se calculent, ils ne s'écrivent pas
+                    en dur (SPEC-CORRECTION section 6). */}
+                <p
+                    className="rounded-xl border bg-card p-4 font-medium tabular-nums md:p-5"
+                    data-test="rules-summary"
+                >
+                    {summary.rules} règle{summary.rules > 1 ? 's' : ''},{' '}
+                    {summary.sources} source{summary.sources > 1 ? 's' : ''},{' '}
+                    {summary.foreign_thresholds} seuil
+                    {summary.foreign_thresholds > 1 ? 's' : ''} étranger
+                    {summary.foreign_thresholds > 1 ? 's' : ''},{' '}
+                    {summary.convention_thresholds} seuil
+                    {summary.convention_thresholds > 1 ? 's' : ''} fixé
+                    {summary.convention_thresholds > 1 ? 's' : ''} par
+                    convention
+                </p>
 
                 <div
                     className="flex items-start gap-3 rounded-xl border border-dashed p-4"
@@ -334,18 +362,27 @@ export default function RulesIndex({
                                     </div>
                                 </dl>
 
-                                <details className="rounded-lg border p-3">
-                                    <summary className="cursor-pointer text-sm font-medium">
-                                        Condition
-                                    </summary>
-                                    <pre className="mt-2 overflow-x-auto text-xs">
-                                        {JSON.stringify(
-                                            rule.condition,
-                                            null,
-                                            2,
+                                {/* Ce que la règle vérifie, en français
+                                    lisible et sans clic supplémentaire :
+                                    jamais le JSON brut (section 6). */}
+                                <div
+                                    className="rounded-lg border p-3 text-sm"
+                                    data-test="condition-sentence"
+                                >
+                                    <p>
+                                        <span className="text-muted-foreground">
+                                            La règle vérifie :{' '}
+                                        </span>
+                                        {rule.condition_sentence}
+                                    </p>
+                                    {rule.is_override &&
+                                        rule.common_condition_sentence && (
+                                            <p className="mt-2 text-muted-foreground">
+                                                Seuil de la fiche nationale :{' '}
+                                                {rule.common_condition_sentence}
+                                            </p>
                                         )}
-                                    </pre>
-                                </details>
+                                </div>
 
                                 {canOverride && !rule.is_overridden && (
                                     <OverrideDialog

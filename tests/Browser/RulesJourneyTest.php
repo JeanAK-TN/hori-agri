@@ -32,7 +32,7 @@ test('l origine de chaque seuil est lisible sans rien déplier', function () {
 
     $this->actingAs($this->exploitationAdmin);
 
-    $page = visit('/rules')->resize(360, 800);
+    $page = visit('/regles')->resize(360, 800);
 
     $page->assertSee('Source togolaise publiée')
         ->assertSee('Fiche de démonstration, page 12')
@@ -41,6 +41,10 @@ test('l origine de chaque seuil est lisible sans rien déplier', function () {
         // Une convention arrive inactive tant que l'exploitation ne l'a
         // pas confirmée (SPEC section 10.4).
         ->assertSee('Inactive')
+        // Le bandeau de synthèse est calculé sur ces deux fixtures.
+        ->assertSee('2 règles, 2 sources, 0 seuil étranger, 1 seuil fixé par convention')
+        // Ce que la règle vérifie s'écrit en français, sans clic.
+        ->assertSee('La règle vérifie :')
         ->assertNoJavaScriptErrors()
         ->assertScript(
             'document.documentElement.scrollWidth <= document.documentElement.clientWidth',
@@ -59,7 +63,7 @@ test('les sept champs interrogeables sont annoncés', function () {
 
     $this->actingAs($this->exploitationAdmin);
 
-    visit('/rules')
+    visit('/regles')
         ->assertSee('Les 7 champs interrogeables')
         ->assertSee('densité de plantation')
         ->assertSee('NPK de couverture cumulé')
@@ -75,7 +79,7 @@ test('surcharger un seuil laisse la règle commune intacte', function () {
 
     $this->actingAs($this->exploitationAdmin);
 
-    $page = visit('/rules')->resize(390, 844);
+    $page = visit('/regles')->resize(390, 844);
 
     $page->click('[data-test=override-TOM-TEST-01]')
         ->assertSee('Surcharger TOM-TEST-01')
@@ -88,6 +92,11 @@ test('surcharger un seuil laisse la règle commune intacte', function () {
 
     $page->assertSee('Seuil surchargé pour votre exploitation')
         ->assertSee('Surcharge de votre exploitation')
+        // Le seuil de la fiche nationale reste rappelé à côté de la
+        // valeur locale (SPEC-CORRECTION section 6).
+        ->assertSee('Seuil de la fiche nationale :')
+        ->assertSee('NPK de couverture cumulé inférieur à 100 kg/ha')
+        ->assertSee('NPK de couverture cumulé inférieur à 120 kg/ha')
         ->assertNoJavaScriptErrors();
 
     expect($common->fresh()->condition['value'])->toBe(100)
@@ -107,7 +116,7 @@ test('une condition mal formée est refusée sans quitter la boîte', function (
 
     $this->actingAs($this->exploitationAdmin);
 
-    $page = visit('/rules');
+    $page = visit('/regles');
 
     $page->click('[data-test=override-TOM-TEST-01]')
         ->fill('#condition', json_encode(
@@ -128,7 +137,7 @@ test('un super_admin maintient la base commune et ne surcharge pas', function ()
 
     $this->actingAs(User::factory()->superAdmin()->create());
 
-    visit('/rules')
+    visit('/regles')
         ->assertSee('TOM-TEST-01')
         ->assertDontSee('Surcharger')
         ->assertNoJavaScriptErrors();

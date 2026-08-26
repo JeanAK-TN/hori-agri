@@ -62,7 +62,7 @@ test('les écrans de l administrateur d exploitation se chargent sans erreur Jav
         '/plots',
         '/campaigns',
         '/cycles',
-        '/rules',
+        '/regles',
     ])
         ->assertNoJavaScriptErrors()
         ->assertNoConsoleLogs();
@@ -87,7 +87,7 @@ test('les écrans du super administrateur se chargent sans erreur JavaScript', f
 
     $this->actingAs(User::factory()->superAdmin()->create());
 
-    visit(['/dashboard', '/exploitations', '/users', '/crops', '/rules'])
+    visit(['/dashboard', '/exploitations', '/users', '/crops', '/regles'])
         ->assertNoJavaScriptErrors()
         ->assertNoConsoleLogs();
 });

@@ -267,7 +267,22 @@ test('the rules screen shows the origin of every threshold', function () {
             ->has('rules', 5)
             ->has('fields', 7)
             ->where('canOverride', false)
-            ->where('rules.0.threshold_status_label', fn (string $label) => $label !== ''),
+            // Le bandeau de synthèse : « 5 règles, 1 source, 0 seuil
+            // étranger, 0 seuil fixé par convention », calculé.
+            ->where('summary.rules', 5)
+            ->where('summary.sources', 1)
+            ->where('summary.foreign_thresholds', 0)
+            ->where('summary.convention_thresholds', 0)
+            // L'origine du seuil porte sa note quand elle existe.
+            ->where(
+                'rules.1.threshold_status_label',
+                'Source togolaise publiée, formule à confirmer',
+            )
+            // Ce que la règle vérifie, en français lisible.
+            ->where(
+                'rules.0.condition_sentence',
+                'culture égal à « Tomate » et densité de plantation inférieur à 33 000 plants/ha',
+            ),
         );
 });
 

@@ -46,8 +46,8 @@ Route::middleware(['auth', EnsureExploitationActive::class])->group(function () 
 
     Route::middleware('role:super_admin,exploitation_admin')->group(function () {
         // Base de règles, avec l'origine de chaque seuil (SPEC section 11).
-        Route::get('rules', [RuleController::class, 'index'])->name('rules.index');
-        Route::patch('rules/{rule}', [RuleController::class, 'update'])->name('rules.update');
+        Route::get('regles', [RuleController::class, 'index'])->name('rules.index');
+        Route::patch('regles/{rule}', [RuleController::class, 'update'])->name('rules.update');
 
         Route::get('users', [UserController::class, 'index'])->name('users.index');
         Route::post('users', [UserController::class, 'store'])->name('users.store');
