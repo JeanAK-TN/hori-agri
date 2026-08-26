@@ -11,7 +11,7 @@ type Props = {
 
 /**
  * Un nombre de tête. Trois valeurs ne méritent pas un graphique : elles
- * se lisent plus vite écrites (design system Hori Agri).
+ * se lisent plus vite écrites (design system AgriRepère).
  */
 export default function StatCard({
     label,

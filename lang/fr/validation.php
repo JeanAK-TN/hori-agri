@@ -7,7 +7,7 @@ return [
     | Lignes de validation
     |--------------------------------------------------------------------------
     |
-    | L'interface d'Hori Agri est intégralement en français (SPEC section 4.3).
+    | L'interface d'AgriRepère est intégralement en français (SPEC section 4.3).
     | Les messages de validation rendus par le serveur en font partie.
     |
     */

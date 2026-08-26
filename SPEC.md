@@ -1,9 +1,9 @@
-# Hori Agri : spécification de construction
+# AgriRepère : spécification de construction
 
 Document unique de référence pour la construction de l'application. Tout ce qui est nécessaire
 pour développer la solution s'y trouve. Ce qui n'y est pas est hors périmètre.
 
-**Projet** : Hori Agri, solution SaaS d'aide à la décision pour les coopératives agricoles.
+**Projet** : AgriRepère, solution SaaS d'aide à la décision pour les coopératives agricoles.
 **Contexte** : mémoire de Licence 3 Systèmes d'Information, option Génie Logiciel, Lomé Business
 School. Auteur : Jean KODIO. Terrain : coopérative agricole Hori, au Togo.
 **Cultures suivies** : maïs, soja, manioc.

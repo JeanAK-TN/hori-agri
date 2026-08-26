@@ -6,7 +6,7 @@ export type CycleStatusValue =
 
 /**
  * Statut d'un cycle cultural, en paires tonales : fond pâle et texte
- * foncé, lisibles en plein soleil (design system Hori Agri).
+ * foncé, lisibles en plein soleil (design system AgriRepère).
  */
 const TONES: Record<CycleStatusValue, string> = {
     planned: 'bg-muted text-muted-foreground',

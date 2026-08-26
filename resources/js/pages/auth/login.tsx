@@ -115,6 +115,6 @@ export default function Login({ status, canResetPassword }: Props) {
 }
 
 Login.layout = {
-    title: 'Connexion à Hori Agri',
+    title: 'Connexion à AgriRepère',
     description: 'Entrez votre numéro de téléphone et votre mot de passe',
 };

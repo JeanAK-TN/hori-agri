@@ -5,7 +5,7 @@ export type SeverityValue = 'high' | 'medium' | 'low';
 
 /**
  * Sévérité d'une recommandation, en paires tonales : fond pâle et texte
- * foncé, jamais de fond saturé plein (design system Hori Agri).
+ * foncé, jamais de fond saturé plein (design system AgriRepère).
  */
 const TONES: Record<SeverityValue, string> = {
     high: 'bg-severity-high text-severity-high-foreground',
