@@ -31,3 +31,6 @@ yarn-error.log
 # Captures d’écran des tests navigateur en échec
 /tests/Browser/Screenshots
 /Tests/Browser/Screenshots
+
+# Chargeur de demonstration local : porte des donnees reelles de la ferme
+/demo-insectgo.php
